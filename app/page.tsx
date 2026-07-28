@@ -1,115 +1,88 @@
+import Link from "next/link";
 import type { Metadata } from "next";
+import { ConwayLife } from "./ConwayLife";
 import { PublicationHeading, PublicationRow } from "./PublicationMotion";
-
-const profile = {
-  name: "Steven Wilcox",
-  role: "Software engineer and product-minded builder",
-  location: "United States",
-  email: "hello@example.com",
-  summary:
-    "I build calm, capable software for people who need systems to be understandable, reliable, and a little easier to live inside.",
-  links: [
-    { label: "Email", href: "mailto:hello@example.com" },
-    { label: "GitHub", href: "https://github.com/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
-    { label: "CV PDF", href: "/cv.pdf" },
-  ],
-};
-
-const work = [
-  {
-    title: "Applied AI Interfaces",
-    period: "Recent",
-    description:
-      "Designed and implemented tools that turn ambiguous workflows into focused, inspectable product experiences.",
-    tags: ["React", "TypeScript", "AI UX"],
-  },
-  {
-    title: "Developer Systems",
-    period: "Recent",
-    description:
-      "Built internal platforms, automation, and integration surfaces that improve engineering feedback loops.",
-    tags: ["APIs", "Tooling", "Reliability"],
-  },
-  {
-    title: "Data-Rich Products",
-    period: "Earlier",
-    description:
-      "Created interfaces for exploring operational data with an emphasis on speed, legibility, and trust.",
-    tags: ["Dashboards", "Design Systems", "Analytics"],
-  },
-];
-
-const experience = [
-  {
-    organization: "Independent / Consulting",
-    role: "Software Engineer",
-    period: "2024 - Present",
-    details:
-      "Partnering with teams on product architecture, frontend systems, AI-assisted workflows, and practical delivery.",
-  },
-  {
-    organization: "Previous Company",
-    role: "Senior Engineer",
-    period: "2021 - 2024",
-    details:
-      "Led implementation across user-facing products, shared frontend foundations, and backend service integrations.",
-  },
-  {
-    organization: "Earlier Roles",
-    role: "Engineer",
-    period: "Before 2021",
-    details:
-      "Developed production software across web applications, workflow tools, data products, and platform services.",
-  },
-];
-
-const capabilities = [
-  "Frontend architecture",
-  "Product engineering",
-  "AI-assisted workflows",
-  "TypeScript and React",
-  "Design systems",
-  "Data visualization",
-  "API integration",
-  "Technical writing",
-];
+import {
+  achievements,
+  capabilities,
+  courses,
+  experience,
+  profile,
+  work,
+} from "./data/content";
 
 export const metadata: Metadata = {
   title: `${profile.name} - CV and Work`,
   description: profile.summary,
 };
 
-export default function Home() {
+type SerifVariant = "default" | "thinner" | "smaller";
+
+const serifVariants: Record<
+  SerifVariant,
+  { name: string; intro: string }
+> = {
+  default: {
+    name: "font-serif text-2xl font-light leading-[1.02] sm:text-3xl lg:text-4xl",
+    intro: "font-serif text-xl font-thin italic leading-[1.35] tracking-[0.015em] text-[#615754]",
+  },
+  thinner: {
+    name: "font-serif text-2xl font-thin leading-[1.02] sm:text-3xl lg:text-4xl",
+    intro: "font-serif text-xl font-thin italic leading-[1.35] tracking-[0.015em] text-[#615754]",
+  },
+  smaller: {
+    name: "font-serif text-xl font-light leading-[1.02] sm:text-2xl lg:text-3xl",
+    intro: "font-serif text-xl font-thin italic leading-[1.35] tracking-[0.015em] text-[#615754]",
+  },
+};
+
+export function CvPage({ serifVariant = "default" }: { serifVariant?: SerifVariant }) {
+  const serif = serifVariants[serifVariant];
+
   return (
-    <main className="min-h-screen bg-[#f6f1e8] text-[#191714]">
+    <main className="min-h-screen bg-[#FEFCF1] text-[#191714]">
       <section className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 px-5 py-5 sm:px-8 lg:grid-cols-[minmax(260px,0.7fr)_minmax(0,1.3fr)] lg:gap-10 lg:px-10">
-        <aside className="flex flex-col justify-between border-b border-[#d8d0c1] pb-8 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:py-10 lg:pr-10">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7f4b31]">
-              Public CV
-            </p>
-            <h1 className="mt-8 max-w-[12ch] text-5xl font-semibold leading-[0.95] sm:text-6xl lg:text-7xl">
+        <aside className="flex flex-col items-center border-b border-[#d8d0c1] pb-8 text-center transition-all duration-300 lg:sticky lg:top-0 lg:h-screen lg:items-start lg:border-b-0 lg:border-r lg:py-10 lg:pr-10 lg:text-left">
+          <div className="flex w-full flex-col items-center lg:items-start">
+            <h1 className={`max-w-[12ch] text-center lg:text-left ${serif.name}`}>
               {profile.name}
             </h1>
-            <p className="mt-6 max-w-sm text-lg leading-7 text-[#514a40]">
+            <p className="mt-6 max-w-sm text-base leading-7 text-[#514a40]">
               {profile.role}
             </p>
           </div>
 
-          <div className="mt-10 space-y-8">
-            <p className="max-w-sm text-pretty text-xl leading-8 text-[#2f2b25]">
-              {profile.summary}
-            </p>
+          <div className="my-8 flex w-full max-w-sm flex-col items-center gap-6">
+            <div className="aspect-[1.62/1] w-full overflow-hidden border border-black bg-transparent">
+              <ConwayLife />
+            </div>
 
-            <nav aria-label="Profile links" className="flex flex-wrap gap-2">
+            <Link
+              className="rounded-full border border-black bg-transparent px-5 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-black hover:text-[#FEFCF1] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-[#FEFCF1]"
+              href="/live-stats"
+            >
+              LIVE STATS
+            </Link>
+
+            <nav
+              aria-label="Profile links"
+              className="flex w-full items-start justify-between"
+            >
               {profile.links.map((link) => (
                 <a
-                  className="inline-flex h-10 items-center border border-[#bcae9a] px-4 text-sm font-medium text-[#191714] transition hover:border-[#7f4b31] hover:bg-[#ebe1d2] focus:outline-none focus:ring-2 focus:ring-[#7f4b31] focus:ring-offset-2 focus:ring-offset-[#f6f1e8]"
+                  aria-label={link.label}
+                  className="group flex min-w-0 flex-col items-center gap-2 text-[#766b5d] focus:outline-none"
                   href={link.href}
                   key={link.label}
+                  rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+                  target={link.href.startsWith("http") ? "_blank" : undefined}
                 >
-                  {link.label}
+                  <span className="inline-flex size-10 items-center justify-center rounded-full bg-black text-[#FEFCF1] transition group-hover:bg-[#766b5d] group-focus-visible:bg-[#766b5d] group-focus-visible:ring-2 group-focus-visible:ring-[#766b5d] group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-[#FEFCF1]">
+                    <link.Icon aria-hidden="true" className="size-4" />
+                  </span>
+                  <span className="min-h-4 text-[0.65rem] font-medium uppercase tracking-[0.16em] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    {link.label}
+                  </span>
                 </a>
               ))}
             </nav>
@@ -119,21 +92,17 @@ export default function Home() {
         <div className="py-10 lg:py-10">
           <section
             aria-labelledby="intro-heading"
-            className="grid gap-6 border-b border-[#d8d0c1] pb-12 md:grid-cols-[0.7fr_1.3fr]"
+            className="border-b border-[#d8d0c1] pb-12"
           >
-            <div>
-              <p className="text-sm uppercase tracking-[0.22em] text-[#766b5d]">
-                Based in {profile.location}
+            <div className="space-y-6 text-center lg:text-left">
+              <p className="text-xs uppercase tracking-[0.32em] text-[#766b5d]">
+                Based in the {profile.location}
               </p>
-            </div>
-            <div>
               <h2
                 id="intro-heading"
-                className="max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl"
+                className={`mx-auto max-w-3xl lg:mx-0 ${serif.intro}`}
               >
-                I like software that earns trust through clarity: thoughtful
-                interfaces, boringly solid systems, and details that hold up
-                under daily use.
+                “{profile.summary}”
               </h2>
             </div>
           </section>
@@ -145,26 +114,41 @@ export default function Home() {
             <PublicationHeading className="mb-8 flex items-end justify-between gap-6">
               <h2
                 id="work-heading"
-                className="text-sm font-semibold uppercase tracking-[0.22em] text-[#7f4b31]"
+                className="text-xs font-semibold uppercase tracking-[0.32em] text-[#615754]"
               >
-                Selected Work
+                Career Highlights
               </h2>
-              <p className="hidden max-w-xs text-right text-sm leading-6 text-[#675f54] sm:block">
-                A compact view of the kinds of projects this page can point to.
-              </p>
             </PublicationHeading>
 
             <div className="grid gap-4">
               {work.map((item) => (
                 <PublicationRow
-                  className="grid gap-5 border border-[#d8d0c1] bg-[#fbf8f1] p-5 md:grid-cols-[1fr_1.4fr]"
+                  className="group grid gap-5 border border-[#d8d0c1] bg-[#FEFCF1] p-5 transition-colors duration-300 hover:border-black md:grid-cols-[1fr_1.4fr]"
                   key={item.title}
                 >
-                  <div>
-                    <p className="text-sm text-[#766b5d]">{item.period}</p>
-                    <h3 className="mt-2 text-2xl font-semibold">
-                      {item.title}
-                    </h3>
+                  <div className="flex min-h-full flex-col">
+                    <div>
+                      <p className="text-sm text-[#8D7A70]">{item.period}</p>
+                      <h3 className="mt-2 text-xl font-medium">
+                        {item.title}
+                      </h3>
+                      {item.title === "Machine Learning PhD Quest" ? (
+                        <div
+                          aria-hidden="true"
+                          className="mt-4 h-1.5 w-32 border border-black"
+                        >
+                          <div className="h-full w-9 bg-black" />
+                        </div>
+                      ) : null}
+                    </div>
+                    {item.isPublished ? (
+                      <Link
+                        className="mt-auto pt-5 text-sm font-medium text-[#8D7A70] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                        href={`/${item.slug}`}
+                      >
+                        Explore &gt;&gt;
+                      </Link>
+                    ) : null}
                   </div>
                   <div>
                     <p className="text-base leading-7 text-[#514a40]">
@@ -173,7 +157,7 @@ export default function Home() {
                     <ul className="mt-5 flex flex-wrap gap-2">
                       {item.tags.map((tag) => (
                         <li
-                          className="border border-[#cfc4b3] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-[#675f54]"
+                          className="border border-[#d8d0c1] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-[#615754]"
                           key={tag}
                         >
                           {tag}
@@ -193,7 +177,7 @@ export default function Home() {
             <PublicationHeading>
               <h2
                 id="experience-heading"
-                className="text-sm font-semibold uppercase tracking-[0.22em] text-[#7f4b31]"
+                className="text-xs font-semibold uppercase tracking-[0.32em] text-[#615754]"
               >
                 Experience
               </h2>
@@ -202,21 +186,37 @@ export default function Home() {
             <div className="mt-8 divide-y divide-[#d8d0c1]">
               {experience.map((item) => (
                 <PublicationRow
-                  className="grid gap-3 py-6 md:grid-cols-[0.8fr_1.2fr]"
+                  className="py-5"
                   key={`${item.organization}-${item.period}`}
                 >
-                  <div>
-                    <p className="font-semibold">{item.organization}</p>
-                    <p className="mt-1 text-sm text-[#766b5d]">
-                      {item.period}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold">{item.role}</h3>
-                    <p className="mt-2 max-w-2xl leading-7 text-[#514a40]">
-                      {item.details}
-                    </p>
-                  </div>
+                  <p className="font-medium">{item.organization}</p>
+                  <p className="mt-1 text-base text-[#514a40]">{item.role}</p>
+                  <p className="mt-1 text-sm text-[#8D7A70]">{item.period}</p>
+                </PublicationRow>
+              ))}
+            </div>
+          </section>
+
+          <section
+            aria-labelledby="achievements-heading"
+            className="border-b border-[#d8d0c1] py-12"
+          >
+            <PublicationHeading>
+              <h2
+                id="achievements-heading"
+                className="text-xs font-semibold uppercase tracking-[0.32em] text-[#615754]"
+              >
+                Achievements
+              </h2>
+            </PublicationHeading>
+
+            <div className="mt-6 divide-y divide-[#d8d0c1]">
+              {achievements.map((achievement) => (
+                <PublicationRow
+                  className="py-3 text-base text-[#514a40]"
+                  key={achievement}
+                >
+                  {achievement}
                 </PublicationRow>
               ))}
             </div>
@@ -224,33 +224,76 @@ export default function Home() {
 
           <section
             aria-labelledby="capabilities-heading"
-            className="grid gap-8 py-12 md:grid-cols-[0.75fr_1.25fr]"
+            className="border-b border-[#d8d0c1] py-12"
           >
-            <div>
-              <h2
-                id="capabilities-heading"
-                className="text-sm font-semibold uppercase tracking-[0.22em] text-[#7f4b31]"
-              >
-                Capabilities
-              </h2>
-              <p className="mt-4 max-w-xs leading-7 text-[#514a40]">
-                The page is intentionally plainspoken: it should read like a CV,
-                not a campaign.
-              </p>
-            </div>
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <h2
+              id="capabilities-heading"
+              className="text-xs font-semibold uppercase tracking-[0.32em] text-[#615754]"
+            >
+              Capabilities
+            </h2>
+            <ul className="mt-6 space-y-5">
               {capabilities.map((capability) => (
-                <li
-                  className="border-b border-[#d8d0c1] pb-3 text-lg font-medium"
-                  key={capability}
-                >
-                  {capability}
+                <li key={capability.category}>
+                  <p className="text-sm font-semibold text-[#615754]">
+                    {capability.category}
+                  </p>
+                  <div className="mt-3 space-y-2 text-sm leading-6 text-[#514a40]">
+                    <p>
+                      <span className="font-medium text-[#615754]">Skills:</span>{" "}
+                      {capability.skills.join(" | ")}
+                    </p>
+                    {capability.technologies?.length ? (
+                      <p>
+                        <span className="font-medium text-[#615754]">
+                          Technologies:
+                        </span>{" "}
+                        {capability.technologies.join(" | ")}
+                      </p>
+                    ) : null}
+                  </div>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {capability.examples.map((skill) => (
+                      <li
+                        className="border border-[#d8d0c1] px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-[#615754]"
+                        key={skill}
+                      >
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>
+          </section>
+
+          <section aria-labelledby="courses-heading" className="py-12">
+            <PublicationHeading>
+              <h2
+                id="courses-heading"
+                className="text-xs font-semibold uppercase tracking-[0.32em] text-[#615754]"
+              >
+                Selected Courses
+              </h2>
+            </PublicationHeading>
+
+            <div className="mt-6 space-y-3">
+              {courses.map((course) => (
+                <PublicationRow
+                  className="text-base text-[#514a40]"
+                  key={course}
+                >
+                  {course}
+                </PublicationRow>
+              ))}
+            </div>
           </section>
         </div>
       </section>
     </main>
   );
+}
+
+export default function Home() {
+  return <CvPage />;
 }

@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+
+  "name": "steven-wilcox-cv",
+  "main": "./dist/server/index.js",
+  "assets": {
+    "directory": "./dist/client"
+  },
+
+  "compatibility_date": "2026-05-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+
+  // Fill this in after running `wrangler whoami`.
+  "account_id": "15add0f561ebe465b2782b532a8eaf49",
+
+  // Once your zone is on Cloudflare, you can attach custom domains here
+  // instead of configuring routes in the dashboard.
+  //
+  // "routes": [
+  //   {
+  //     "pattern": "swilcox.dev",
+  //     "custom_domain": true
+  //   }
+  // ]
+}

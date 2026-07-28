@@ -1,0 +1,13 @@
+{"timestamp":"00:36:48.877","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:48.903","source":"Server","level":"ERROR","message":"⨯ \"unhandledRejection:\" Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:48.911","source":"Server","level":"ERROR","message":"⨯ \"unhandledRejection: \" Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:48.986","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:48.989","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.152","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.154","source":"Server","level":"ERROR","message":"⨯ \"unhandledRejection:\" Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.167","source":"Server","level":"ERROR","message":"⨯ \"unhandledRejection: \" Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.190","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.194","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.209","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.211","source":"Server","level":"ERROR","message":"Error: ENOENT: no such file or directory, scandir '/Users/stevenwilcox/Desktop/swdev/tgol/app'"}
+{"timestamp":"00:36:49.539","source":"Server","level":"ERROR","message":"⨯ Module not found: Error: Can't resolve 'next-flight-client-entry-loader' in '/Users/stevenwilcox/Desktop/swdev/tgol'"}

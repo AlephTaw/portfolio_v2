@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f1e8;
+  --background: #FEFCF1;
   --foreground: #191714;
 }
 
@@ -29,4 +29,36 @@ html {
 
 a {
   text-underline-offset: 0.18em;
+}
+
+.pane-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.pane-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.route-enter {
+  animation: route-enter 380ms ease-in-out;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-enter {
+    animation: none;
+  }
 }
