@@ -65,6 +65,14 @@ test("opens the character sheet in the homepage portfolio pane", async () => {
   const html = await response.text();
   assert.match(html, /Character Sheet/);
   assert.match(html, /Campaign: The Crucible/);
+  assert.match(html, />SQL</);
+  assert.match(html, />Python</);
+  assert.match(html, />Machine Learning</);
+  assert.match(html, />Deployments</);
+  assert.match(html, /Commit History/);
+  assert.match(html, />B-Code</);
+  assert.match(html, /chore: removed comment and commented out original paper color/);
+  assert.match(html, /feat: character sheet, mlphd quest component integration/);
 });
 
 test("redirects the legacy live stats page to the character sheet view", async () => {

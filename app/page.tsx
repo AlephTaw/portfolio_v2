@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ConwayLife } from "./ConwayLife";
-import { CharacterSheet } from "./components/CharacterSheet";
+import { CharacterSheet } from "./components/character-sheet/CharacterSheet";
 import { HighlightCard } from "./components/HighlightCard";
 import {
   PortfolioViewButton,
