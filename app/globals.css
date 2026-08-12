@@ -2,8 +2,6 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  /* Original site background (paper) color: #FEFCF1 */
-  /* --background: #FEFCF1; */
   --background: hsl(51 25% 97%);
   --foreground: #191714;
 }
