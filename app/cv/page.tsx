@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function CvViewerPage() {
   return (
     <main className="flex min-h-dvh flex-col bg-[#e9e5dc] text-[#191714]">
-      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-black/15 bg-[#FEFCF1] px-4 py-3 sm:px-6">
+      <header className="flex min-h-16 items-center justify-between gap-4 border-b border-black/15 bg-background px-4 py-3 sm:px-6">
         <Link
           className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#514a40] transition hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 focus-visible:ring-offset-[#FEFCF1]"
           href="/"
@@ -42,7 +42,7 @@ export default function CvViewerPage() {
           data={`${resumePath}#view=FitH&navpanes=0`}
           type="application/pdf"
         >
-          <div className="mx-auto mt-16 max-w-md bg-[#FEFCF1] p-8 text-center shadow-sm">
+          <div className="mx-auto mt-16 max-w-md bg-background p-8 text-center shadow-sm">
             <p className="text-base leading-7 text-[#514a40]">
               Your browser cannot display the CV inline.
             </p>

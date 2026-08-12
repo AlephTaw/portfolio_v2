@@ -31,6 +31,9 @@ test("server-renders the public CV page", async () => {
   const html = await response.text();
   assert.match(html, /<title>Steven Wilcox - CV and Work<\/title>/i);
   assert.match(html, /Career Highlights/);
+  assert.match(html, /Welcome to the game of life/);
+  assert.match(html, /Curriculum Vitae/);
+  assert.match(html, /Want to see your idea come to life or solve a challenging/);
   assert.match(html, /Experience/);
   assert.match(html, /Achievements/);
   assert.match(html, /top 14th percentile in the nation on the Putnam Exam/);
@@ -41,9 +44,8 @@ test("server-renders the public CV page", async () => {
 
 test("server-renders detail pages", async () => {
   const pages = [
-    ["/sirl", /SIRL/, /This timeline is temporarily hidden while the detail page is being updated\./],
-    ["/mlphd", /Machine Learning PhD Quest/, /This timeline is temporarily hidden while the detail page is being updated\./],
-    ["/live-stats", /Live Stats/, /Welcome to the Game of Life/],
+    ["/sirl", /SIRL/, /SIRL authentication background animation/],
+    ["/mlphd", /Machine Learning PhD Quest/, /Data Science/],
     ["/contact", /Contact/, /Name \*/],
   ];
 
@@ -54,6 +56,24 @@ test("server-renders detail pages", async () => {
     assert.match(html, heading);
     assert.match(html, content);
   }
+});
+
+test("opens the character sheet in the homepage portfolio pane", async () => {
+  const response = await render("/?view=character-sheet");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /Character Sheet/);
+  assert.match(html, /Campaign: The Crucible/);
+});
+
+test("redirects the legacy live stats page to the character sheet view", async () => {
+  const response = await render("/live-stats");
+  assert.equal(response.status, 307);
+  assert.equal(
+    response.headers.get("location"),
+    "http://localhost/?view=character-sheet",
+  );
 });
 
 test("links the profile icons to the anonymized CV and social profiles", async () => {

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import catalogData from "../generated/curriculum-catalog.json";
 import { HighlightDetailPage } from "../components/HighlightDetailPage";
 import { work } from "../data/content";
+import type { CurriculumCatalog } from "../lib/curriculum";
+import { CurriculumReader } from "./_components/CurriculumReader";
 
 const highlight = work.find((item) => item.slug === "mlphd")!;
 
@@ -15,5 +18,16 @@ export default function MlPhdPage() {
     notFound();
   }
 
-  return <HighlightDetailPage highlight={highlight} showTimeline={false} />;
+  return (
+    <HighlightDetailPage
+      compactHeader
+      detailContent={
+        <CurriculumReader catalog={catalogData as CurriculumCatalog} />
+      }
+      highlight={highlight}
+      hideTags
+      showTimeline={false}
+      tagsBeforeDescription
+    />
+  );
 }

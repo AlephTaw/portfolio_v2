@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
@@ -7,6 +8,28 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
 
 const { d1, r2 } = hostingConfig;
+
+function markdownTextPlugin() {
+  return {
+    name: "swdev:markdown-text",
+    enforce: "pre" as const,
+    async load(id: string) {
+      const filePath = id.split("?", 1)[0];
+
+      if (!filePath.endsWith(".md")) {
+        return null;
+      }
+
+      this.addWatchFile(filePath);
+
+      return {
+        code: `export default ${JSON.stringify(await readFile(filePath, "utf8"))};`,
+        map: null,
+        moduleType: "js" as const,
+      };
+    },
+  };
+}
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
@@ -47,6 +70,7 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
+      markdownTextPlugin(),
       vinext(),
       sites(),
       cloudflare({

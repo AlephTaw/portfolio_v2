@@ -148,7 +148,7 @@ export function ContactCard({
   }
 
   return (
-    <main className="min-h-screen bg-[#FEFCF1] px-5 py-8 text-[#191714] sm:px-8 lg:px-10">
+    <main className="min-h-screen bg-background px-5 py-8 text-[#191714] sm:px-8 lg:px-10">
       <div className="mx-auto max-w-5xl">
         <Link
           className="text-xs font-semibold uppercase tracking-[0.32em] text-[#766b5d]"
@@ -167,7 +167,7 @@ export function ContactCard({
             </p>
           </header>
 
-          <div className="mt-8 min-h-[36rem] border border-[#d8d0c1] bg-[#FEFCF1] p-5 sm:p-7">
+          <div className="mt-8 min-h-[36rem] border border-[#d8d0c1] bg-background p-5 sm:p-7">
             <AnimatePresence mode="wait">
               {status.type === "success" ? (
                 <motion.div

@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "concepts": [
+    {
+      "id": "sql-select",
+      "title": "Selecting Data",
+      "requires": []
+    },
+    {
+      "id": "sql-filtering",
+      "title": "Filtering Rows",
+      "requires": [
+        "sql-select"
+      ]
+    },
+    {
+      "id": "sql-grouping",
+      "title": "Grouping Rows",
+      "requires": [
+        "sql-select"
+      ]
+    },
+    {
+      "id": "sql-aggregation",
+      "title": "Aggregate Functions",
+      "requires": [
+        "sql-grouping"
+      ]
+    },
+    {
+      "id": "storage-hierarchy",
+      "title": "Storage Systems by Access Pattern",
+      "requires": []
+    },
+    {
+      "id": "physical-storage",
+      "title": "Physical Storage",
+      "requires": [
+        "storage-hierarchy"
+      ]
+    },
+    {
+      "id": "object-storage",
+      "title": "Object Storage",
+      "requires": [
+        "storage-hierarchy"
+      ]
+    },
+    {
+      "id": "analytical-storage",
+      "title": "Analytical Storage",
+      "requires": [
+        "storage-hierarchy"
+      ]
+    },
+    {
+      "id": "operational-storage",
+      "title": "Operational Storage",
+      "requires": [
+        "storage-hierarchy"
+      ]
+    },
+    {
+      "id": "cache-storage",
+      "title": "Cache Storage",
+      "requires": [
+        "storage-hierarchy"
+      ]
+    }
+  ],
+  "units": [
+    {
+      "id": "sql-select-and-filtering",
+      "title": "SELECT and Filtering",
+      "notebook": "notebooks/data-science/sql/select-and-filtering.py",
+      "outputPath": "/bootcamp/sql-select-and-filtering.html",
+      "difficulty": "easy",
+      "teaches": [
+        "sql-select",
+        "sql-filtering"
+      ],
+      "assesses": [
+        "sql-select",
+        "sql-filtering"
+      ],
+      "topics": [
+        "sql",
+        "querying"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-analyst"
+      ],
+      "goals": [
+        "query-data"
+      ]
+    },
+    {
+      "id": "sql-aggregation",
+      "title": "Aggregation",
+      "notebook": "notebooks/data-science/sql/aggregation.py",
+      "outputPath": "/bootcamp/sql-aggregation.html",
+      "difficulty": "medium",
+      "teaches": [
+        "sql-grouping",
+        "sql-aggregation"
+      ],
+      "assesses": [
+        "sql-grouping",
+        "sql-aggregation"
+      ],
+      "topics": [
+        "sql",
+        "analytics"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-analyst"
+      ],
+      "goals": [
+        "summarize-data"
+      ]
+    },
+    {
+      "id": "data-storage-and-retrieval",
+      "title": "Storage Systems by Access Pattern",
+      "notebook": "notebooks/data-science/data-storage/storage-systems.py",
+      "outputPath": "/bootcamp/data-storage-and-retrieval.html",
+      "difficulty": "easy",
+      "teaches": [
+        "storage-hierarchy",
+        "physical-storage",
+        "object-storage",
+        "analytical-storage",
+        "operational-storage",
+        "cache-storage"
+      ],
+      "assesses": [],
+      "topics": [
+        "data-storage",
+        "infrastructure"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer"
+      ],
+      "goals": [
+        "choose-storage-systems"
+      ]
+    }
+  ],
+  "views": {
+    "default": {
+      "title": "Machine Learning PhD Quest",
+      "items": [
+        {
+          "type": "section",
+          "id": "data-science",
+          "title": "Data Science",
+          "order": 10,
+          "children": [
+            {
+              "type": "section",
+              "id": "sql",
+              "title": "SQL",
+              "order": 10,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "sql-select-and-filtering",
+                  "order": 10
+                },
+                {
+                  "type": "unit",
+                  "unit": "sql-aggregation",
+                  "order": 20
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "id": "data-storage-and-retrieval",
+              "title": "Data Storage and Retrieval",
+              "order": 20,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "data-storage-and-retrieval",
+                  "order": 10
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "flattened": [
+        {
+          "type": "section",
+          "id": "data-science",
+          "title": "Data Science",
+          "order": 10,
+          "depth": 1
+        },
+        {
+          "type": "section",
+          "id": "sql",
+          "title": "SQL",
+          "order": 10,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "sql-select-and-filtering",
+          "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "sql-aggregation",
+          "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "section",
+          "id": "data-storage-and-retrieval",
+          "title": "Data Storage and Retrieval",
+          "order": 20,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "data-storage-and-retrieval",
+          "order": 10,
+          "depth": 3
+        }
+      ]
+    }
+  }
+}
