@@ -1,0 +1,191 @@
+{
+  "source": "notebooks/data-science/ml-engineering/docker-compose/all_in_one_docker_compose.py",
+  "units": [
+    {
+      "id": "docker-images-containers",
+      "title": "Images and containers",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "docker-images-containers"
+      ],
+      "assesses": [
+        "docker-images-containers"
+      ],
+      "requires": [],
+      "order": 10,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-images-containers.py"
+    },
+    {
+      "id": "docker-cli-lifecycle",
+      "title": "The Docker CLI lifecycle",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "docker-cli-lifecycle"
+      ],
+      "assesses": [
+        "docker-cli-lifecycle"
+      ],
+      "requires": [
+        "docker-images-containers"
+      ],
+      "order": 20,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-cli-lifecycle.py"
+    },
+    {
+      "id": "docker-dockerfiles",
+      "title": "Dockerfiles",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "docker-dockerfiles"
+      ],
+      "assesses": [
+        "docker-dockerfiles"
+      ],
+      "requires": [
+        "docker-images-containers"
+      ],
+      "order": 30,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-dockerfiles.py"
+    },
+    {
+      "id": "docker-builds-registries",
+      "title": "Builds, cache, tags, and registries",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-builds-registries"
+      ],
+      "assesses": [
+        "docker-builds-registries"
+      ],
+      "requires": [
+        "docker-dockerfiles"
+      ],
+      "order": 40,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-builds-registries.py"
+    },
+    {
+      "id": "docker-runtime-configuration",
+      "title": "Networking, ports, volumes, and environment",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-runtime-configuration"
+      ],
+      "assesses": [
+        "docker-runtime-configuration"
+      ],
+      "requires": [
+        "docker-cli-lifecycle"
+      ],
+      "order": 50,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-runtime-configuration.py"
+    },
+    {
+      "id": "docker-compose-fundamentals",
+      "title": "Docker Compose fundamentals",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-compose-fundamentals"
+      ],
+      "assesses": [
+        "docker-compose-fundamentals"
+      ],
+      "requires": [
+        "docker-runtime-configuration"
+      ],
+      "order": 60,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-compose-fundamentals.py"
+    },
+    {
+      "id": "docker-compose-development",
+      "title": "Compose development workflows",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-compose-development"
+      ],
+      "assesses": [
+        "docker-compose-development"
+      ],
+      "requires": [
+        "docker-compose-fundamentals"
+      ],
+      "order": 70,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-compose-development.py"
+    },
+    {
+      "id": "docker-container-testing",
+      "title": "Testing Docker containers",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-container-testing"
+      ],
+      "assesses": [
+        "docker-container-testing"
+      ],
+      "requires": [
+        "docker-compose-development"
+      ],
+      "order": 80,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-container-testing.py"
+    },
+    {
+      "id": "docker-security",
+      "title": "Security and image quality",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "docker-security"
+      ],
+      "assesses": [
+        "docker-security"
+      ],
+      "requires": [
+        "docker-dockerfiles"
+      ],
+      "order": 90,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-security.py"
+    },
+    {
+      "id": "docker-production",
+      "title": "Docker in production",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "docker-production"
+      ],
+      "assesses": [
+        "docker-production"
+      ],
+      "requires": [
+        "docker-container-testing",
+        "docker-security"
+      ],
+      "order": 100,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-production.py"
+    },
+    {
+      "id": "docker-troubleshooting",
+      "title": "Troubleshooting and operations",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-troubleshooting"
+      ],
+      "assesses": [
+        "docker-troubleshooting"
+      ],
+      "requires": [
+        "docker-compose-fundamentals"
+      ],
+      "order": 110,
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-troubleshooting.py"
+    }
+  ]
+}

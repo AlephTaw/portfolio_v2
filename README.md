@@ -1,24 +1,31 @@
-# Steven Wilcox CV
+# Steven Wilcox portfolio and agent
 
-Single-page public CV and work presentation built with Next App Router semantics
-on top of Vinext, Vite, and a Cloudflare Workers runtime.
+This repository now contains two independently runnable applications:
 
-## Stack
+- `apps/portfolio` is the public portfolio and live-stats application.
+- `apps/agent` is an identical starting copy for the productivity agent.
 
-- Next.js App Router
-- Vinext
-- Vite
-- Cloudflare Workers
-- Tailwind CSS
-- Framer Motion
-- Lenis
+No shared component package has been introduced yet. The applications can evolve
+independently until their stable shared boundaries are clear.
 
-## Documentation
+## Local development
 
-- [Project workflows](docs/workflows.md) is the single source of truth for prerequisites,
-  setup, local development, tutorial and asset creation, SQLite generation, testing, Git,
-  production builds, contact configuration, Cloudflare deployment, domains, and DNS.
-- [MLPHD curriculum architecture](docs/mlphd-document-layout.md) explains the curriculum's
-  structure and implementation choices.
-- [Notebook-to-MLPHD integration](docs/notebook-to-mlphd-workflow.md) documents all-in-one
-  authoring, unit extraction, registration, ordering, and publishing.
+Use Node 22 from the repository root:
+
+```sh
+nvm use
+```
+
+Then run either application:
+
+```sh
+npm run dev:portfolio
+npm run dev:agent
+```
+
+The root scripts use ports 3002 and 3003 respectively. Each app also retains its
+own package scripts, configuration, assets, curriculum, notebooks, tests, and
+documentation.
+
+Local secrets are not copied automatically. Create `apps/portfolio/.env.local`
+and `apps/agent/.env.local` from each app's `.env.example` when configuring them.

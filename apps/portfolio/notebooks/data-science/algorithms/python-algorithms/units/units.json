@@ -1,0 +1,139 @@
+{
+  "source": "notebooks/data-science/algorithms/python-algorithms/all_in_one_python_algorithms.py",
+  "units": [
+    {
+      "id": "python-algorithms-complexity",
+      "title": "Complexity and algorithmic patterns",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithmic-complexity"
+      ],
+      "assesses": [
+        "python-algorithmic-complexity"
+      ],
+      "requires": [],
+      "order": 10,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-complexity.py"
+    },
+    {
+      "id": "python-algorithms-hash-maps",
+      "title": "Arrays and hash maps",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithms-hash-maps"
+      ],
+      "assesses": [
+        "python-algorithms-hash-maps"
+      ],
+      "requires": [
+        "python-algorithmic-complexity"
+      ],
+      "order": 20,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-hash-maps.py"
+    },
+    {
+      "id": "python-algorithms-searching",
+      "title": "Sorting and binary search",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-searching"
+      ],
+      "assesses": [
+        "python-algorithms-searching"
+      ],
+      "requires": [
+        "python-algorithms-hash-maps"
+      ],
+      "order": 30,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-searching.py"
+    },
+    {
+      "id": "python-algorithms-sliding-window",
+      "title": "Two pointers and sliding windows",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-sliding-window"
+      ],
+      "assesses": [
+        "python-algorithms-sliding-window"
+      ],
+      "requires": [
+        "python-algorithms-searching"
+      ],
+      "order": 40,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-sliding-window.py"
+    },
+    {
+      "id": "python-algorithms-stacks-queues",
+      "title": "Stacks and queues",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-stacks-queues"
+      ],
+      "assesses": [
+        "python-algorithms-stacks-queues"
+      ],
+      "requires": [
+        "python-algorithms-sliding-window"
+      ],
+      "order": 50,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-stacks-queues.py"
+    },
+    {
+      "id": "python-algorithms-trees-graphs",
+      "title": "Trees and graph traversal",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-trees-graphs"
+      ],
+      "assesses": [
+        "python-algorithms-trees-graphs"
+      ],
+      "requires": [
+        "python-algorithms-stacks-queues"
+      ],
+      "order": 60,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-trees-graphs.py"
+    },
+    {
+      "id": "python-algorithms-heaps-top-k",
+      "title": "Heaps and top-k patterns",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "python-algorithms-heaps-top-k"
+      ],
+      "assesses": [
+        "python-algorithms-heaps-top-k"
+      ],
+      "requires": [
+        "python-algorithms-trees-graphs"
+      ],
+      "order": 70,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-heaps-top-k.py"
+    },
+    {
+      "id": "python-algorithms-interview-testing",
+      "title": "Testing and explaining algorithm solutions",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithms-testing"
+      ],
+      "assesses": [
+        "python-algorithms-testing"
+      ],
+      "requires": [
+        "python-algorithms-heaps-top-k"
+      ],
+      "order": 80,
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-interview-testing.py"
+    }
+  ]
+}
