@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "runtime": {
+    "script": "https://cdn.jsdelivr.net/npm/@marimo-team/islands@0.23.16/dist/main.js",
+    "payloadUrl": "/bootcamp/islands/runtime.json?v=24af70367fca"
+  },
+  "layers": [
+    {
+      "id": "python-language",
+      "title": "Python Language",
+      "order": 10,
+      "unitIds": [
+        "python-values-names",
+        "python-expressions-truthiness",
+        "python-control-flow",
+        "python-functions",
+        "python-containers",
+        "python-iteration",
+        "python-exceptions-resources",
+        "python-classes-protocols",
+        "python-type-hints",
+        "python-decorators",
+        "python-modules-packages",
+        "python-io-json",
+        "python-custom-exceptions",
+        "python-standard-library",
+        "python-environments-cli"
+      ],
+      "url": "/bootcamp/islands/python-language.json?v=c3be260068cb"
+    },
+    {
+      "id": "sql",
+      "title": "SQL",
+      "order": 20,
+      "unitIds": [
+        "sql-select-and-filtering",
+        "sql-select-and-filtering-exercise",
+        "sql-aggregation"
+      ],
+      "url": "/bootcamp/islands/sql.json?v=dcc8eb162d57"
+    },
+    {
+      "id": "data-storage-and-retrieval",
+      "title": "Data Storage and Retrieval",
+      "order": 30,
+      "unitIds": [
+        "data-storage-and-retrieval"
+      ],
+      "url": "/bootcamp/islands/data-storage-and-retrieval.json?v=d65904a2bbf0"
+    },
+    {
+      "id": "probability-and-statistics",
+      "title": "Probability and Statistics",
+      "order": 40,
+      "unitIds": [
+        "stats-probability-conditional-independence",
+        "stats-bayes-base-rates",
+        "stats-random-variables-distributions",
+        "stats-expectation-variance-covariance",
+        "stats-sampling-clt",
+        "stats-estimation-confidence-intervals",
+        "stats-hypothesis-testing-power",
+        "stats-experimentation-ab-tests"
+      ],
+      "url": "/bootcamp/islands/probability-and-statistics.json?v=ca43091bfcc8"
+    },
+    {
+      "id": "python-algorithms",
+      "title": "Python Algorithms",
+      "order": 50,
+      "unitIds": [
+        "python-algorithms-complexity",
+        "python-algorithms-hash-maps",
+        "python-algorithms-searching",
+        "python-algorithms-sliding-window",
+        "python-algorithms-stacks-queues",
+        "python-algorithms-trees-graphs",
+        "python-algorithms-heaps-top-k",
+        "python-algorithms-interview-testing"
+      ],
+      "url": "/bootcamp/islands/python-algorithms.json?v=17bc126c6ed8"
+    },
+    {
+      "id": "machine-learning-interviews",
+      "title": "Machine Learning",
+      "order": 60,
+      "unitIds": [
+        "ml-problem-framing-splits",
+        "ml-linear-logistic-regularization",
+        "ml-trees-ensembles",
+        "ml-classification-metrics-thresholds",
+        "ml-preprocessing-pipelines",
+        "ml-cross-validation-tuning",
+        "ml-unsupervised-dimensionality",
+        "ml-production-monitoring"
+      ],
+      "url": "/bootcamp/islands/machine-learning-interviews.json?v=aa604e809035"
+    },
+    {
+      "id": "docker-compose",
+      "title": "Docker and Docker Compose",
+      "order": 70,
+      "unitIds": [
+        "docker-images-containers",
+        "docker-cli-lifecycle",
+        "docker-dockerfiles",
+        "docker-builds-registries",
+        "docker-runtime-configuration",
+        "docker-compose-fundamentals",
+        "docker-compose-development",
+        "docker-container-testing",
+        "docker-security",
+        "docker-production",
+        "docker-troubleshooting"
+      ],
+      "url": "/bootcamp/islands/docker-compose.json?v=24958b16ed7b"
+    }
+  ]
+}

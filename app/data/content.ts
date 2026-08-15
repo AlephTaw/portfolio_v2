@@ -55,7 +55,7 @@ export const work = [
     title: "Machine Learning PhD Quest",
     slug: "mlphd",
     isPublished: true,
-    period: "Ongoing",
+    period: "Ongoing (Public Alpha)",
     description:
       "A self-directed research and professional development track across machine learning, deep learning, NLP, vision, deployment, testing, and monitoring.",
     tags: ["CS229", "CS231N", "CS224N"],
@@ -97,17 +97,28 @@ export const work = [
       },
     ],
   },
-];
+] satisfies {
+  title: string;
+  slug: string;
+  isPublished: boolean;
+  period: string;
+  description: string;
+  tags: string[];
+  timeline: {
+    title: string;
+    body: string;
+  }[];
+}[];
 
 export const experience = [
   {
-    organization: "Data Scientist, Consulting",
+    organization: "Data Science and Software Consulting",
     role: "Consulting",
     period: "January 2024 - November 2024",
   },
   {
     organization: "OxyML",
-    role: "Product Lead",
+    role: "Head of Product",
     period: "January 2023 - December 2023",
   },
   {

@@ -6,11 +6,22 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "predev": "npm run bootcamp:databases && npm run curriculum:preview",
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
+    "prebuild": "npm run curriculum:catalog && npm run bootcamp:databases",
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "curriculum:catalog": "node scripts/build-curriculum.mjs",
+    "curriculum:units": "uv run python scripts/split_all_in_one_notebooks.py",
+    "curriculum:units:check": "uv run python scripts/split_all_in_one_notebooks.py --check",
+    "curriculum:preview": "npm run curriculum:units && npm run curriculum:catalog && uv run python scripts/build-mlphd-islands.py",
+    "bootcamp:databases:build": "uv run python -m database.builders.build_all",
+    "bootcamp:databases:publish": "uv run python -m database.builders.publish",
+    "bootcamp:databases": "npm run bootcamp:databases:build && npm run bootcamp:databases:publish",
+    "curriculum:export": "npm run curriculum:units && npm run curriculum:catalog && uv run python scripts/export-curriculum.py && uv run python scripts/build-mlphd-islands.py",
+    "curriculum:test": "npm run curriculum:units:check && uv run ruff check src database/builders notebooks tests/python scripts/export-curriculum.py scripts/build-mlphd-islands.py scripts/split_all_in_one_notebook.py scripts/split_all_in_one_notebooks.py && uv run pytest",
     "db:generate": "drizzle-kit generate",
     "cf:deploy": "npm run build && wrangler deploy",
     "cf:tail": "wrangler tail steven-wilcox-cv"
@@ -18,11 +29,18 @@
   "dependencies": {
     "drizzle-orm": "0.45.2",
     "framer-motion": "^12.42.2",
+    "github-slugger": "^2.0.0",
+    "gray-matter": "^4.0.3",
     "lenis": "^1.3.25",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "react-icons": "^5.7.0"
+    "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",

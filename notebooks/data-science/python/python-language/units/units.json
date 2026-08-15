@@ -1,0 +1,258 @@
+{
+  "source": "notebooks/data-science/python/python-language/all_in_one_python_tutorial.py",
+  "units": [
+    {
+      "id": "python-values-names",
+      "title": "Values, names, and identity",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-values-names"
+      ],
+      "assesses": [
+        "python-values-names"
+      ],
+      "requires": [],
+      "order": 10,
+      "notebook": "notebooks/data-science/python/python-language/units/python-values-names.py"
+    },
+    {
+      "id": "python-expressions-truthiness",
+      "title": "Expressions, truthiness, and built-ins",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-expressions-truthiness"
+      ],
+      "assesses": [
+        "python-expressions-truthiness"
+      ],
+      "requires": [
+        "python-values-names"
+      ],
+      "order": 20,
+      "notebook": "notebooks/data-science/python/python-language/units/python-expressions-truthiness.py"
+    },
+    {
+      "id": "python-control-flow",
+      "title": "Control flow and pattern matching",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-control-flow"
+      ],
+      "assesses": [
+        "python-control-flow"
+      ],
+      "requires": [
+        "python-expressions-truthiness"
+      ],
+      "order": 30,
+      "notebook": "notebooks/data-science/python/python-language/units/python-control-flow.py"
+    },
+    {
+      "id": "python-functions",
+      "title": "Functions and parameter forms",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-functions"
+      ],
+      "assesses": [
+        "python-functions"
+      ],
+      "requires": [
+        "python-control-flow"
+      ],
+      "order": 40,
+      "notebook": "notebooks/data-science/python/python-language/units/python-functions.py"
+    },
+    {
+      "id": "python-containers",
+      "title": "Containers, comprehensions, and unpacking",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-containers"
+      ],
+      "assesses": [
+        "python-containers"
+      ],
+      "requires": [
+        "python-functions"
+      ],
+      "order": 50,
+      "notebook": "notebooks/data-science/python/python-language/units/python-containers.py"
+    },
+    {
+      "id": "python-iteration",
+      "title": "Iteration and generators",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-iteration"
+      ],
+      "assesses": [
+        "python-iteration"
+      ],
+      "requires": [
+        "python-containers"
+      ],
+      "order": 60,
+      "notebook": "notebooks/data-science/python/python-language/units/python-iteration.py"
+    },
+    {
+      "id": "python-exceptions-resources",
+      "title": "Exceptions and resource handling",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-exceptions-resources"
+      ],
+      "assesses": [
+        "python-exceptions-resources"
+      ],
+      "requires": [
+        "python-functions"
+      ],
+      "order": 70,
+      "notebook": "notebooks/data-science/python/python-language/units/python-exceptions-resources.py"
+    },
+    {
+      "id": "python-classes-protocols",
+      "title": "Classes and protocols",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-classes-protocols"
+      ],
+      "assesses": [
+        "python-classes-protocols"
+      ],
+      "requires": [
+        "python-functions"
+      ],
+      "order": 80,
+      "notebook": "notebooks/data-science/python/python-language/units/python-classes-protocols.py"
+    },
+    {
+      "id": "python-type-hints",
+      "title": "Type hints",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-type-hints"
+      ],
+      "assesses": [
+        "python-type-hints"
+      ],
+      "requires": [
+        "python-functions"
+      ],
+      "order": 90,
+      "notebook": "notebooks/data-science/python/python-language/units/python-type-hints.py"
+    },
+    {
+      "id": "python-decorators",
+      "title": "Decorators",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "python-decorators"
+      ],
+      "assesses": [
+        "python-decorators"
+      ],
+      "requires": [
+        "python-functions"
+      ],
+      "order": 100,
+      "notebook": "notebooks/data-science/python/python-language/units/python-decorators.py"
+    },
+    {
+      "id": "python-modules-packages",
+      "title": "Modules and packages",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-modules-packages"
+      ],
+      "assesses": [
+        "python-modules-packages"
+      ],
+      "requires": [
+        "python-functions"
+      ],
+      "order": 110,
+      "notebook": "notebooks/data-science/python/python-language/units/python-modules-packages.py"
+    },
+    {
+      "id": "python-io-json",
+      "title": "Input, output, and structured data",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-io-json"
+      ],
+      "assesses": [
+        "python-io-json"
+      ],
+      "requires": [
+        "python-containers"
+      ],
+      "order": 120,
+      "notebook": "notebooks/data-science/python/python-language/units/python-io-json.py"
+    },
+    {
+      "id": "python-custom-exceptions",
+      "title": "Errors and custom exceptions",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-custom-exceptions"
+      ],
+      "assesses": [
+        "python-custom-exceptions"
+      ],
+      "requires": [
+        "python-exceptions-resources"
+      ],
+      "order": 130,
+      "notebook": "notebooks/data-science/python/python-language/units/python-custom-exceptions.py"
+    },
+    {
+      "id": "python-standard-library",
+      "title": "Standard-library tools",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-standard-library"
+      ],
+      "assesses": [
+        "python-standard-library"
+      ],
+      "requires": [
+        "python-modules-packages"
+      ],
+      "order": 140,
+      "notebook": "notebooks/data-science/python/python-language/units/python-standard-library.py"
+    },
+    {
+      "id": "python-environments-cli",
+      "title": "Virtual environments and interpreter commands",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-environments-cli"
+      ],
+      "assesses": [
+        "python-environments-cli"
+      ],
+      "requires": [
+        "python-modules-packages"
+      ],
+      "order": 150,
+      "notebook": "notebooks/data-science/python/python-language/units/python-environments-cli.py"
+    }
+  ]
+}

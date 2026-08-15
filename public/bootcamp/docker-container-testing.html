@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" style="background: hsl(51 25% 97%)">
+  <head>
+    <style data-mlphd-embed-style>
+      :root, html, body, #root, marimo-app {
+        color-scheme: light;
+        --background: hsl(51 25% 97%) !important;
+        --card: hsl(51 25% 97%) !important;
+        --popover: hsl(51 25% 97%) !important;
+        --foreground: #191714 !important;
+        --card-foreground: #191714 !important;
+        --popover-foreground: #191714 !important;
+        --primary: #191714 !important;
+        --primary-foreground: hsl(51 25% 97%) !important;
+        --muted: #f3ecde !important;
+        --muted-foreground: #766b5d !important;
+        --accent: #f3ecde !important;
+        --accent-foreground: #191714 !important;
+        --border: #d8d0c1 !important;
+        --input: #d8d0c1 !important;
+        --ring: #8d7a70 !important;
+        background: hsl(51 25% 97%) !important;
+        background-color: hsl(51 25% 97%) !important;
+        color: #191714;
+      }
+      #root svg.animate-spin {
+        color: #8d7a70 !important;
+        stroke-width: 1.5;
+      }
+      #root p.text-center.text-sm.text-muted-foreground {
+        color: #766b5d !important;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.62rem !important;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      [data-testid="watermark"] { display: none !important; }
+    </style>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="./assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="./assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="./assets/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>docker-container-testing</title>
+    <script type="module" crossorigin src="./assets/index-Gv23EHlE.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/preload-helper-TXkS1QI3.js">
+    <link rel="modulepreload" crossorigin href="./assets/objects-BlG0ZrO0.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="./assets/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/jsx-runtime-Blw4afVn.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEventListener-C0195JsF.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-DOVIEEPN.js">
+    <link rel="modulepreload" crossorigin href="./assets/precisionRound-i2ImZxgc.js">
+    <link rel="modulepreload" crossorigin href="./assets/defaultLocale-BUCH2FMc.js">
+    <link rel="modulepreload" crossorigin href="./assets/vega-loader.browser-Dun7Qe4B.js">
+    <link rel="modulepreload" crossorigin href="./assets/tooltip-B7U4xkIN.js">
+    <link rel="modulepreload" crossorigin href="./assets/clsx-XrBBnd7s.js">
+    <link rel="modulepreload" crossorigin href="./assets/cn-DYvqRARy.js">
+    <link rel="modulepreload" crossorigin href="./assets/badge-B92a4ePY.js">
+    <link rel="modulepreload" crossorigin href="./assets/button-DDGiD1NW.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="./assets/fullscreen-CTDqNQr6.js">
+    <link rel="modulepreload" crossorigin href="./assets/menu-items-CCi6aOPm.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BLN8PNJV.js">
+    <link rel="modulepreload" crossorigin href="./assets/createLucideIcon-w-Qo9n0R.js">
+    <link rel="modulepreload" crossorigin href="./assets/check-rzLRd0j9.js">
+    <link rel="modulepreload" crossorigin href="./assets/x-C-Eq0ag8.js">
+    <link rel="modulepreload" crossorigin href="./assets/select-BP75_5jJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/tooltip-4bZlU7jl.js">
+    <link rel="modulepreload" crossorigin href="./assets/use-toast-BwJoaaDM.js">
+    <link rel="modulepreload" crossorigin href="./assets/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="./assets/invariant-CkiqGLcK.js">
+    <link rel="modulepreload" crossorigin href="./assets/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="./assets/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="./assets/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-BWBBpCkT.js">
+    <link rel="modulepreload" crossorigin href="./assets/constants-CDyU_g2F.js">
+    <link rel="modulepreload" crossorigin href="./assets/session-BmukRjSi.js">
+    <link rel="modulepreload" crossorigin href="./assets/Deferred-D2igisxY.js">
+    <link rel="modulepreload" crossorigin href="./assets/config-B-Q7J_6d.js">
+    <link rel="modulepreload" crossorigin href="./assets/uuid-ImXS-885.js">
+    <link rel="modulepreload" crossorigin href="./assets/DeferredRequestRegistry-C8EV1PoE.js">
+    <link rel="modulepreload" crossorigin href="./assets/requests-9-v2bhoi.js">
+    <link rel="modulepreload" crossorigin href="./assets/useLifecycle-lLOBhc-1.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNonce-CbdaHKzX.js">
+    <link rel="modulepreload" crossorigin href="./assets/useTheme-Bxv9B31g.js">
+    <link rel="modulepreload" crossorigin href="./assets/arrays-DbOq36rN.js">
+    <link rel="modulepreload" crossorigin href="./assets/strings--BknHX9C.js">
+    <link rel="modulepreload" crossorigin href="./assets/once-CGKw_kwj.js">
+    <link rel="modulepreload" crossorigin href="./assets/capabilities-DoEg0XwL.js">
+    <link rel="modulepreload" crossorigin href="./assets/createReducer-DGx5Af-C.js">
+    <link rel="modulepreload" crossorigin href="./assets/paths-BKO-pHK6.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-12S8I4CH.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DYEuVkEX.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CiVShZKM.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-BJZAIIze.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-aRc_dRed.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DnjsPBRJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DcwTQG1A.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-CPjTeT8p.js">
+    <link rel="modulepreload" crossorigin href="./assets/dist-DI1-Z60I.js">
+    <link rel="modulepreload" crossorigin href="./assets/stex-FMMSUPAS.js">
+    <link rel="modulepreload" crossorigin href="./assets/toDate-Ct2FT81-.js">
+    <link rel="modulepreload" crossorigin href="./assets/purify.es-CWmnYhGI.js">
+    <link rel="modulepreload" crossorigin href="./assets/cjs-D5tzp-Y6.js">
+    <link rel="modulepreload" crossorigin href="./assets/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="./assets/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="./assets/debounce-OiXznToA.js">
+    <link rel="modulepreload" crossorigin href="./assets/database-zap-CKO8g4BU.js">
+    <link rel="modulepreload" crossorigin href="./assets/main-BNL5rxQw.js">
+    <link rel="modulepreload" crossorigin href="./assets/cells-CJLUCcQg.js">
+    <link rel="modulepreload" crossorigin href="./assets/kbd-C5HnBH5U.js">
+    <link rel="modulepreload" crossorigin href="./assets/useInstallPackage-WiYBwhUO.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-dialog-Bb8Lz8ko.js">
+    <link rel="modulepreload" crossorigin href="./assets/dialog-BCVepWLJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDebounce-JDKr83KO.js">
+    <link rel="modulepreload" crossorigin href="./assets/numbers-rmawRqQP.js">
+    <link rel="modulepreload" crossorigin href="./assets/SSRProvider-BUSmWJKC.js">
+    <link rel="modulepreload" crossorigin href="./assets/context-BFPaAUK_.js">
+    <link rel="modulepreload" crossorigin href="./assets/useNumberFormatter-4-Qvf4uR.js">
+    <link rel="modulepreload" crossorigin href="./assets/usePress-5hBv4sjD.js">
+    <link rel="modulepreload" crossorigin href="./assets/input-JxFwu-3G.js">
+    <link rel="modulepreload" crossorigin href="./assets/ImperativeModal-fY-ZfT0b.js">
+    <link rel="modulepreload" crossorigin href="./assets/cell-link-CWQ4BYr-.js">
+    <link rel="modulepreload" crossorigin href="./assets/config-BJVx3eBW.js">
+    <link rel="modulepreload" crossorigin href="./assets/alert-jlwhGxSb.js">
+    <link rel="modulepreload" crossorigin href="./assets/chevron-right-BS_NcSch.js">
+    <link rel="modulepreload" crossorigin href="./assets/dropdown-menu-dHmZR8bI.js">
+    <link rel="modulepreload" crossorigin href="./assets/links-wcQA1Np1.js">
+    <link rel="modulepreload" crossorigin href="./assets/useRunCells-DZ4glj3f.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-Bxb1_Gtw.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-3iHFdt22.js">
+    <link rel="modulepreload" crossorigin href="./assets/copy-icon-neDQUo4Q.js">
+    <link rel="modulepreload" crossorigin href="./assets/RenderHTML-C1rWkDWe.js">
+    <link rel="modulepreload" crossorigin href="./assets/datasource-DbljozeY.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-Rxc-B11B.js">
+    <link rel="modulepreload" crossorigin href="./assets/hat-glasses-BttHlyvs.js">
+    <link rel="modulepreload" crossorigin href="./assets/package-Bxz_8e44.js">
+    <link rel="modulepreload" crossorigin href="./assets/sparkles-DUCpRFlS.js">
+    <link rel="modulepreload" crossorigin href="./assets/MarimoErrorOutput-Cu5WMawt.js">
+    <link rel="modulepreload" crossorigin href="./assets/ErrorBoundary-DzTD8LVq.js">
+    <link rel="modulepreload" crossorigin href="./assets/eye-off-BOZA7gbn.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-cw-CYq4mK5a.js">
+    <link rel="modulepreload" crossorigin href="./assets/tree-actions-BiQ4VzX-.js">
+    <link rel="modulepreload" crossorigin href="./assets/spinner-D-V4psAa.js">
+    <link rel="modulepreload" crossorigin href="./assets/html-to-image-CN9yTa5s.js">
+    <link rel="modulepreload" crossorigin href="./assets/focus-B6HBbAwF.js">
+    <link rel="modulepreload" crossorigin href="./assets/useAsyncData-Bg5iAViP.js">
+    <link rel="modulepreload" crossorigin href="./assets/LazyAnyLanguageCodeMirror-A-Ant1Ad.js">
+    <link rel="modulepreload" crossorigin href="./assets/micromark-factory-space-Dx_STMJD.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-5FQGJX7Z-CYQpNADu.js">
+    <link rel="modulepreload" crossorigin href="./assets/markdown-renderer-CzJx-MnJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/command-Dqxie4gq.js">
+    <link rel="modulepreload" crossorigin href="./assets/field-BsxD35VE.js">
+    <link rel="modulepreload" crossorigin href="./assets/popover-Bcz1Zikb.js">
+    <link rel="modulepreload" crossorigin href="./assets/errors-PgHhDa-M.js">
+    <link rel="modulepreload" crossorigin href="./assets/download-DwYUg-o4.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-CH2plyy9.js">
+    <link rel="modulepreload" crossorigin href="./assets/useIframeCapabilities-j6fR_dBA.js">
+    <link rel="modulepreload" crossorigin href="./assets/error-banner-BSxEOIn2.js">
+    <link rel="modulepreload" crossorigin href="./assets/formats-DzmLpc9A.js">
+    <link rel="modulepreload" crossorigin href="./assets/utils-CCTAhdFi.js">
+    <link rel="modulepreload" crossorigin href="./assets/en-US-CjNeNXDB.js">
+    <link rel="modulepreload" crossorigin href="./assets/isValid-D7naiWNs.js">
+    <link rel="modulepreload" crossorigin href="./assets/dates-C2LWzsCZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/extends-B9D0JO9U.js">
+    <link rel="modulepreload" crossorigin href="./assets/emotion-is-prop-valid.esm-lG8j6oqk.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDateFormatter-rtpVEy3J.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-icons.esm-D4GMDkIf.js">
+    <link rel="modulepreload" crossorigin href="./assets/RSPContexts-WiCgGm__.js">
+    <link rel="modulepreload" crossorigin href="./assets/table-D-tcnZC7.js">
+    <link rel="modulepreload" crossorigin href="./assets/ellipsis-C_B8Ux9M.js">
+    <link rel="modulepreload" crossorigin href="./assets/external-link-BOlXZUla.js">
+    <link rel="modulepreload" crossorigin href="./assets/message-circle-dL5J5ZsZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/plus-AgXtozBz.js">
+    <link rel="modulepreload" crossorigin href="./assets/trash-2-72W0TZ3L.js">
+    <link rel="modulepreload" crossorigin href="./assets/react-resizable-panels.browser.esm-Z-MD3n3J.js">
+    <link rel="modulepreload" crossorigin href="./assets/JsonOutput-D2UI9WX5.js">
+    <link rel="modulepreload" crossorigin href="./assets/chart-no-axes-column-iDRxid4h.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-function-DNNRTPQJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/spec-C7opZZRp.js">
+    <link rel="modulepreload" crossorigin href="./assets/column-preview-DREOGG_c.js">
+    <link rel="modulepreload" crossorigin href="./assets/icons-CIPE8AIY.js">
+    <link rel="modulepreload" crossorigin href="./assets/radio-group-CcU5wNVj.js">
+    <link rel="modulepreload" crossorigin href="./assets/floating-outline-DBlzcHYf.js">
+    <link rel="modulepreload" crossorigin href="./assets/switch-OVajJBPR.js">
+    <link rel="modulepreload" crossorigin href="./assets/objectWithoutPropertiesLoose-CboCOq4o.js">
+    <link rel="modulepreload" crossorigin href="./assets/esm-B30N1GS0.js">
+    <link rel="modulepreload" crossorigin href="./assets/readonly-python-code-CYfbPYQ0.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-headphone-DAu6VO6j.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-CJH9JNGH.js">
+    <link rel="modulepreload" crossorigin href="./assets/image-5XI2VU-q.js">
+    <link rel="modulepreload" crossorigin href="./assets/file-icons-CODNoWOy.js">
+    <link rel="modulepreload" crossorigin href="./assets/events-90X9nql5.js">
+    <link rel="modulepreload" crossorigin href="./assets/share-852X_cqy.js">
+    <link rel="modulepreload" crossorigin href="./assets/blob-BNTWOaI9.js">
+    <link rel="modulepreload" crossorigin href="./assets/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="./assets/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_baseSet-CsW0tABf.js">
+    <link rel="modulepreload" crossorigin href="./assets/state-CsGOoEZv.js">
+    <link rel="modulepreload" crossorigin href="./assets/label-CqjrpwRC.js">
+    <link rel="modulepreload" crossorigin href="./assets/form-W6ZZMHnc.js">
+    <link rel="modulepreload" crossorigin href="./assets/textarea-DtCcemo9.js">
+    <link rel="modulepreload" crossorigin href="./assets/refresh-ccw-sLaKP2vj.js">
+    <link rel="modulepreload" crossorigin href="./assets/form-BYlqbYKI.js">
+    <link rel="modulepreload" crossorigin href="./assets/renderShortcut-Bl8_FVn8.js">
+    <link rel="modulepreload" crossorigin href="./assets/useBoolean-CFj86iac.js">
+    <link rel="modulepreload" crossorigin href="./assets/useDeepCompareMemoize-CSMoa-ga.js">
+    <link rel="modulepreload" crossorigin href="./assets/types-jdbI9Q8O.js">
+    <link rel="modulepreload" crossorigin href="./assets/semaphore-C-Nli4KG.js">
+    <link rel="modulepreload" crossorigin href="./assets/fileToBase64-hLJmVjNJ.js">
+    <link rel="modulepreload" crossorigin href="./assets/pathUtils-icFgkNy9.js">
+    <link rel="modulepreload" crossorigin href="./assets/prop-types-C638SUfx.js">
+    <link rel="modulepreload" crossorigin href="./assets/es-gYgfF8y5.js">
+    <link rel="modulepreload" crossorigin href="./assets/_hasPath-hMc_3QZy.js">
+    <link rel="modulepreload" crossorigin href="./assets/hasIn-CSsM95b1.js">
+    <link rel="modulepreload" crossorigin href="./assets/flatten-Bd5tsfm_.js">
+    <link rel="modulepreload" crossorigin href="./assets/pick-D1xb4gl6.js">
+    <link rel="modulepreload" crossorigin href="./assets/code-xml-aSiY8T7C.js">
+    <link rel="modulepreload" crossorigin href="./assets/globe-Dwo3iXzC.js">
+    <link rel="modulepreload" crossorigin href="./assets/house-DS0r7dNZ.js">
+    <link rel="modulepreload" crossorigin href="./assets/square-DFICx2Qv.js">
+    <link rel="modulepreload" crossorigin href="./assets/triangle-alert-BL4YVsPy.js">
+    <link rel="modulepreload" crossorigin href="./assets/bundle.esm-D0TWQ6iT.js">
+    <link rel="stylesheet" crossorigin href="./assets/cells-BVzo2MHf.css">
+    <link rel="stylesheet" crossorigin href="./assets/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="./assets/JsonOutput-BQtz7-np.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-8Nlyq3mV.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "# /// script\n# dependencies = [\"marimo\"]\n# requires-python = \"\u003E=3.12\"\n# ///\n\nimport marimo\n\n__generated_with = \"0.23.16\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell\ndef _():\n    import marimo as mo\n    from mlphd_bootcamp import assertion, execute_submission, problem\n\n    return assertion, execute_submission, mo, problem\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(\"\"\"\n    # Docker and Docker Compose tutorial\n\n    This notebook turns the Docker tutorial into short implementation\n    exercises. Each topic has a separate exposition cell followed immediately\n    by an exercise cell with:\n\n    1. a nested exercise description;\n    2. an interactive input area;\n    3. an assertion-decorated submission with automatic grading.\n\n    The exercises validate Dockerfiles, Compose snippets, and operational\n    commands without starting containers or changing your Docker host.\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(r\"\"\"\n    ## Commands cheat sheet\n\n    The examples use `IMAGE` for an image reference, `CONTAINER` for a container\n    name or ID, and `SERVICE` for a Compose service name.\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(\"\"\"\n    ### Images, builds, and registries\n\n    | Command | Purpose |\n    |:--|:--|\n    | `docker pull IMAGE` | Download an image from a registry. |\n    | `docker image ls` | List images stored locally. |\n    | `docker image inspect IMAGE` | Show image configuration and metadata. |\n    | `docker build -t IMAGE .` | Build and tag an image from the current build context. |\n    | `docker tag SOURCE TARGET` | Add another repository or version tag to an image. |\n    | `docker push IMAGE` | Upload a tagged image to a registry. |\n    | `docker image rm IMAGE` | Remove a local image reference. |\n\n    ### Containers and runtime options\n\n    | Command or option | Purpose |\n    |:--|:--|\n    | `docker run IMAGE` | Create and start a container from an image. |\n    | `docker run -d --name NAME IMAGE` | Run detached with a stable container name. |\n    | `docker ps --all` | List running and stopped containers. |\n    | `docker logs CONTAINER` | Read a container's standard output and error. |\n    | `docker exec -it CONTAINER COMMAND` | Run a command inside an existing container. |\n    | `docker inspect CONTAINER` | Show detailed runtime configuration and state. |\n    | `docker stop CONTAINER` | Gracefully stop a running container. |\n    | `docker rm --force CONTAINER` | Stop if necessary and remove a container. |\n    | `--rm` | Remove a container automatically when its process exits. |\n    | `-p HOST:CONTAINER` | Publish a container port on the host. |\n    | `--mount source=VOLUME,target=PATH` | Attach durable named-volume storage. |\n    | `-e NAME=VALUE` | Set a container environment variable. |\n\n    ### Dockerfile instructions\n\n    | Instruction | Purpose |\n    |:--|:--|\n    | `FROM` | Select the base image. |\n    | `WORKDIR` | Set the working directory for later instructions and startup. |\n    | `COPY` | Copy files from the build context into the image. |\n    | `RUN` | Execute a build-time command and create an image layer. |\n    | `USER` | Select the non-root runtime user. |\n    | `EXPOSE` | Document the port used by the application. |\n    | `CMD` | Define the default container command. |\n\n    ### Docker Compose\n\n    | Command | Purpose |\n    |:--|:--|\n    | `docker compose config` | Merge, resolve, and validate Compose configuration. |\n    | `docker compose up --build` | Build changed images and start the project. |\n    | `docker compose up -d` | Start or update the project in the background. |\n    | `docker compose down` | Stop and remove the project's containers and network. |\n    | `docker compose ps --all` | Show running and stopped project services. |\n    | `docker compose logs --tail=200 SERVICE` | Show bounded recent service logs. |\n    | `docker compose run --rm SERVICE COMMAND` | Run a disposable one-off service command. |\n    | `docker compose exec SERVICE COMMAND` | Run a command in an existing service container. |\n    | `docker compose pull` | Download service images. |\n    | `-f BASE -f OVERRIDE` | Merge Compose files from left to right. |\n    | `up --no-deps -d SERVICE` | Recreate one service without restarting dependencies. |\n\n    ### Testing and observation\n\n    | Command | Purpose |\n    |:--|:--|\n    | `curl --fail URL` | Fail when an HTTP health endpoint returns an error status. |\n    | `docker stats` | Observe live container CPU, memory, and network usage. |\n\n    Each numbered topic below names the cheat-sheet entries it introduces or\n    applies.\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(\"\"\"\n    ## 8. Testing Docker containers\n\n    ### Exposition\n\n    A green image build is not enough: test the image, startup behavior,\n    health endpoint, service integration, logs, exit code, and persistence.\n    CI should test the exact artifact that will be published.\n\n    ### Commands covered\n\n    - `docker build -t IMAGE:test .` creates a specifically tagged test artifact.\n    - `docker run --rm IMAGE:test COMMAND` runs tests in a disposable container.\n    - `docker run -d --name NAME -p HOST:CONTAINER IMAGE:test` starts the same\n      artifact for external checks.\n    - `curl --fail URL` turns an unhealthy HTTP response into a failing check.\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    docker_exercise_08_description = mo.md(\n        \"\"\"\n        ### Exercise\n\n        Create `commands` that build `example/web:test`, run its test suite in a\n        disposable container, start it on port `18080`, and curl `/health`.\n        \"\"\"\n    )\n    docker_exercise_08_starter = mo.ui.code_editor(\n        value='commands = [\\n    \"docker build -t example/web:test .\",\\n    \"docker run --rm example/web:test python -m pytest\",\\n    \"docker run -d --name web-test -p 18080:8080 example/web:test\",\\n    \"curl --fail http://localhost:18080/health\",\\n]',\n        language=\"python\",\n        label=\"Your Python answer\",\n        min_height=180,\n    )\n    docker_exercise_08_submit = mo.ui.run_button(label=\"Submit answer\")\n    return (\n        docker_exercise_08_description,\n        docker_exercise_08_starter,\n        docker_exercise_08_submit,\n    )\n\n\n@app.cell(hide_code=True)\ndef _(\n    assertion,\n    docker_exercise_08_description,\n    docker_exercise_08_starter,\n    docker_exercise_08_submit,\n    execute_submission,\n    mo,\n    problem,\n):\n    @assertion(lambda _ns: None)\n    def _submission(source):\n        _ns = execute_submission(source)\n        _commands = _ns.get(\"commands\", [])\n        assert any(\"docker build\" in _command and \":test\" in _command for _command in _commands), \"missing test image build\"\n        assert any(\"--rm\" in _command and \"pytest\" in _command for _command in _commands), \"missing disposable test run\"\n        assert any(\"/health\" in _command and \"--fail\" in _command for _command in _commands), \"missing health check\"\n        return _ns\n\n    problem(mo, docker_exercise_08_description, docker_exercise_08_starter, _submission, docker_exercise_08_submit)\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">%23%20%2F%2F%2F%20script%0A%23%20dependencies%20%3D%20%5B%22marimo%22%5D%0A%23%20requires-python%20%3D%20%22%3E%3D3.12%22%0A%23%20%2F%2F%2F%0A%0Aimport%20marimo%0A%0A__generated_with%20%3D%20%220.23.16%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20from%20mlphd_bootcamp%20import%20assertion%2C%20execute_submission%2C%20problem%0A%0A%20%20%20%20return%20assertion%2C%20execute_submission%2C%20mo%2C%20problem%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%20Docker%20and%20Docker%20Compose%20tutorial%0A%0A%20%20%20%20This%20notebook%20turns%20the%20Docker%20tutorial%20into%20short%20implementation%0A%20%20%20%20exercises.%20Each%20topic%20has%20a%20separate%20exposition%20cell%20followed%20immediately%0A%20%20%20%20by%20an%20exercise%20cell%20with%3A%0A%0A%20%20%20%201.%20a%20nested%20exercise%20description%3B%0A%20%20%20%202.%20an%20interactive%20input%20area%3B%0A%20%20%20%203.%20an%20assertion-decorated%20submission%20with%20automatic%20grading.%0A%0A%20%20%20%20The%20exercises%20validate%20Dockerfiles%2C%20Compose%20snippets%2C%20and%20operational%0A%20%20%20%20commands%20without%20starting%20containers%20or%20changing%20your%20Docker%20host.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%23%20Commands%20cheat%20sheet%0A%0A%20%20%20%20The%20examples%20use%20%60IMAGE%60%20for%20an%20image%20reference%2C%20%60CONTAINER%60%20for%20a%20container%0A%20%20%20%20name%20or%20ID%2C%20and%20%60SERVICE%60%20for%20a%20Compose%20service%20name.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%23%20Images%2C%20builds%2C%20and%20registries%0A%0A%20%20%20%20%7C%20Command%20%7C%20Purpose%20%7C%0A%20%20%20%20%7C%3A--%7C%3A--%7C%0A%20%20%20%20%7C%20%60docker%20pull%20IMAGE%60%20%7C%20Download%20an%20image%20from%20a%20registry.%20%7C%0A%20%20%20%20%7C%20%60docker%20image%20ls%60%20%7C%20List%20images%20stored%20locally.%20%7C%0A%20%20%20%20%7C%20%60docker%20image%20inspect%20IMAGE%60%20%7C%20Show%20image%20configuration%20and%20metadata.%20%7C%0A%20%20%20%20%7C%20%60docker%20build%20-t%20IMAGE%20.%60%20%7C%20Build%20and%20tag%20an%20image%20from%20the%20current%20build%20context.%20%7C%0A%20%20%20%20%7C%20%60docker%20tag%20SOURCE%20TARGET%60%20%7C%20Add%20another%20repository%20or%20version%20tag%20to%20an%20image.%20%7C%0A%20%20%20%20%7C%20%60docker%20push%20IMAGE%60%20%7C%20Upload%20a%20tagged%20image%20to%20a%20registry.%20%7C%0A%20%20%20%20%7C%20%60docker%20image%20rm%20IMAGE%60%20%7C%20Remove%20a%20local%20image%20reference.%20%7C%0A%0A%20%20%20%20%23%23%23%20Containers%20and%20runtime%20options%0A%0A%20%20%20%20%7C%20Command%20or%20option%20%7C%20Purpose%20%7C%0A%20%20%20%20%7C%3A--%7C%3A--%7C%0A%20%20%20%20%7C%20%60docker%20run%20IMAGE%60%20%7C%20Create%20and%20start%20a%20container%20from%20an%20image.%20%7C%0A%20%20%20%20%7C%20%60docker%20run%20-d%20--name%20NAME%20IMAGE%60%20%7C%20Run%20detached%20with%20a%20stable%20container%20name.%20%7C%0A%20%20%20%20%7C%20%60docker%20ps%20--all%60%20%7C%20List%20running%20and%20stopped%20containers.%20%7C%0A%20%20%20%20%7C%20%60docker%20logs%20CONTAINER%60%20%7C%20Read%20a%20container's%20standard%20output%20and%20error.%20%7C%0A%20%20%20%20%7C%20%60docker%20exec%20-it%20CONTAINER%20COMMAND%60%20%7C%20Run%20a%20command%20inside%20an%20existing%20container.%20%7C%0A%20%20%20%20%7C%20%60docker%20inspect%20CONTAINER%60%20%7C%20Show%20detailed%20runtime%20configuration%20and%20state.%20%7C%0A%20%20%20%20%7C%20%60docker%20stop%20CONTAINER%60%20%7C%20Gracefully%20stop%20a%20running%20container.%20%7C%0A%20%20%20%20%7C%20%60docker%20rm%20--force%20CONTAINER%60%20%7C%20Stop%20if%20necessary%20and%20remove%20a%20container.%20%7C%0A%20%20%20%20%7C%20%60--rm%60%20%7C%20Remove%20a%20container%20automatically%20when%20its%20process%20exits.%20%7C%0A%20%20%20%20%7C%20%60-p%20HOST%3ACONTAINER%60%20%7C%20Publish%20a%20container%20port%20on%20the%20host.%20%7C%0A%20%20%20%20%7C%20%60--mount%20source%3DVOLUME%2Ctarget%3DPATH%60%20%7C%20Attach%20durable%20named-volume%20storage.%20%7C%0A%20%20%20%20%7C%20%60-e%20NAME%3DVALUE%60%20%7C%20Set%20a%20container%20environment%20variable.%20%7C%0A%0A%20%20%20%20%23%23%23%20Dockerfile%20instructions%0A%0A%20%20%20%20%7C%20Instruction%20%7C%20Purpose%20%7C%0A%20%20%20%20%7C%3A--%7C%3A--%7C%0A%20%20%20%20%7C%20%60FROM%60%20%7C%20Select%20the%20base%20image.%20%7C%0A%20%20%20%20%7C%20%60WORKDIR%60%20%7C%20Set%20the%20working%20directory%20for%20later%20instructions%20and%20startup.%20%7C%0A%20%20%20%20%7C%20%60COPY%60%20%7C%20Copy%20files%20from%20the%20build%20context%20into%20the%20image.%20%7C%0A%20%20%20%20%7C%20%60RUN%60%20%7C%20Execute%20a%20build-time%20command%20and%20create%20an%20image%20layer.%20%7C%0A%20%20%20%20%7C%20%60USER%60%20%7C%20Select%20the%20non-root%20runtime%20user.%20%7C%0A%20%20%20%20%7C%20%60EXPOSE%60%20%7C%20Document%20the%20port%20used%20by%20the%20application.%20%7C%0A%20%20%20%20%7C%20%60CMD%60%20%7C%20Define%20the%20default%20container%20command.%20%7C%0A%0A%20%20%20%20%23%23%23%20Docker%20Compose%0A%0A%20%20%20%20%7C%20Command%20%7C%20Purpose%20%7C%0A%20%20%20%20%7C%3A--%7C%3A--%7C%0A%20%20%20%20%7C%20%60docker%20compose%20config%60%20%7C%20Merge%2C%20resolve%2C%20and%20validate%20Compose%20configuration.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20up%20--build%60%20%7C%20Build%20changed%20images%20and%20start%20the%20project.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20up%20-d%60%20%7C%20Start%20or%20update%20the%20project%20in%20the%20background.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20down%60%20%7C%20Stop%20and%20remove%20the%20project's%20containers%20and%20network.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20ps%20--all%60%20%7C%20Show%20running%20and%20stopped%20project%20services.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20logs%20--tail%3D200%20SERVICE%60%20%7C%20Show%20bounded%20recent%20service%20logs.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20run%20--rm%20SERVICE%20COMMAND%60%20%7C%20Run%20a%20disposable%20one-off%20service%20command.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20exec%20SERVICE%20COMMAND%60%20%7C%20Run%20a%20command%20in%20an%20existing%20service%20container.%20%7C%0A%20%20%20%20%7C%20%60docker%20compose%20pull%60%20%7C%20Download%20service%20images.%20%7C%0A%20%20%20%20%7C%20%60-f%20BASE%20-f%20OVERRIDE%60%20%7C%20Merge%20Compose%20files%20from%20left%20to%20right.%20%7C%0A%20%20%20%20%7C%20%60up%20--no-deps%20-d%20SERVICE%60%20%7C%20Recreate%20one%20service%20without%20restarting%20dependencies.%20%7C%0A%0A%20%20%20%20%23%23%23%20Testing%20and%20observation%0A%0A%20%20%20%20%7C%20Command%20%7C%20Purpose%20%7C%0A%20%20%20%20%7C%3A--%7C%3A--%7C%0A%20%20%20%20%7C%20%60curl%20--fail%20URL%60%20%7C%20Fail%20when%20an%20HTTP%20health%20endpoint%20returns%20an%20error%20status.%20%7C%0A%20%20%20%20%7C%20%60docker%20stats%60%20%7C%20Observe%20live%20container%20CPU%2C%20memory%2C%20and%20network%20usage.%20%7C%0A%0A%20%20%20%20Each%20numbered%20topic%20below%20names%20the%20cheat-sheet%20entries%20it%20introduces%20or%0A%20%20%20%20applies.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%208.%20Testing%20Docker%20containers%0A%0A%20%20%20%20%23%23%23%20Exposition%0A%0A%20%20%20%20A%20green%20image%20build%20is%20not%20enough%3A%20test%20the%20image%2C%20startup%20behavior%2C%0A%20%20%20%20health%20endpoint%2C%20service%20integration%2C%20logs%2C%20exit%20code%2C%20and%20persistence.%0A%20%20%20%20CI%20should%20test%20the%20exact%20artifact%20that%20will%20be%20published.%0A%0A%20%20%20%20%23%23%23%20Commands%20covered%0A%0A%20%20%20%20-%20%60docker%20build%20-t%20IMAGE%3Atest%20.%60%20creates%20a%20specifically%20tagged%20test%20artifact.%0A%20%20%20%20-%20%60docker%20run%20--rm%20IMAGE%3Atest%20COMMAND%60%20runs%20tests%20in%20a%20disposable%20container.%0A%20%20%20%20-%20%60docker%20run%20-d%20--name%20NAME%20-p%20HOST%3ACONTAINER%20IMAGE%3Atest%60%20starts%20the%20same%0A%20%20%20%20%20%20artifact%20for%20external%20checks.%0A%20%20%20%20-%20%60curl%20--fail%20URL%60%20turns%20an%20unhealthy%20HTTP%20response%20into%20a%20failing%20check.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20docker_exercise_08_description%20%3D%20mo.md(%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20%23%23%23%20Exercise%0A%0A%20%20%20%20%20%20%20%20Create%20%60commands%60%20that%20build%20%60example%2Fweb%3Atest%60%2C%20run%20its%20test%20suite%20in%20a%0A%20%20%20%20%20%20%20%20disposable%20container%2C%20start%20it%20on%20port%20%6018080%60%2C%20and%20curl%20%60%2Fhealth%60.%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20)%0A%20%20%20%20docker_exercise_08_starter%20%3D%20mo.ui.code_editor(%0A%20%20%20%20%20%20%20%20value%3D'commands%20%3D%20%5B%5Cn%20%20%20%20%22docker%20build%20-t%20example%2Fweb%3Atest%20.%22%2C%5Cn%20%20%20%20%22docker%20run%20--rm%20example%2Fweb%3Atest%20python%20-m%20pytest%22%2C%5Cn%20%20%20%20%22docker%20run%20-d%20--name%20web-test%20-p%2018080%3A8080%20example%2Fweb%3Atest%22%2C%5Cn%20%20%20%20%22curl%20--fail%20http%3A%2F%2Flocalhost%3A18080%2Fhealth%22%2C%5Cn%5D'%2C%0A%20%20%20%20%20%20%20%20language%3D%22python%22%2C%0A%20%20%20%20%20%20%20%20label%3D%22Your%20Python%20answer%22%2C%0A%20%20%20%20%20%20%20%20min_height%3D180%2C%0A%20%20%20%20)%0A%20%20%20%20docker_exercise_08_submit%20%3D%20mo.ui.run_button(label%3D%22Submit%20answer%22)%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20docker_exercise_08_description%2C%0A%20%20%20%20%20%20%20%20docker_exercise_08_starter%2C%0A%20%20%20%20%20%20%20%20docker_exercise_08_submit%2C%0A%20%20%20%20)%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(%0A%20%20%20%20assertion%2C%0A%20%20%20%20docker_exercise_08_description%2C%0A%20%20%20%20docker_exercise_08_starter%2C%0A%20%20%20%20docker_exercise_08_submit%2C%0A%20%20%20%20execute_submission%2C%0A%20%20%20%20mo%2C%0A%20%20%20%20problem%2C%0A)%3A%0A%20%20%20%20%40assertion(lambda%20_ns%3A%20None)%0A%20%20%20%20def%20_submission(source)%3A%0A%20%20%20%20%20%20%20%20_ns%20%3D%20execute_submission(source)%0A%20%20%20%20%20%20%20%20_commands%20%3D%20_ns.get(%22commands%22%2C%20%5B%5D)%0A%20%20%20%20%20%20%20%20assert%20any(%22docker%20build%22%20in%20_command%20and%20%22%3Atest%22%20in%20_command%20for%20_command%20in%20_commands)%2C%20%22missing%20test%20image%20build%22%0A%20%20%20%20%20%20%20%20assert%20any(%22--rm%22%20in%20_command%20and%20%22pytest%22%20in%20_command%20for%20_command%20in%20_commands)%2C%20%22missing%20disposable%20test%20run%22%0A%20%20%20%20%20%20%20%20assert%20any(%22%2Fhealth%22%20in%20_command%20and%20%22--fail%22%20in%20_command%20for%20_command%20in%20_commands)%2C%20%22missing%20health%20check%22%0A%20%20%20%20%20%20%20%20return%20_ns%0A%0A%20%20%20%20problem(mo%2C%20docker_exercise_08_description%2C%20docker_exercise_08_starter%2C%20_submission%2C%20docker_exercise_08_submit)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code></head>
+  <body>
+    <div id="root"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "read",
+            "version": "0.23.16",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "uv"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>

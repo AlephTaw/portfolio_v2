@@ -1,7 +1,8 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
 
 :root {
-  --background: #FEFCF1;
+  --background: hsl(51 25% 97%);
   --foreground: #191714;
 }
 
@@ -52,13 +53,63 @@ a {
   }
 }
 
+@keyframes live-status-blink {
+  0%,
+  97.99% {
+    opacity: 1;
+  }
+
+  98%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.live-status-indicator {
+  animation: live-status-blink 30s steps(1, end) infinite;
+}
+
+.life-status-container {
+  container-type: inline-size;
+}
+
+.life-status-row {
+  gap: 0.5rem;
+  font-size: 0.4rem;
+  letter-spacing: 0.04em;
+}
+
+@container (min-width: 18rem) {
+  .life-status-row {
+    gap: 0.75rem;
+    font-size: 0.45rem;
+    letter-spacing: 0.08em;
+  }
+}
+
+@container (min-width: 22rem) {
+  .life-status-row {
+    gap: 1rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+  }
+}
+
+@container (min-width: 24rem) {
+  .life-status-row {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+  }
+}
+
 .route-enter {
   animation: route-enter 380ms ease-in-out;
   will-change: opacity, transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .route-enter {
+  .route-enter,
+  .live-status-indicator {
     animation: none;
   }
 }

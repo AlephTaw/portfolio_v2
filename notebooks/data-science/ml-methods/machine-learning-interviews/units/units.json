@@ -1,0 +1,140 @@
+{
+  "source": "notebooks/data-science/ml-methods/machine-learning-interviews/all_in_one_machine_learning_interviews.py",
+  "units": [
+    {
+      "id": "ml-problem-framing-splits",
+      "title": "Problem framing, splits, and leakage",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "ml-problem-framing-splits"
+      ],
+      "assesses": [
+        "ml-problem-framing-splits"
+      ],
+      "requires": [],
+      "order": 10,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-problem-framing-splits.py"
+    },
+    {
+      "id": "ml-linear-logistic-regularization",
+      "title": "Linear models and regularization",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-linear-logistic-regularization"
+      ],
+      "assesses": [
+        "ml-linear-logistic-regularization"
+      ],
+      "requires": [
+        "ml-problem-framing-splits"
+      ],
+      "order": 20,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-linear-logistic-regularization.py"
+    },
+    {
+      "id": "ml-trees-ensembles",
+      "title": "Decision trees and ensembles",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-trees-ensembles"
+      ],
+      "assesses": [
+        "ml-trees-ensembles"
+      ],
+      "requires": [
+        "ml-linear-logistic-regularization"
+      ],
+      "order": 30,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-trees-ensembles.py"
+    },
+    {
+      "id": "ml-classification-metrics-thresholds",
+      "title": "Classification metrics and thresholds",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-classification-metrics-thresholds"
+      ],
+      "assesses": [
+        "ml-classification-metrics-thresholds"
+      ],
+      "requires": [
+        "ml-problem-framing-splits"
+      ],
+      "order": 40,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-classification-metrics-thresholds.py"
+    },
+    {
+      "id": "ml-preprocessing-pipelines",
+      "title": "Preprocessing and feature pipelines",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-preprocessing-pipelines"
+      ],
+      "assesses": [
+        "ml-preprocessing-pipelines"
+      ],
+      "requires": [
+        "ml-problem-framing-splits"
+      ],
+      "order": 50,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-preprocessing-pipelines.py"
+    },
+    {
+      "id": "ml-cross-validation-tuning",
+      "title": "Cross-validation and hyperparameter tuning",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "ml-cross-validation-tuning"
+      ],
+      "assesses": [
+        "ml-cross-validation-tuning"
+      ],
+      "requires": [
+        "ml-preprocessing-pipelines",
+        "ml-classification-metrics-thresholds"
+      ],
+      "order": 60,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-cross-validation-tuning.py"
+    },
+    {
+      "id": "ml-unsupervised-dimensionality",
+      "title": "Clustering and dimensionality reduction",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-unsupervised-dimensionality"
+      ],
+      "assesses": [
+        "ml-unsupervised-dimensionality"
+      ],
+      "requires": [
+        "ml-preprocessing-pipelines"
+      ],
+      "order": 70,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-unsupervised-dimensionality.py"
+    },
+    {
+      "id": "ml-production-monitoring",
+      "title": "Production inference and monitoring",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "ml-production-monitoring"
+      ],
+      "assesses": [
+        "ml-production-monitoring"
+      ],
+      "requires": [
+        "ml-cross-validation-tuning"
+      ],
+      "order": 80,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-production-monitoring.py"
+    }
+  ]
+}

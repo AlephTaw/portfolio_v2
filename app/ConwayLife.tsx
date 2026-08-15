@@ -12,7 +12,6 @@ const aliveColors = [
   "#615754",
   "#8D7A70",
 ];
-const backgroundColor = "#FFFDEF";
 const gridColor = "#000000";
 const cellSize = 12;
 const stepMs = 30000;
@@ -67,6 +66,12 @@ function draw(
   const columns = cells[0]?.length ?? 0;
   const renderedCellWidth = width / columns;
   const renderedCellHeight = height / rows;
+
+  const backgroundColor =
+    window
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue("--background")
+      .trim() || "hsl(51 25% 97%)";
 
   context.fillStyle = backgroundColor;
   context.fillRect(0, 0, width, height);
