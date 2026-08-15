@@ -1,0 +1,211 @@
+.mlphd-islands,
+.mlphd-islands .marimo {
+  --background: hsl(51 25% 97%);
+  --foreground: #191714;
+  --card: hsl(51 25% 97%);
+  --card-foreground: #191714;
+  --popover: hsl(51 25% 97%);
+  --popover-foreground: #191714;
+  --primary: #191714;
+  --primary-foreground: hsl(51 25% 97%);
+  --muted: #f3ecde;
+  --muted-foreground: #766b5d;
+  --accent: #f3ecde;
+  --accent-foreground: #191714;
+  --border: #d8d0c1;
+  --input: #d8d0c1;
+  --ring: #8d7a70;
+  color: var(--foreground);
+}
+
+.mlphd-islands,
+.mlphd-islands .marimo,
+.mlphd-islands marimo-island,
+.mlphd-islands marimo-cell-output,
+.mlphd-islands [class*="bg-background"] {
+  background: var(--background) !important;
+}
+
+.mlphd-islands .mlphd-unit + .mlphd-unit {
+  margin-top: 4rem;
+  border-top: 1px solid #d8d0c1;
+  padding-top: 4rem;
+}
+
+.mlphd-islands [data-interactive-layer] + [data-interactive-layer] .mlphd-unit:first-child {
+  margin-top: 4rem;
+  border-top: 1px solid #d8d0c1;
+  padding-top: 4rem;
+}
+
+.mlphd-interactive-placeholder {
+  display: flex;
+  min-height: 10rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #d8d0c1;
+  color: #9b9081;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  margin-top: 1.5rem;
+  padding: 2rem;
+  text-transform: uppercase;
+}
+
+.mlphd-islands svg.animate-spin {
+  color: #8d7a70 !important;
+  stroke-width: 1.5;
+}
+
+.mlphd-islands marimo-island[data-reactive="false"] {
+  color: #766b5d;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.mlphd-islands [data-testid="watermark"] {
+  display: none !important;
+}
+
+.mlphd-islands [data-interactive-block] .relative.min-h-6 > .absolute.top-0.right-0.z-50 {
+  display: none !important;
+}
+
+.mlphd-islands,
+.mlphd-islands .marimo,
+.mlphd-islands .markdown,
+.mlphd-islands button,
+.mlphd-islands input,
+.mlphd-islands textarea {
+  font-family: var(--font-geist-sans), Geist, Arial, Helvetica, sans-serif;
+}
+
+.mlphd-islands .markdown {
+  color: #514a40;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.mlphd-static-cell + .mlphd-static-cell {
+  margin-top: 1.25rem;
+}
+
+.mlphd-prose {
+  color: #514a40;
+  font-family: var(--font-geist-sans), Geist, Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.mlphd-prose .paragraph {
+  display: block;
+  margin: 0.7rem 0;
+}
+
+.mlphd-prose h1 {
+  color: #191714;
+  font-size: 1.3rem;
+  font-weight: 300;
+  line-height: 1.35;
+  margin: 0 0 1rem;
+}
+
+.mlphd-prose h2 {
+  color: #615754;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
+.mlphd-prose h3,
+.mlphd-prose h4,
+.mlphd-islands marimo-island .markdown h3,
+.mlphd-islands marimo-island .markdown h4 {
+  color: #191714;
+  font-family: var(--font-geist-sans), Geist, Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.mlphd-prose code {
+  color: #222b3d;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9em;
+}
+
+.mlphd-prose ul,
+.mlphd-prose ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.mlphd-prose ul {
+  list-style: disc;
+}
+
+.mlphd-prose ol {
+  list-style: decimal;
+}
+
+.mlphd-prose li + li {
+  margin-top: 0.35rem;
+}
+
+.mlphd-prose table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.mlphd-prose th,
+.mlphd-prose td {
+  border-bottom: 1px solid #d8d0c1;
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.mlphd-math-inline {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  vertical-align: -0.15em;
+  white-space: nowrap;
+}
+
+.mlphd-math-display {
+  margin: 1rem 0;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.25rem 0;
+}
+
+.mlphd-prose .katex {
+  font-size: 1em;
+}
+
+.mlphd-islands .markdown h1 {
+  color: #191714;
+  font-weight: 300 !important;
+}
+
+.mlphd-islands .markdown h2 {
+  color: #615754;
+  font-size: 0.8rem;
+  font-weight: 600 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+}
+
+.mlphd-islands .markdown h3,
+.mlphd-islands .markdown h4 {
+  color: #191714;
+}

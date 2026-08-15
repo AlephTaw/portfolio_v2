@@ -58,6 +58,106 @@ test("server-renders detail pages", async () => {
   }
 });
 
+test("server-renders the complete MLPHD curriculum as a static-first document", async () => {
+  const response = await render("/mlphd");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /id="unit-sql-select-and-filtering"/);
+  assert.match(html, /id="unit-sql-select-and-filtering-exercise"/);
+  assert.match(html, /id="unit-sql-aggregation"/);
+  assert.match(html, /id="unit-data-storage-and-retrieval"/);
+  assert.match(html, /id="unit-stats-probability-conditional-independence"/);
+  assert.match(html, /id="unit-ml-problem-framing-splits"/);
+  assert.match(html, /data-interactive-layer="python-language"/);
+  assert.match(html, /data-interactive-layer="machine-learning-interviews"/);
+  assert.match(html, /Python programs create values such as numbers, strings, sets/);
+  assert.match(html, /Cross-validation and hyperparameter tuning/);
+  assert.match(html, /class="mlphd-prose"/);
+  assert.match(html, /class="katex"/);
+  assert.match(html, /Interactive content loads as you approach/);
+  assert.doesNotMatch(html, /<marimo-tex\b/);
+  assert.doesNotMatch(html, /data-app-id="mlphd"/);
+  assert.doesNotMatch(html, /<iframe/i);
+  assert.doesNotMatch(
+    html,
+    /MarimoExceptionRaisedError|MultipleDefinitionError|Traceback \(most recent call last\)/,
+  );
+});
+
+test("publishes complete error-free MLPHD lazy interactive layers", async () => {
+  const manifest = JSON.parse(
+    await readFile(
+      new URL("../app/generated/mlphd-islands-manifest.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const staticDocument = JSON.parse(
+    await readFile(
+      new URL("../app/generated/mlphd-static-document.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const runtime = JSON.parse(
+    await readFile(
+      new URL("../public/bootcamp/islands/runtime.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const unitIds = manifest.layers.flatMap((layer) => layer.unitIds);
+  let hiddenDependencyBlocks = 0;
+  let guardedCodeEditorBlocks = 0;
+
+  assert.equal(manifest.layers.length, 7);
+  assert.equal(unitIds.length, 54);
+  assert.equal(new Set(unitIds).size, unitIds.length);
+  assert.equal(staticDocument.units.length, 54);
+  assert.deepEqual(
+    staticDocument.units.map((unit) => unit.id),
+    unitIds,
+  );
+  assert.equal(manifest.runtime.payloadUrl.split("?")[0], "/bootcamp/islands/runtime.json");
+  assert.match(runtime.html, /"appId": "mlphd"/);
+  assert.match(runtime.html, /mlphd_bootcamp-0\.1\.0-py3-none-any\.whl/);
+
+  for (const descriptor of manifest.layers) {
+    const layer = JSON.parse(
+      await readFile(
+        new URL(`../public${descriptor.url.split("?")[0]}`, import.meta.url),
+        "utf8",
+      ),
+    );
+    assert.equal(layer.id, descriptor.id);
+    assert.deepEqual(
+      layer.units.map((unit) => unit.id),
+      descriptor.unitIds,
+    );
+    hiddenDependencyBlocks += layer.units
+      .flatMap((unit) => unit.blocks)
+      .filter((block) => block.visible === false).length;
+    for (const block of layer.units.flatMap((unit) => unit.blocks)) {
+      if (!block.html.includes("<marimo-code-editor")) continue;
+      assert.match(
+        block.html,
+        /<marimo-cell-output>\s*<marimo-ui-element data-mlphd-island-source-guard hidden/,
+      );
+      guardedCodeEditorBlocks += 1;
+    }
+    assert.doesNotMatch(
+      JSON.stringify(layer),
+      /MarimoExceptionRaisedError|MultipleDefinitionError|Traceback \(most recent call last\)/,
+    );
+  }
+
+  assert.ok(hiddenDependencyBlocks > 0);
+  assert.ok(guardedCodeEditorBlocks > 0);
+
+  assert.doesNotMatch(
+    JSON.stringify(runtime),
+    /MarimoExceptionRaisedError|MultipleDefinitionError|Traceback \(most recent call last\)/,
+  );
+});
+
 test("opens the character sheet in the homepage portfolio pane", async () => {
   const response = await render("/?view=character-sheet");
   assert.equal(response.status, 200);
@@ -82,6 +182,31 @@ test("redirects the legacy live stats page to the character sheet view", async (
     response.headers.get("location"),
     "http://localhost/?view=character-sheet",
   );
+});
+
+test("links character sheet sections to focused detail pages", async () => {
+  const homeResponse = await render("/?view=character-sheet");
+  const homeHtml = await homeResponse.text();
+  const pages = [
+    ["/live-stats/character-stats", /Character v0\.1\.0/, "Character Stats"],
+    ["/live-stats/campaign-summary", /Campaign: The Crucible/, "Campaign Summary"],
+    ["/live-stats/commit-history", /Commit History/, "Commit History"],
+    ["/live-stats/achievements", />SQL</, "Achievements"],
+  ];
+
+  for (const [path, content, activeLabel] of pages) {
+    assert.match(homeHtml, new RegExp(`href="${path}"`));
+    const response = await render(path);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /href="\/\?view=character-sheet"[^>]*>Back</);
+    assert.match(html, content);
+    assert.match(html, /aria-label="Live Stats sections"/);
+    assert.match(
+      html,
+      new RegExp(`aria-current="page" aria-label="${activeLabel}"`),
+    );
+  }
 });
 
 test("links the profile icons to the anonymized CV and social profiles", async () => {

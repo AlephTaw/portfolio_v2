@@ -5,12 +5,14 @@ description = "Browser-compatible exercise helpers for the MLPHD curriculum."
 requires-python = ">=3.10"
 dependencies = [
   "marimo[sql]>=0.19.7",
+  "polars>=1.43.2",
 ]
 
 [dependency-groups]
 dev = [
   "pytest>=8.3",
   "ruff>=0.12",
+  "watchdog>=6.0",
 ]
 
 [build-system]
@@ -22,6 +24,10 @@ packages = ["src/mlphd_bootcamp"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
+pythonpath = ["."]
+
+[tool.marimo.runtime]
+watcher_on_save = "autorun"
 
 [tool.ruff]
 line-length = 100
@@ -32,6 +38,12 @@ select = ["E4", "E7", "E9", "F", "I", "S"]
 
 [tool.ruff.lint.per-file-ignores]
 "notebooks/**/*.py" = ["F541", "I001"]
+"notebooks/data-science/python/python-language/*.py" = ["F541", "I001", "S101", "S102"]
+"notebooks/data-science/ml-engineering/docker-compose/*.py" = ["F541", "I001", "S101", "S102"]
+"notebooks/data-science/algorithms/python-algorithms/*.py" = ["F541", "I001", "S101", "S102"]
+"notebooks/data-science/ml-methods/machine-learning-interviews/*.py" = ["F541", "I001", "S101", "S102"]
+"notebooks/data-science/mathematics/probability-statistics-interviews/*.py" = ["F541", "I001", "S101", "S102"]
+"notebooks/data-science/sql/all_in_one_sql*.py" = ["F401", "S608"]
 "scripts/export-curriculum.py" = ["S603", "S607"]
 "src/mlphd_bootcamp/exercises.py" = ["S102"]
 "tests/**/*.py" = ["S101"]

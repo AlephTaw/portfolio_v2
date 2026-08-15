@@ -1,0 +1,139 @@
+{
+  "source": "notebooks/data-science/mathematics/probability-statistics-interviews/all_in_one_probability_and_statistics.py",
+  "units": [
+    {
+      "id": "stats-probability-conditional-independence",
+      "title": "Probability, conditioning, and independence",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "stats-probability-conditional-independence"
+      ],
+      "assesses": [
+        "stats-probability-conditional-independence"
+      ],
+      "requires": [],
+      "order": 10,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-probability-conditional-independence.py"
+    },
+    {
+      "id": "stats-bayes-base-rates",
+      "title": "Bayes' theorem and base rates",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-bayes-base-rates"
+      ],
+      "assesses": [
+        "stats-bayes-base-rates"
+      ],
+      "requires": [
+        "stats-probability-conditional-independence"
+      ],
+      "order": 20,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-bayes-base-rates.py"
+    },
+    {
+      "id": "stats-random-variables-distributions",
+      "title": "Random variables and distributions",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-random-variables-distributions"
+      ],
+      "assesses": [
+        "stats-random-variables-distributions"
+      ],
+      "requires": [
+        "stats-bayes-base-rates"
+      ],
+      "order": 30,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-random-variables-distributions.py"
+    },
+    {
+      "id": "stats-expectation-variance-covariance",
+      "title": "Expectation, variance, and covariance",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-expectation-variance-covariance"
+      ],
+      "assesses": [
+        "stats-expectation-variance-covariance"
+      ],
+      "requires": [
+        "stats-random-variables-distributions"
+      ],
+      "order": 40,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-expectation-variance-covariance.py"
+    },
+    {
+      "id": "stats-sampling-clt",
+      "title": "Sampling distributions and the central limit theorem",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-sampling-clt"
+      ],
+      "assesses": [
+        "stats-sampling-clt"
+      ],
+      "requires": [
+        "stats-expectation-variance-covariance"
+      ],
+      "order": 50,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-sampling-clt.py"
+    },
+    {
+      "id": "stats-estimation-confidence-intervals",
+      "title": "Estimation and confidence intervals",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-estimation-confidence-intervals"
+      ],
+      "assesses": [
+        "stats-estimation-confidence-intervals"
+      ],
+      "requires": [
+        "stats-sampling-clt"
+      ],
+      "order": 60,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-estimation-confidence-intervals.py"
+    },
+    {
+      "id": "stats-hypothesis-testing-power",
+      "title": "Hypothesis tests, errors, and power",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "stats-hypothesis-testing-power"
+      ],
+      "assesses": [
+        "stats-hypothesis-testing-power"
+      ],
+      "requires": [
+        "stats-estimation-confidence-intervals"
+      ],
+      "order": 70,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-hypothesis-testing-power.py"
+    },
+    {
+      "id": "stats-experimentation-ab-tests",
+      "title": "Experimentation and A/B tests",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "stats-experimentation-ab-tests"
+      ],
+      "assesses": [
+        "stats-experimentation-ab-tests"
+      ],
+      "requires": [
+        "stats-hypothesis-testing-power"
+      ],
+      "order": 80,
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-experimentation-ab-tests.py"
+    }
+  ]
+}

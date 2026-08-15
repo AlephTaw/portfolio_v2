@@ -1,0 +1,1130 @@
+{
+  "schemaVersion": 1,
+  "units": [
+    {
+      "id": "python-values-names",
+      "blocks": [
+        {
+          "id": "python-values-names-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"python-tutorial\">Python tutorial</h1>\n<span class=\"paragraph\">This notebook turns the Python tutorial cheat sheet into short,\nauto-graded implementation exercises. Each exercise has three parts:</span>\n<ol>\n<li>a description of the task;</li>\n<li>an interactive Python code input area;</li>\n<li>an assertion-decorated submission that reports <strong>Correct</strong> or <strong>Not yet</strong>.</li>\n</ol>\n<span class=\"paragraph\">Submit code that creates the names requested by each prompt. Your code is\nexecuted in an isolated namespace for that exercise.</span></div></div>"
+        },
+        {
+          "id": "python-values-names-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"1-values-names-and-identity\">1. Values, names, and identity</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Python programs create values such as numbers, strings, sets, and\ndictionaries, then bind names to those objects. Assignment binds a name;\n<code>is</code> checks object identity, while <code>==</code> checks value equality.</span></div></div>"
+        },
+        {
+          "id": "python-values-names-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-values-names-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-expressions-truthiness",
+      "blocks": [
+        {
+          "id": "python-expressions-truthiness-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"2-expressions-truthiness-and-built-ins\">2. Expressions, truthiness, and built-ins</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Expressions produce values using arithmetic, comparison, Boolean, and\nconditional operators. Empty containers and zero are falsey; <code>any</code>,\n<code>all</code>, and conversion built-ins make common checks explicit.</span></div></div>"
+        },
+        {
+          "id": "python-expressions-truthiness-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-expressions-truthiness-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-control-flow",
+      "blocks": [
+        {
+          "id": "python-control-flow-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"3-control-flow-and-pattern-matching\">3. Control flow and pattern matching</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Branches select a path, loops repeat work, and <code>break</code> or <code>continue</code>\nrefine iteration. <code>match</code> makes structural cases readable when values\nhave several possible shapes.</span></div></div>"
+        },
+        {
+          "id": "python-control-flow-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-control-flow-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-functions",
+      "blocks": [
+        {
+          "id": "python-functions-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"4-functions-and-parameter-forms\">4. Functions and parameter forms</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Functions package behavior for reuse and testing. Defaults, keyword-only\nparameters, positional-only parameters, <code>*args</code>, and <code>**kwargs</code> let a\nfunction express a precise calling interface.</span></div></div>"
+        },
+        {
+          "id": "python-functions-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-functions-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-containers",
+      "blocks": [
+        {
+          "id": "python-containers-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"5-containers-comprehensions-and-unpacking\">5. Containers, comprehensions, and unpacking</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Lists, tuples, dictionaries, and sets organize related values. Slicing,\ncomprehensions, and <code>*</code>/<code>**</code> unpacking provide concise transformations\nwhile preserving the underlying container semantics.</span></div></div>"
+        },
+        {
+          "id": "python-containers-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-containers-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-iteration",
+      "blocks": [
+        {
+          "id": "python-iteration-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"6-iteration-and-generators\">6. Iteration and generators</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Iterables can produce values one at a time, and generators make that\nproduction lazy. <code>enumerate</code> adds positions without manual counters.</span></div></div>"
+        },
+        {
+          "id": "python-iteration-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-iteration-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-exceptions-resources",
+      "blocks": [
+        {
+          "id": "python-exceptions-resources-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"7-exceptions-and-resource-handling\">7. Exceptions and resource handling</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Exceptions separate normal logic from failure paths. Context managers\nguarantee cleanup for files and other resources, even when code fails.</span></div></div>"
+        },
+        {
+          "id": "python-exceptions-resources-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-exceptions-resources-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-classes-protocols",
+      "blocks": [
+        {
+          "id": "python-classes-protocols-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"8-classes-and-protocols\">8. Classes and protocols</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Classes combine state and behavior, while protocols focus on what an\nobject can do. Special methods such as <code>__len__</code> let custom objects work\nwith ordinary Python syntax.</span></div></div>"
+        },
+        {
+          "id": "python-classes-protocols-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-classes-protocols-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-type-hints",
+      "blocks": [
+        {
+          "id": "python-type-hints-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"9-type-hints\">9. Type hints</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Type hints document intended interfaces and enable editor and static\nchecker feedback. They describe runtime values but are not enforced by\nPython automatically.</span></div></div>"
+        },
+        {
+          "id": "python-type-hints-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-type-hints-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-decorators",
+      "blocks": [
+        {
+          "id": "python-decorators-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"10-decorators\">10. Decorators</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">A decorator wraps or modifies a function or class. <code>functools.wraps</code>\npreserves metadata so decorated functions remain discoverable and\ndebuggable.</span></div></div>"
+        },
+        {
+          "id": "python-decorators-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-decorators-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-modules-packages",
+      "blocks": [
+        {
+          "id": "python-modules-packages-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"11-modules-and-packages\">11. Modules and packages</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Modules divide a program into reusable namespaces, and packages organize\nmodules into a larger project. The <code>__main__</code> guard keeps imports from\naccidentally running a script.</span></div></div>"
+        },
+        {
+          "id": "python-modules-packages-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-modules-packages-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-io-json",
+      "blocks": [
+        {
+          "id": "python-io-json-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"12-input-output-and-structured-data\">12. Input, output, and structured data</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Input and output connect programs to people, files, and other systems.\nJSON provides a portable representation for common nested Python data.</span></div></div>"
+        },
+        {
+          "id": "python-io-json-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-io-json-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-custom-exceptions",
+      "blocks": [
+        {
+          "id": "python-custom-exceptions-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"13-errors-and-custom-exceptions\">13. Errors and custom exceptions</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Specific exceptions communicate what went wrong and let callers recover\nappropriately. Custom exception classes give an application\u2019s failures a\nmeaningful, catchable vocabulary.</span></div></div>"
+        },
+        {
+          "id": "python-custom-exceptions-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-custom-exceptions-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-standard-library",
+      "blocks": [
+        {
+          "id": "python-standard-library-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"14-standard-library-tools\">14. Standard-library tools</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Python\u2019s standard library supplies tested building blocks for collections,\ndates, files, testing, logging, debugging, concurrency, and numeric work.</span></div></div>"
+        },
+        {
+          "id": "python-standard-library-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-standard-library-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-environments-cli",
+      "blocks": [
+        {
+          "id": "python-environments-cli-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"15-virtual-environments-and-interpreter-commands\">15. Virtual environments and interpreter commands</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Virtual environments isolate dependencies between projects. Using\n<code>python -m</code> ties package installation and module execution to a specific\ninterpreter.</span></div></div>"
+        },
+        {
+          "id": "python-environments-cli-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-environments-cli-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "sql-select-and-filtering",
+      "blocks": [
+        {
+          "id": "sql-select-and-filtering-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"select-and-filtering\">SELECT and Filtering</h1>\n<h2 id=\"learning-objective\">Learning objective</h2>\n<span class=\"paragraph\">Retrieve a precise subset of a relation by combining <code>SELECT</code>, <code>FROM</code>, and\n<code>WHERE</code>.</span>\n<h2 id=\"exposition\">Exposition</h2>\n<span class=\"paragraph\">A query answers three separate questions:</span>\n<ol>\n<li><strong>What columns should be returned?</strong> <code>SELECT</code> defines the output shape.</li>\n<li><strong>Where does the data come from?</strong> <code>FROM</code> names the relation.</li>\n<li><strong>Which rows qualify?</strong> <code>WHERE</code> evaluates a condition for each input row.</li>\n</ol>\n<span class=\"paragraph\">Conceptually, filtering happens before the final projection is presented:</span>\n<div class=\"mlphd-math-display\"><span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msup><mi>R</mi><mo mathvariant=\"normal\" lspace=\"0em\" rspace=\"0em\">\u2032</mo></msup><mo>=</mo><mo stretchy=\"false\">{</mo><mi>r</mi><mo>\u2208</mo><mi>R</mi><mo>\u2223</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>r</mi><mo stretchy=\"false\">)</mo><mo stretchy=\"false\">}</mo><mi mathvariant=\"normal\">.</mi></mrow><annotation encoding=\"application/x-tex\">R&#x27; = \\{r \\in R \\mid P(r)\\}.</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.8019em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\" style=\"margin-right:0.0077em;\">R</span><span class=\"msupsub\"><span class=\"vlist-t\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.8019em;\"><span style=\"top:-3.113em;margin-right:0.05em;\"><span class=\"pstrut\" style=\"height:2.7em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mtight\"><span class=\"mord mtight\">\u2032</span></span></span></span></span></span></span></span></span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mopen\">{</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">r</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">\u2208</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0077em;\">R</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">\u2223</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">r</span><span class=\"mclose\">)}</span><span class=\"mord\">.</span></span></span></span></span></div><span class=\"paragraph\">Here, <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>R</mi></mrow><annotation encoding=\"application/x-tex\">R</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.6833em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0077em;\">R</span></span></span></span></span> is the source relation, <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>P</mi></mrow><annotation encoding=\"application/x-tex\">P</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.6833em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span></span></span></span></span> is the predicate in <code>WHERE</code>, and <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msup><mi>R</mi><mo mathvariant=\"normal\" lspace=\"0em\" rspace=\"0em\">\u2032</mo></msup></mrow><annotation encoding=\"application/x-tex\">R&#x27;</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.7519em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\" style=\"margin-right:0.0077em;\">R</span><span class=\"msupsub\"><span class=\"vlist-t\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.7519em;\"><span style=\"top:-3.063em;margin-right:0.05em;\"><span class=\"pstrut\" style=\"height:2.7em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mtight\"><span class=\"mord mtight\">\u2032</span></span></span></span></span></span></span></span></span></span></span></span></span> is\nthe set of rows that satisfy that predicate.</span></div></div>"
+        },
+        {
+          "id": "sql-select-and-filtering-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Name</th>\n<th style=\"text-align: left;\">Field</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\">Ada</td>\n<td style=\"text-align: left;\">mathematics</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\">Grace</td>\n<td style=\"text-align: left;\">computing</td>\n</tr>\n</tbody>\n</table></div></div>"
+        },
+        {
+          "id": "sql-select-and-filtering-block-3",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><span class=\"paragraph\">The predicate <code>field &lt;&gt; 'physics'</code> is evaluated once for each row. Ada and Grace\nsatisfy it; Katherine does not. <code>SELECT name, field</code> then determines which columns\nappear in the result.</span>\n<h2 id=\"concept-check\">Concept check</h2>\n<span class=\"paragraph\">This check has exactly the same scope as the exposition above. It is part of this\nunit rather than a separate curriculum unit.</span>\n<span class=\"paragraph\">Which clause decides whether an individual input row qualifies for the result?</span></div></div>"
+        },
+        {
+          "id": "sql-select-and-filtering-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "sql-select-and-filtering-exercise",
+      "blocks": [
+        {
+          "id": "sql-select-and-filtering-exercise-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"select-and-filtering-exercise\">SELECT and Filtering: Exercise</h1>\n<h2 id=\"task\">Task</h2>\n<span class=\"paragraph\">Write a query that returns one column named <code>name</code> containing everyone whose\n<code>field</code> is not <code>physics</code>. Sort the result alphabetically by <code>name</code>.</span>\n<span class=\"paragraph\">The browser-local table contains:</span>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: right;\">id</th>\n<th style=\"text-align: left;\">name</th>\n<th style=\"text-align: left;\">field</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: right;\">1</td>\n<td style=\"text-align: left;\">Ada</td>\n<td style=\"text-align: left;\">mathematics</td>\n</tr>\n<tr>\n<td style=\"text-align: right;\">2</td>\n<td style=\"text-align: left;\">Grace</td>\n<td style=\"text-align: left;\">computing</td>\n</tr>\n<tr>\n<td style=\"text-align: right;\">3</td>\n<td style=\"text-align: left;\">Katherine</td>\n<td style=\"text-align: left;\">physics</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\">Edit the starter query, then select <strong>Run and check</strong>. Equivalent SQL solutions are\naccepted because the result\u2014not the query text\u2014is assessed.</span></div></div>"
+        },
+        {
+          "id": "sql-select-and-filtering-exercise-block-3",
+          "kind": "interactive",
+          "placeholder": true
+        },
+        {
+          "id": "sql-select-and-filtering-exercise-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 1rem'><span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Columns:</strong> <code>['name']</code></span>\n<span class=\"paragraph\"><strong>Rows:</strong> <code>[('Ada',), ('Grace',), ('Katherine',)]</code></span></span></div></div>"
+        },
+        {
+          "id": "sql-select-and-filtering-exercise-block-5",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"review\">Review</h2>\n<span class=\"paragraph\">A valid solution projects <code>name</code>, filters rows using <code>WHERE</code>, and establishes a\ndeterministic result order with <code>ORDER BY</code>. The checker intentionally accepts any\nSQL text that produces the required result.</span></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "sql-aggregation",
+      "blocks": [
+        {
+          "id": "sql-aggregation-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"aggregation\">Aggregation</h1>\n<h2 id=\"learning-objectives\">Learning objectives</h2>\n<span class=\"paragraph\">Group observations and calculate summary statistics with aggregate functions.</span>\n<span class=\"paragraph\">If a group contains <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>N</mi></mrow><annotation encoding=\"application/x-tex\">N</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.6833em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.109em;\">N</span></span></span></span></span> observations, its arithmetic mean is</span>\n<div class=\"mlphd-math-display\"><span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover accent=\"true\"><mi>x</mi><mo>\u02c9</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>\u2211</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>x</mi><mi>i</mi></msub><mi mathvariant=\"normal\">.</mi></mrow><annotation encoding=\"application/x-tex\">\\bar{x} = \\frac{1}{N}\\sum_{i=1}^{N}x_i.</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.5678em;\"></span><span class=\"mord accent\"><span class=\"vlist-t\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.5678em;\"><span style=\"top:-3em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"mord mathnormal\">x</span></span><span style=\"top:-3em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"accent-body\" style=\"left:-0.2222em;\"><span class=\"mord\">\u02c9</span></span></span></span></span></span></span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:3.106em;vertical-align:-1.2777em;\"></span><span class=\"mord\"><span class=\"mopen nulldelimiter\"></span><span class=\"mfrac\"><span class=\"vlist-t vlist-t2\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:1.3214em;\"><span style=\"top:-2.314em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\" style=\"margin-right:0.109em;\">N</span></span></span><span style=\"top:-3.23em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"frac-line\" style=\"border-bottom-width:0.04em;\"></span></span><span style=\"top:-3.677em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"mord\"><span class=\"mord\">1</span></span></span></span><span class=\"vlist-s\">\u200b</span></span><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.686em;\"><span></span></span></span></span></span><span class=\"mclose nulldelimiter\"></span></span><span class=\"mspace\" style=\"margin-right:0.1667em;\"></span><span class=\"mop op-limits\"><span class=\"vlist-t vlist-t2\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:1.8283em;\"><span style=\"top:-1.8723em;margin-left:0em;\"><span class=\"pstrut\" style=\"height:3.05em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mtight\"><span class=\"mord mathnormal mtight\">i</span><span class=\"mrel mtight\">=</span><span class=\"mord mtight\">1</span></span></span></span><span style=\"top:-3.05em;\"><span class=\"pstrut\" style=\"height:3.05em;\"></span><span><span class=\"mop op-symbol large-op\">\u2211</span></span></span><span style=\"top:-4.3em;margin-left:0em;\"><span class=\"pstrut\" style=\"height:3.05em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mtight\"><span class=\"mord mathnormal mtight\" style=\"margin-right:0.109em;\">N</span></span></span></span></span><span class=\"vlist-s\">\u200b</span></span><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:1.2777em;\"><span></span></span></span></span></span><span class=\"mspace\" style=\"margin-right:0.1667em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\">x</span><span class=\"msupsub\"><span class=\"vlist-t vlist-t2\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.3117em;\"><span style=\"top:-2.55em;margin-left:0em;margin-right:0.05em;\"><span class=\"pstrut\" style=\"height:2.7em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mathnormal mtight\">i</span></span></span></span><span class=\"vlist-s\">\u200b</span></span><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.15em;\"><span></span></span></span></span></span></span><span class=\"mord\">.</span></span></span></span></span></div></div></div>"
+        },
+        {
+          "id": "sql-aggregation-block-3",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Category</th>\n<th style=\"text-align: right;\">Observations</th>\n<th style=\"text-align: right;\">Mean value</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\">A</td>\n<td style=\"text-align: right;\">2</td>\n<td style=\"text-align: right;\">12.0</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\">B</td>\n<td style=\"text-align: right;\">2</td>\n<td style=\"text-align: right;\">9.0</td>\n</tr>\n</tbody>\n</table></div></div>"
+        },
+        {
+          "id": "sql-aggregation-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"concept-check\">Concept check</h2>\n<span class=\"paragraph\">Extend the query so that it also returns <code>min_value</code> and <code>max_value</code> for each\ncategory. Edit the starter SQL and select <strong>Run and check</strong>. The checker evaluates\nthe result rather than looking for specific query text.</span></div></div>"
+        },
+        {
+          "id": "sql-aggregation-block-5",
+          "kind": "interactive",
+          "placeholder": true
+        },
+        {
+          "id": "sql-aggregation-block-6",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 1rem'><span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Columns:</strong> <code>['category', 'observations', 'mean_value']</code></span>\n<span class=\"paragraph\"><strong>Rows:</strong> <code>[('A', 2, 12.0), ('B', 2, 9.0)]</code></span></span></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "data-storage-and-retrieval",
+      "blocks": [
+        {
+          "id": "data-storage-and-retrieval-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"storage-systems-by-access-pattern\">Storage Systems by Access Pattern</h1>\n<span class=\"paragraph\">Cloud storage includes object storage, block storage, file storage, and data lakes\nor warehouses. View them as a hierarchy that scales from raw hardware blocks to\nstructured business data. Each layer serves a specific access pattern, speed\nrequirement, and consistency model.</span>\n<h2 id=\"physical-and-infrastructure-layer\">Physical and Infrastructure Layer</h2>\n<span class=\"paragraph\">This layer deals with bytes, disks, and raw access.</span>\n<ul>\n<li><strong>Block Storage:</strong> Raw volumes attached to servers. It offers low latency and high\n  IOPS. Use it for operating-system boot disks and high-performance databases.</li>\n<li><strong>File Storage:</strong> Hierarchical folders shared over a network through protocols such\n  as NFS or SMB. Use it for shared home directories and legacy application content.</li>\n</ul>\n<h2 id=\"unstructured-and-blob-layer\">Unstructured and Blob Layer</h2>\n<span class=\"paragraph\">This layer stores raw files without a fixed database schema.</span>\n<ul>\n<li><strong>Object Storage:</strong> A flat namespace for large binary objects. Use it for images,\n  backups, media, and data-lake raw zones.</li>\n</ul>\n<h2 id=\"analytical-and-big-data-layer\">Analytical and Big Data Layer</h2>\n<span class=\"paragraph\">This layer organizes large datasets for search and analytics.</span>\n<ul>\n<li><strong>Data Lakes:</strong> Repositories for raw, semi-structured, and structured files used in\n  large-scale processing and machine-learning training.</li>\n<li><strong>Data Warehouses:</strong> Columnar relational storage optimized for analytical queries\n  and aggregated reporting.</li>\n</ul>\n<h2 id=\"operational-and-transactional-layer\">Operational and Transactional Layer</h2>\n<span class=\"paragraph\">This layer manages live, mutable application state.</span>\n<ul>\n<li><strong>Relational Databases:</strong> Tables with schemas and transactional guarantees.</li>\n<li><strong>NoSQL Databases:</strong> Models optimized for access patterns such as key-value,\n  document, or graph retrieval.</li>\n</ul>\n<h2 id=\"ephemeral-and-cache-layer\">Ephemeral and Cache Layer</h2>\n<span class=\"paragraph\">This layer trades durability for speed.</span>\n<ul>\n<li><strong>In-Memory Caches:</strong> Volatile storage for sessions, query results, and\n  low-latency retrieval.</li>\n</ul></div></div>"
+        }
+      ]
+    },
+    {
+      "id": "stats-probability-conditional-independence",
+      "blocks": [
+        {
+          "id": "stats-probability-conditional-independence-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"probability-and-statistics-for-data-scientist-interviews\">Probability and statistics for data scientist interviews</h1>\n<span class=\"paragraph\"><strong>Prerequisites:</strong> Python arithmetic and basic algebra.</span>\n<span class=\"paragraph\">These units focus on the reasoning, calculations, assumptions, and concise\nexplanations commonly expected in data scientist interviews. Every unit is\nindependently executable.</span></div></div>"
+        },
+        {
+          "id": "stats-probability-conditional-independence-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"1-probability-conditioning-and-independence\">1. Probability, conditioning, and independence</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Interview probability questions test whether you can reason\ncorrectly when events overlap or new information changes the sample space.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Apply complements, unions, conditional probability, and the formal\ntest for independence.</span>\n<span class=\"paragraph\">Use <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>P</mi><mo stretchy=\"false\">(</mo><msup><mi>A</mi><mi>c</mi></msup><mo stretchy=\"false\">)</mo><mo>=</mo><mn>1</mn><mo>\u2212</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">P(A^c)=1-P(A)</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord\"><span class=\"mord mathnormal\">A</span><span class=\"msupsub\"><span class=\"vlist-t\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.6644em;\"><span style=\"top:-3.063em;margin-right:0.05em;\"><span class=\"pstrut\" style=\"height:2.7em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mathnormal mtight\">c</span></span></span></span></span></span></span></span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:0.7278em;vertical-align:-0.0833em;\"></span><span class=\"mord\">1</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u2212</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mclose\">)</span></span></span></span></span>, <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo>\u222a</mo><mi>B</mi><mo stretchy=\"false\">)</mo><mo>=</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo stretchy=\"false\">)</mo><mo>+</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>B</mi><mo stretchy=\"false\">)</mo><mo>\u2212</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo>\u2229</mo><mi>B</mi><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">P(A\\cup B)=P(A)+P(B)-P(A\\cap B)</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u222a</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">+</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u2212</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u2229</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span></span></span></span></span>, and\n<span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mi mathvariant=\"normal\">\u2223</mi><mi>B</mi><mo stretchy=\"false\">)</mo><mo>=</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo>\u2229</mo><mi>B</mi><mo stretchy=\"false\">)</mo><mi mathvariant=\"normal\">/</mi><mi>P</mi><mo stretchy=\"false\">(</mo><mi>B</mi><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">P(A|B)=P(A\\cap B)/P(B)</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mord\">\u2223</span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u2229</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span><span class=\"mord\">/</span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span></span></span></span></span>. Events are independent exactly when\n<span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo>\u2229</mo><mi>B</mi><mo stretchy=\"false\">)</mo><mo>=</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>A</mi><mo stretchy=\"false\">)</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>B</mi><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">P(A\\cap B)=P(A)P(B)</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u2229</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\">A</span><span class=\"mclose\">)</span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0502em;\">B</span><span class=\"mclose\">)</span></span></span></span></span>; mutually exclusive nonempty events are not independent.</span></div></div>"
+        },
+        {
+          "id": "stats-probability-conditional-independence-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-probability-conditional-independence-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-bayes-base-rates",
+      "blocks": [
+        {
+          "id": "stats-bayes-base-rates-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"2-bayes-theorem-and-base-rates\">2. Bayes' theorem and base rates</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> A seemingly accurate detector may produce mostly false alarms\nwhen the event it detects is rare.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Update a prior probability using evidence and explain why prevalence\nmatters to precision.</span>\n<span class=\"paragraph\">For a binary test, posterior precision is\n<span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>P</mi><mo stretchy=\"false\">(</mo><mi>D</mi><mi mathvariant=\"normal\">\u2223</mi><mo>+</mo><mo stretchy=\"false\">)</mo><mo>=</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mo>+</mo><mi mathvariant=\"normal\">\u2223</mi><mi>D</mi><mo stretchy=\"false\">)</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>D</mi><mo stretchy=\"false\">)</mo><mi mathvariant=\"normal\">/</mi><mo stretchy=\"false\">(</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mo>+</mo><mi mathvariant=\"normal\">\u2223</mi><mi>D</mi><mo stretchy=\"false\">)</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mi>D</mi><mo stretchy=\"false\">)</mo><mo>+</mo><mi>P</mi><mo stretchy=\"false\">(</mo><mo>+</mo><mi mathvariant=\"normal\">\u2223</mi><msup><mi>D</mi><mi>c</mi></msup><mo stretchy=\"false\">)</mo><mi>P</mi><mo stretchy=\"false\">(</mo><msup><mi>D</mi><mi>c</mi></msup><mo stretchy=\"false\">)</mo><mo stretchy=\"false\">)</mo></mrow><annotation encoding=\"application/x-tex\">P(D|+)=P(+|D)P(D)/(P(+|D)P(D)+P(+|D^c)P(D^c))</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"mord\">\u2223</span><span class=\"mord\">+</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span><span class=\"mrel\">=</span><span class=\"mspace\" style=\"margin-right:0.2778em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord\">+</span><span class=\"mord\">\u2223</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"mclose\">)</span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"mclose\">)</span><span class=\"mord\">/</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord\">+</span><span class=\"mord\">\u2223</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"mclose\">)</span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"mclose\">)</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">+</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord\">+</span><span class=\"mord\">\u2223</span><span class=\"mord\"><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"msupsub\"><span class=\"vlist-t\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.6644em;\"><span style=\"top:-3.063em;margin-right:0.05em;\"><span class=\"pstrut\" style=\"height:2.7em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mathnormal mtight\">c</span></span></span></span></span></span></span></span><span class=\"mclose\">)</span><span class=\"mord mathnormal\" style=\"margin-right:0.1389em;\">P</span><span class=\"mopen\">(</span><span class=\"mord\"><span class=\"mord mathnormal\" style=\"margin-right:0.0278em;\">D</span><span class=\"msupsub\"><span class=\"vlist-t\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.6644em;\"><span style=\"top:-3.063em;margin-right:0.05em;\"><span class=\"pstrut\" style=\"height:2.7em;\"></span><span class=\"sizing reset-size6 size3 mtight\"><span class=\"mord mathnormal mtight\">c</span></span></span></span></span></span></span></span><span class=\"mclose\">))</span></span></span></span></span>. Sensitivity supplies the\nfirst likelihood; the false-positive rate is one minus specificity.</span></div></div>"
+        },
+        {
+          "id": "stats-bayes-base-rates-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-bayes-base-rates-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-random-variables-distributions",
+      "blocks": [
+        {
+          "id": "stats-random-variables-distributions-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"3-random-variables-and-distributions\">3. Random variables and distributions</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Choosing a distribution encodes the data-generating process\nand determines which summaries and likelihoods are appropriate.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Match Bernoulli, binomial, Poisson, exponential, and normal models\nto common interview scenarios.</span>\n<span class=\"paragraph\">Bernoulli models one binary trial; binomial counts successes in fixed\nindependent trials; Poisson counts events in an interval; exponential models\nwaiting time under a constant event rate; normal models symmetric continuous\nvariation and often approximates aggregate noise.</span></div></div>"
+        },
+        {
+          "id": "stats-random-variables-distributions-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-random-variables-distributions-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-expectation-variance-covariance",
+      "blocks": [
+        {
+          "id": "stats-expectation-variance-covariance-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"4-expectation-variance-and-covariance\">4. Expectation, variance, and covariance</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> These quantities summarize center, uncertainty, and linear\nco-movement and underpin estimation and modeling.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Compute population mean, variance, covariance, and distinguish\ncovariance from correlation.</span>\n<span class=\"paragraph\">Expectation is linear even for dependent variables. Variance is expected\nsquared deviation. Covariance has units; correlation standardizes covariance\nto <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo stretchy=\"false\">[</mo><mo>\u2212</mo><mn>1</mn><mo separator=\"true\">,</mo><mn>1</mn><mo stretchy=\"false\">]</mo></mrow><annotation encoding=\"application/x-tex\">[-1,1]</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1em;vertical-align:-0.25em;\"></span><span class=\"mopen\">[</span><span class=\"mord\">\u2212</span><span class=\"mord\">1</span><span class=\"mpunct\">,</span><span class=\"mspace\" style=\"margin-right:0.1667em;\"></span><span class=\"mord\">1</span><span class=\"mclose\">]</span></span></span></span></span>. Neither correlation nor zero covariance generally proves\nindependence or causation.</span></div></div>"
+        },
+        {
+          "id": "stats-expectation-variance-covariance-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-expectation-variance-covariance-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-sampling-clt",
+      "blocks": [
+        {
+          "id": "stats-sampling-clt-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"5-sampling-distributions-and-the-central-limit-theorem\">5. Sampling distributions and the central limit theorem</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Statistical uncertainty concerns how an estimator changes\nacross repeated samples, not merely how individual observations vary.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Explain sampling distributions, standard error, and when the CLT\njustifies a normal approximation for a sample mean.</span>\n<span class=\"paragraph\">For iid observations with finite variance, the sample mean has standard error\n<span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mi>\u03c3</mi><mi mathvariant=\"normal\">/</mi><msqrt><mi>n</mi></msqrt></mrow><annotation encoding=\"application/x-tex\">\\sigma/\\sqrt{n}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1.0503em;vertical-align:-0.25em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0359em;\">\u03c3</span><span class=\"mord\">/</span><span class=\"mord sqrt\"><span class=\"vlist-t vlist-t2\"><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.8003em;\"><span class=\"svg-align\" style=\"top:-3em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"mord\" style=\"padding-left:0.833em;\"><span class=\"mord mathnormal\">n</span></span></span><span style=\"top:-2.7603em;\"><span class=\"pstrut\" style=\"height:3em;\"></span><span class=\"hide-tail\" style=\"min-width:0.853em;height:1.08em;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400em\" height=\"1.08em\" viewBox=\"0 0 400000 1080\" preserveAspectRatio=\"xMinYMin slice\"><path d=\"M95,702\nc-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14\nc0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54\nc44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10\ns173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429\nc69,-144,104.5,-217.7,106.5,-221\nl0 -0\nc5.3,-9.3,12,-14,20,-14\nH400000v40H845.2724\ns-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7\nc-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z\nM834 80h400000v40h-400000z\"/></svg></span></span></span><span class=\"vlist-s\">\u200b</span></span><span class=\"vlist-r\"><span class=\"vlist\" style=\"height:0.2397em;\"><span></span></span></span></span></span></span></span></span></span> and becomes approximately normal as sample size grows.\nDependence, heavy tails, and selection bias can invalidate naive conclusions.</span></div></div>"
+        },
+        {
+          "id": "stats-sampling-clt-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-sampling-clt-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-estimation-confidence-intervals",
+      "blocks": [
+        {
+          "id": "stats-estimation-confidence-intervals-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"6-estimation-and-confidence-intervals\">6. Estimation and confidence intervals</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> A point estimate without uncertainty can make small, noisy\ndifferences look decisive.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Distinguish estimators from estimates and correctly interpret a\nfrequentist confidence interval.</span>\n<span class=\"paragraph\">A 95% confidence procedure covers the fixed true parameter in 95% of repeated\nsamples under its assumptions. It does not assign a 95% probability to the\nparameter after this one interval is observed. Approximate mean intervals use\nestimate <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>\u00b1</mo></mrow><annotation encoding=\"application/x-tex\">\\pm</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.6667em;vertical-align:-0.0833em;\"></span><span class=\"mord\">\u00b1</span></span></span></span></span> critical value <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mo>\u00d7</mo></mrow><annotation encoding=\"application/x-tex\">\\times</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.6667em;vertical-align:-0.0833em;\"></span><span class=\"mord\">\u00d7</span></span></span></span></span> standard error.</span></div></div>"
+        },
+        {
+          "id": "stats-estimation-confidence-intervals-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-estimation-confidence-intervals-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-hypothesis-testing-power",
+      "blocks": [
+        {
+          "id": "stats-hypothesis-testing-power-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"7-hypothesis-tests-errors-and-power\">7. Hypothesis tests, errors, and power</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Interviews often probe whether you can separate statistical\nevidence from practical importance and avoid common p-value mistakes.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Interpret p-values, Type I and Type II errors, power, and multiple\ntesting tradeoffs.</span>\n<span class=\"paragraph\">A p-value is the probability, assuming the null and model are true, of a test\nstatistic at least as extreme as observed. Alpha controls the Type I error\nrate; beta is the Type II error rate; power is <span class=\"mlphd-math-inline\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><mn>1</mn><mo>\u2212</mo><mi>\u03b2</mi></mrow><annotation encoding=\"application/x-tex\">1-\\beta</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.7278em;vertical-align:-0.0833em;\"></span><span class=\"mord\">1</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span><span class=\"mbin\">\u2212</span><span class=\"mspace\" style=\"margin-right:0.2222em;\"></span></span><span class=\"base\"><span class=\"strut\" style=\"height:0.8889em;vertical-align:-0.1944em;\"></span><span class=\"mord mathnormal\" style=\"margin-right:0.0528em;\">\u03b2</span></span></span></span></span>. Larger samples,\nlarger effects, lower noise, or a larger alpha usually increase power.</span></div></div>"
+        },
+        {
+          "id": "stats-hypothesis-testing-power-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-hypothesis-testing-power-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "stats-experimentation-ab-tests",
+      "blocks": [
+        {
+          "id": "stats-experimentation-ab-tests-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"8-experimentation-and-ab-tests\">8. Experimentation and A/B tests</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Product data scientists must connect causal identification,\nexperimental design, and business decisions\u2014not merely calculate p-values.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Explain randomization, units of assignment and analysis, guardrails,\nsample-ratio mismatch, practical significance, and common experiment threats.</span>\n<span class=\"paragraph\">Randomization balances confounders in expectation. Analyze at a level that\nrespects assignment and dependence. Define one primary metric and guardrails\nbefore launch, check instrumentation and sample-ratio mismatch, and report\neffect sizes with uncertainty. Peeking or testing many metrics needs correction.</span></div></div>"
+        },
+        {
+          "id": "stats-experimentation-ab-tests-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "stats-experimentation-ab-tests-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-complexity",
+      "blocks": [
+        {
+          "id": "python-algorithms-complexity-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"python-algorithms-for-data-science-interviews\">Python algorithms for data science interviews</h1>\n<span class=\"paragraph\"><strong>Prerequisites:</strong> Python functions, lists, dictionaries, sets, loops,\nand basic complexity notation.</span>\n<span class=\"paragraph\">This notebook focuses on reusable algorithmic patterns rather than\nmemorizing isolated solutions. Exercises are automatically graded and\nrun only in an isolated Python namespace; no external services are used.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-complexity-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"1-complexity-and-algorithmic-patterns\">1. Complexity and algorithmic patterns</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Interview solutions must be correct and practical at the\nscale of the input, not merely correct for a toy example.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Estimate time and space complexity and identify whether a\nsolution is linear, logarithmic, quadratic, or exponential.</span>\n<span class=\"paragraph\">A single pass is usually <code>O(n)</code>. Nested independent passes are still\n<code>O(n)</code> when they do not nest; nested loops over the same input are often\n<code>O(n\u00b2)</code>. Hash lookup is typically <code>O(1)</code> average-case, while sorting is\ncommonly <code>O(n log n)</code>. State the assumptions behind your estimate.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-complexity-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-complexity-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-hash-maps",
+      "blocks": [
+        {
+          "id": "python-algorithms-hash-maps-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"2-arrays-and-hash-maps\">2. Arrays and hash maps</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Many interview problems become linear when a set or\ndictionary remembers what has already been seen.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Use a hash map to solve a one-pass lookup problem while keeping\nthe original order and handling duplicates explicitly.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-hash-maps-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-hash-maps-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-searching",
+      "blocks": [
+        {
+          "id": "python-algorithms-searching-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"3-sorting-and-binary-search\">3. Sorting and binary search</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Sorting creates order that enables fast searching and\nsimplifies downstream comparisons.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Implement binary search with a shrinking inclusive interval.</span>\n<span class=\"paragraph\">Binary search requires sorted input. At each step compare the midpoint,\nthen discard half the remaining interval. The loop invariant is that a\nmatching value, if present, remains inside <code>[left, right]</code>.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-searching-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-searching-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-sliding-window",
+      "blocks": [
+        {
+          "id": "python-algorithms-sliding-window-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"4-two-pointers-and-sliding-windows\">4. Two pointers and sliding windows</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Recomputing every subarray often creates quadratic work;\nmaintaining a moving window can reduce it to one pass.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Maintain the sum of a fixed-size window as it moves across a\nsequence.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-sliding-window-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-sliding-window-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-stacks-queues",
+      "blocks": [
+        {
+          "id": "python-algorithms-stacks-queues-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"5-stacks-and-queues\">5. Stacks and queues</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> LIFO and FIFO behavior model parsing, task scheduling,\nbreadth-first search, and many streaming workflows.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Use a stack to validate nested delimiters in one pass.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-stacks-queues-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-stacks-queues-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-trees-graphs",
+      "blocks": [
+        {
+          "id": "python-algorithms-trees-graphs-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"6-trees-and-graph-traversal\">6. Trees and graph traversal</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Hierarchical and network-shaped data appears in feature\nrelationships, dependency graphs, and search problems.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Traverse a graph with breadth-first search while tracking\nvisited nodes so cycles do not cause infinite work.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-trees-graphs-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-trees-graphs-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-heaps-top-k",
+      "blocks": [
+        {
+          "id": "python-algorithms-heaps-top-k-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"7-heaps-and-top-k-patterns\">7. Heaps and top-k patterns</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Data science workloads often need the largest, smallest,\nor most frequent few items without fully sorting a huge collection.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Use a heap or equivalent bounded structure to solve a top-k\nproblem and state its space tradeoff.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-heaps-top-k-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-heaps-top-k-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "python-algorithms-interview-testing",
+      "blocks": [
+        {
+          "id": "python-algorithms-interview-testing-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"8-testing-and-explaining-solutions\">8. Testing and explaining solutions</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Interviewers assess reasoning as well as output: edge\ncases, invariants, complexity, and communication distinguish a robust\nsolution from a lucky example.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Produce a compact test plan that covers normal, boundary, and\nfailure cases, then state the algorithm\u2019s complexity.</span></div></div>"
+        },
+        {
+          "id": "python-algorithms-interview-testing-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "python-algorithms-interview-testing-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-problem-framing-splits",
+      "blocks": [
+        {
+          "id": "ml-problem-framing-splits-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"machine-learning-for-data-scientist-interviews\">Machine learning for data scientist interviews</h1>\n<span class=\"paragraph\"><strong>Prerequisites:</strong> Python, basic probability, descriptive statistics, and\nmatrix/vector intuition.</span>\n<span class=\"paragraph\">The units emphasize model choice, evaluation, leakage prevention, tradeoffs,\nand concise interview communication. Each unit runs independently.</span></div></div>"
+        },
+        {
+          "id": "ml-problem-framing-splits-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"1-problem-framing-splits-and-leakage\">1. Problem framing, splits, and leakage</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> A sophisticated model cannot rescue a target, metric, or\nvalidation split that does not match the decision being made.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Translate a product question into a prediction target, unit of\nobservation, horizon, metric, and leakage-safe split.</span>\n<span class=\"paragraph\">Use random splits only when observations are exchangeable. Use temporal\nsplits for future prediction and grouped splits when records from one entity\nmust not cross train and validation. Fit preprocessing on training data only.</span></div></div>"
+        },
+        {
+          "id": "ml-problem-framing-splits-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-problem-framing-splits-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-linear-logistic-regularization",
+      "blocks": [
+        {
+          "id": "ml-linear-logistic-regularization-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"2-linear-models-and-regularization\">2. Linear models and regularization</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Linear and logistic models are strong interpretable baselines\nand reveal whether added model complexity is actually useful.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Explain coefficients, logistic probabilities, and the difference\nbetween L1 and L2 regularization.</span>\n<span class=\"paragraph\">Linear regression predicts a continuous response. Logistic regression models\nlog-odds for classification. L1 can produce sparse coefficients; L2 shrinks\ncorrelated coefficients smoothly. Scale features when penalty size should be\ncomparable across coefficients.</span></div></div>"
+        },
+        {
+          "id": "ml-linear-logistic-regularization-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-linear-logistic-regularization-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-trees-ensembles",
+      "blocks": [
+        {
+          "id": "ml-trees-ensembles-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"3-decision-trees-and-ensembles\">3. Decision trees and ensembles</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Trees capture nonlinear effects and interactions with little\npreprocessing, while ensembles stabilize or strengthen individual trees.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Contrast decision trees, random forests, and gradient boosting.</span>\n<span class=\"paragraph\">Deep trees have low bias and high variance. Random forests reduce variance by\naveraging decorrelated trees. Gradient boosting sequentially fits residual\nerrors and often offers stronger accuracy but more tuning sensitivity.</span></div></div>"
+        },
+        {
+          "id": "ml-trees-ensembles-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-trees-ensembles-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-classification-metrics-thresholds",
+      "blocks": [
+        {
+          "id": "ml-classification-metrics-thresholds-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"4-classification-metrics-and-thresholds\">4. Classification metrics and thresholds</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Accuracy can hide failure on rare classes, and the best\nprobability threshold depends on business costs.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Compute precision, recall, and F1 and explain ROC-AUC versus PR-AUC.</span>\n<span class=\"paragraph\">Precision asks how many predicted positives were correct; recall asks how\nmany actual positives were found. PR-AUC is especially informative with rare\npositives. Choose a threshold using validation data and explicit error costs.</span></div></div>"
+        },
+        {
+          "id": "ml-classification-metrics-thresholds-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-classification-metrics-thresholds-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-preprocessing-pipelines",
+      "blocks": [
+        {
+          "id": "ml-preprocessing-pipelines-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"5-preprocessing-and-feature-pipelines\">5. Preprocessing and feature pipelines</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Leakage often enters through preprocessing performed before\nsplitting or through features unavailable at prediction time.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Build a leakage-safe order for splitting, fitting transforms,\ntransforming validation data, and fitting a model.</span>\n<span class=\"paragraph\">Imputation, scaling, encoding, and feature selection learn parameters. Fit\nthem on training data and reuse those fitted transforms everywhere else.\nTrees usually do not require scaling; distance- and penalty-based models do.</span></div></div>"
+        },
+        {
+          "id": "ml-preprocessing-pipelines-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-preprocessing-pipelines-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-cross-validation-tuning",
+      "blocks": [
+        {
+          "id": "ml-cross-validation-tuning-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"6-cross-validation-and-hyperparameter-tuning\">6. Cross-validation and hyperparameter tuning</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Reusing a test set during tuning turns it into training data\nand produces an optimistic performance estimate.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Separate training/tuning from final evaluation and summarize\ncross-validation results with uncertainty.</span>\n<span class=\"paragraph\">Tune preprocessing and model hyperparameters inside each fold. Keep one final\ntest set untouched. Prefer randomized or informed search when the parameter\nspace is large, and compare against a simple baseline.</span></div></div>"
+        },
+        {
+          "id": "ml-cross-validation-tuning-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-cross-validation-tuning-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-unsupervised-dimensionality",
+      "blocks": [
+        {
+          "id": "ml-unsupervised-dimensionality-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"7-clustering-and-dimensionality-reduction\">7. Clustering and dimensionality reduction</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Unsupervised methods help explore structure when labels are\nabsent, but their outputs are sensitive to scale and assumptions.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> State when to use k-means or PCA and identify their main caveats.</span>\n<span class=\"paragraph\">K-means minimizes within-cluster squared Euclidean distance, favoring roughly\nspherical clusters. PCA finds orthogonal directions of maximum variance.\nStandardize features when units differ, and validate usefulness downstream.</span></div></div>"
+        },
+        {
+          "id": "ml-unsupervised-dimensionality-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-unsupervised-dimensionality-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "ml-production-monitoring",
+      "blocks": [
+        {
+          "id": "ml-production-monitoring-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"8-production-inference-and-monitoring\">8. Production inference and monitoring</h2>\n<span class=\"paragraph\"><strong>Motivation:</strong> Offline accuracy does not guarantee reliable decisions after\ndeployment when data, behavior, latency, or costs change.</span>\n<span class=\"paragraph\"><strong>Goal:</strong> Distinguish data drift, concept drift, service health, and delayed\noutcome monitoring.</span>\n<span class=\"paragraph\">Version data, code, features, model, and threshold together. Monitor input\nschema and distributions, prediction distributions, latency/errors, and\nbusiness outcomes. Use shadow or canary releases and retain rollback paths.</span></div></div>"
+        },
+        {
+          "id": "ml-production-monitoring-block-3",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "ml-production-monitoring-block-4",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-images-containers",
+      "blocks": [
+        {
+          "id": "docker-images-containers-block-1",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h1 id=\"docker-and-docker-compose-tutorial\">Docker and Docker Compose tutorial</h1>\n<span class=\"paragraph\">This notebook turns the Docker tutorial into short implementation\nexercises. Each topic has a separate exposition cell followed immediately\nby an exercise cell with:</span>\n<ol>\n<li>a nested exercise description;</li>\n<li>an interactive input area;</li>\n<li>an assertion-decorated submission with automatic grading.</li>\n</ol>\n<span class=\"paragraph\">The exercises validate Dockerfiles, Compose snippets, and operational\ncommands without starting containers or changing your Docker host.</span></div></div>"
+        },
+        {
+          "id": "docker-images-containers-block-2",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"commands-cheat-sheet\">Commands cheat sheet</h2>\n<span class=\"paragraph\">The examples use <code>IMAGE</code> for an image reference, <code>CONTAINER</code> for a container\nname or ID, and <code>SERVICE</code> for a Compose service name.</span></div></div>"
+        },
+        {
+          "id": "docker-images-containers-block-3",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h3 id=\"images-builds-and-registries\">Images, builds, and registries</h3>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Command</th>\n<th style=\"text-align: left;\">Purpose</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\"><code>docker pull IMAGE</code></td>\n<td style=\"text-align: left;\">Download an image from a registry.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker image ls</code></td>\n<td style=\"text-align: left;\">List images stored locally.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker image inspect IMAGE</code></td>\n<td style=\"text-align: left;\">Show image configuration and metadata.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker build -t IMAGE .</code></td>\n<td style=\"text-align: left;\">Build and tag an image from the current build context.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker tag SOURCE TARGET</code></td>\n<td style=\"text-align: left;\">Add another repository or version tag to an image.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker push IMAGE</code></td>\n<td style=\"text-align: left;\">Upload a tagged image to a registry.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker image rm IMAGE</code></td>\n<td style=\"text-align: left;\">Remove a local image reference.</td>\n</tr>\n</tbody>\n</table>\n<h3 id=\"containers-and-runtime-options\">Containers and runtime options</h3>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Command or option</th>\n<th style=\"text-align: left;\">Purpose</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\"><code>docker run IMAGE</code></td>\n<td style=\"text-align: left;\">Create and start a container from an image.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker run -d --name NAME IMAGE</code></td>\n<td style=\"text-align: left;\">Run detached with a stable container name.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker ps --all</code></td>\n<td style=\"text-align: left;\">List running and stopped containers.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker logs CONTAINER</code></td>\n<td style=\"text-align: left;\">Read a container's standard output and error.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker exec -it CONTAINER COMMAND</code></td>\n<td style=\"text-align: left;\">Run a command inside an existing container.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker inspect CONTAINER</code></td>\n<td style=\"text-align: left;\">Show detailed runtime configuration and state.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker stop CONTAINER</code></td>\n<td style=\"text-align: left;\">Gracefully stop a running container.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker rm --force CONTAINER</code></td>\n<td style=\"text-align: left;\">Stop if necessary and remove a container.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>--rm</code></td>\n<td style=\"text-align: left;\">Remove a container automatically when its process exits.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>-p HOST:CONTAINER</code></td>\n<td style=\"text-align: left;\">Publish a container port on the host.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>--mount source=VOLUME,target=PATH</code></td>\n<td style=\"text-align: left;\">Attach durable named-volume storage.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>-e NAME=VALUE</code></td>\n<td style=\"text-align: left;\">Set a container environment variable.</td>\n</tr>\n</tbody>\n</table>\n<h3 id=\"dockerfile-instructions\">Dockerfile instructions</h3>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Instruction</th>\n<th style=\"text-align: left;\">Purpose</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\"><code>FROM</code></td>\n<td style=\"text-align: left;\">Select the base image.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>WORKDIR</code></td>\n<td style=\"text-align: left;\">Set the working directory for later instructions and startup.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>COPY</code></td>\n<td style=\"text-align: left;\">Copy files from the build context into the image.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>RUN</code></td>\n<td style=\"text-align: left;\">Execute a build-time command and create an image layer.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>USER</code></td>\n<td style=\"text-align: left;\">Select the non-root runtime user.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>EXPOSE</code></td>\n<td style=\"text-align: left;\">Document the port used by the application.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>CMD</code></td>\n<td style=\"text-align: left;\">Define the default container command.</td>\n</tr>\n</tbody>\n</table>\n<h3 id=\"docker-compose\">Docker Compose</h3>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Command</th>\n<th style=\"text-align: left;\">Purpose</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose config</code></td>\n<td style=\"text-align: left;\">Merge, resolve, and validate Compose configuration.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose up --build</code></td>\n<td style=\"text-align: left;\">Build changed images and start the project.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose up -d</code></td>\n<td style=\"text-align: left;\">Start or update the project in the background.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose down</code></td>\n<td style=\"text-align: left;\">Stop and remove the project's containers and network.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose ps --all</code></td>\n<td style=\"text-align: left;\">Show running and stopped project services.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose logs --tail=200 SERVICE</code></td>\n<td style=\"text-align: left;\">Show bounded recent service logs.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose run --rm SERVICE COMMAND</code></td>\n<td style=\"text-align: left;\">Run a disposable one-off service command.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose exec SERVICE COMMAND</code></td>\n<td style=\"text-align: left;\">Run a command in an existing service container.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker compose pull</code></td>\n<td style=\"text-align: left;\">Download service images.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>-f BASE -f OVERRIDE</code></td>\n<td style=\"text-align: left;\">Merge Compose files from left to right.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>up --no-deps -d SERVICE</code></td>\n<td style=\"text-align: left;\">Recreate one service without restarting dependencies.</td>\n</tr>\n</tbody>\n</table>\n<h3 id=\"testing-and-observation\">Testing and observation</h3>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Command</th>\n<th style=\"text-align: left;\">Purpose</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\"><code>curl --fail URL</code></td>\n<td style=\"text-align: left;\">Fail when an HTTP health endpoint returns an error status.</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><code>docker stats</code></td>\n<td style=\"text-align: left;\">Observe live container CPU, memory, and network usage.</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\">Each numbered topic below names the cheat-sheet entries it introduces or\napplies.</span></div></div>"
+        },
+        {
+          "id": "docker-images-containers-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"1-images-and-containers\">1. Images and containers</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">An image is a read-only package of application files and dependencies. A\ncontainer is a configured runtime instance of an image and can be removed\nwithout changing the source image.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker pull IMAGE</code> and <code>docker image ls</code> introduce obtaining and locating\n  immutable image artifacts.</li>\n<li><code>docker run IMAGE</code> shows how an image becomes a running container instance.</li>\n<li><code>docker ps --all</code> distinguishes existing container instances from images.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-images-containers-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-images-containers-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-cli-lifecycle",
+      "blocks": [
+        {
+          "id": "docker-cli-lifecycle-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"2-the-docker-cli-lifecycle\">2. The Docker CLI lifecycle</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">The CLI creates, starts, inspects, interacts with, stops, and removes\ncontainers. <code>docker exec</code> runs a process inside an existing container;\nit does not modify the image.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker run -d --name NAME -p HOST:CONTAINER IMAGE</code> creates a named,\n  detached container and publishes its application port.</li>\n<li><code>docker logs</code>, <code>docker exec</code>, and <code>docker inspect</code> observe or interact with\n  an existing container without rebuilding its image.</li>\n<li><code>docker stop</code> and <code>docker rm --force</code> cover graceful and forced cleanup.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-cli-lifecycle-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-cli-lifecycle-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-dockerfiles",
+      "blocks": [
+        {
+          "id": "docker-dockerfiles-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"3-dockerfiles\">3. Dockerfiles</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Dockerfiles describe how to build images. Instruction order affects cache\nreuse, while <code>USER</code>, <code>CMD</code>, and a small build context improve runtime\nsafety and repeatability.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker build -t IMAGE .</code> executes the Dockerfile against the current build\n  context.</li>\n<li><code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, and <code>RUN</code> define the build sequence and cacheable\n  layers.</li>\n<li><code>USER</code>, <code>EXPOSE</code>, and JSON-array <code>CMD</code> define safer runtime defaults.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-dockerfiles-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-dockerfiles-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-builds-registries",
+      "blocks": [
+        {
+          "id": "docker-builds-registries-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"4-builds-cache-tags-and-registries\">4. Builds, cache, tags, and registries</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Build context determines what the builder can see, and instruction order\ndetermines cache reuse. Tags give images recognizable release identities;\nregistries distribute those tagged artifacts.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker build -t IMAGE .</code> builds from a context and assigns a local tag.</li>\n<li><code>docker image inspect IMAGE</code> verifies the resulting image metadata.</li>\n<li><code>docker tag SOURCE TARGET</code> creates a registry-qualified release identity.</li>\n<li><code>docker push IMAGE</code> publishes that exact tagged artifact.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-builds-registries-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-builds-registries-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-runtime-configuration",
+      "blocks": [
+        {
+          "id": "docker-runtime-configuration-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"5-networking-ports-volumes-and-environment\">5. Networking, ports, volumes, and environment</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Containers need explicit interfaces for traffic, configuration, and\ndurable state. Publish ports with <code>HOST:CONTAINER</code>, use service names on\nuser-defined networks, and keep secrets out of images.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker run -p HOST:CONTAINER</code> publishes a container port through the host.</li>\n<li><code>--mount source=VOLUME,target=PATH</code> attaches durable named-volume storage.</li>\n<li><code>-e NAME=VALUE</code> supplies runtime configuration without baking it into the\n  image.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-runtime-configuration-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-runtime-configuration-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-compose-fundamentals",
+      "blocks": [
+        {
+          "id": "docker-compose-fundamentals-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"6-docker-compose-fundamentals\">6. Docker Compose fundamentals</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Compose describes services, networks, volumes, environment, and health\nchecks in one declarative project. <code>depends_on</code> expresses relationships;\na healthcheck expresses readiness.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker compose config</code> validates the declarative service model before it\n  runs.</li>\n<li><code>docker compose up --build</code> builds local services and starts the project.</li>\n<li><code>docker compose ps --all</code> reports service-container state.</li>\n<li>Compose keys covered here are <code>services</code>, <code>build</code>, <code>image</code>, <code>depends_on</code>,\n  <code>healthcheck</code>, and top-level <code>volumes</code>.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-compose-fundamentals-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-compose-fundamentals-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-compose-development",
+      "blocks": [
+        {
+          "id": "docker-compose-development-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"7-compose-development-workflows\">7. Compose development workflows</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Compose overrides let development add source mounts, debug settings, and\noptional services without changing the production definition. Validate a\nmerged configuration before starting it.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker compose -f BASE -f OVERRIDE config</code> previews and validates the\n  left-to-right merged configuration.</li>\n<li><code>docker compose -f BASE -f OVERRIDE up --build</code> starts the development\n  variant with current images.</li>\n<li><code>docker compose run --rm SERVICE COMMAND</code> executes disposable tests or\n  administrative tasks in the service environment.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-compose-development-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-compose-development-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-container-testing",
+      "blocks": [
+        {
+          "id": "docker-container-testing-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"8-testing-docker-containers\">8. Testing Docker containers</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">A green image build is not enough: test the image, startup behavior,\nhealth endpoint, service integration, logs, exit code, and persistence.\nCI should test the exact artifact that will be published.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker build -t IMAGE:test .</code> creates a specifically tagged test artifact.</li>\n<li><code>docker run --rm IMAGE:test COMMAND</code> runs tests in a disposable container.</li>\n<li><code>docker run -d --name NAME -p HOST:CONTAINER IMAGE:test</code> starts the same\n  artifact for external checks.</li>\n<li><code>curl --fail URL</code> turns an unhealthy HTTP response into a failing check.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-container-testing-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-container-testing-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-security",
+      "blocks": [
+        {
+          "id": "docker-security-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"9-security-and-image-quality\">9. Security and image quality</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Containers share a host kernel, so image provenance, non-root execution,\nminimal dependencies, secret handling, and resource limits matter. Security\nis part of the build and deployment workflow, not a final manual check.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li>Dockerfile <code>USER</code> establishes non-root execution in the image itself.</li>\n<li><code>docker image inspect IMAGE</code> verifies configured users, entrypoints, and\n  other image metadata.</li>\n<li><code>.dockerignore</code> limits sensitive or unnecessary build-context files.</li>\n<li>Image scanning belongs after <code>docker build</code> and before <code>docker push</code> in CI.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-security-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-security-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-production",
+      "blocks": [
+        {
+          "id": "docker-production-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"10-docker-in-production\">10. Docker in production</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Production needs tested immutable artifacts, release-specific\nconfiguration, restart and health behavior, observability, backups, and\nrollback. A production Compose override can adapt a single-server deploy;\nlarger workloads need a platform designed for scheduling and scaling.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker compose -f BASE -f PRODUCTION pull</code> obtains immutable release\n  images before deployment.</li>\n<li><code>docker compose -f BASE -f PRODUCTION up -d</code> applies the production model\n  in the background.</li>\n<li><code>docker compose ... up --no-deps -d SERVICE</code> replaces one changed service\n  without deliberately restarting its dependencies.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-production-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-production-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    },
+    {
+      "id": "docker-troubleshooting",
+      "blocks": [
+        {
+          "id": "docker-troubleshooting-block-4",
+          "kind": "static",
+          "html": "<div class=\"mlphd-static-cell\"><div class=\"mlphd-prose\"><h2 id=\"11-troubleshooting-and-operations\">11. Troubleshooting and operations</h2>\n<h3 id=\"exposition\">Exposition</h3>\n<span class=\"paragraph\">Diagnose the layer that failed: merged configuration, process, logs,\nmounts, network, healthcheck, or host resources. Evidence from inspection\nis more useful than repeatedly restarting a failing service.</span>\n<h3 id=\"commands-covered\">Commands covered</h3>\n<ul>\n<li><code>docker compose config</code> detects invalid or surprising merged configuration.</li>\n<li><code>docker compose ps --all</code> exposes exited as well as running services.</li>\n<li><code>docker compose logs --tail=200 SERVICE</code> retrieves focused recent evidence.</li>\n<li><code>docker inspect CONTAINER</code> exposes mounts, networks, environment, health,\n  and process state; <code>docker stats</code> adds live resource evidence.</li>\n</ul></div></div>"
+        },
+        {
+          "id": "docker-troubleshooting-block-5",
+          "kind": "interactive",
+          "placeholder": false
+        },
+        {
+          "id": "docker-troubleshooting-block-6",
+          "kind": "interactive",
+          "placeholder": true
+        }
+      ]
+    }
+  ]
+}

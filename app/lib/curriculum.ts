@@ -1,4 +1,5 @@
 export type Difficulty = "easy" | "medium" | "hard";
+export type CurriculumUnitKind = "exposition" | "exercise";
 
 export type CurriculumConcept = {
   id: string;
@@ -11,6 +12,7 @@ export type CurriculumUnit = {
   title: string;
   notebook: string;
   outputPath: string;
+  kind: CurriculumUnitKind;
   difficulty: Difficulty;
   teaches: string[];
   assesses: string[];

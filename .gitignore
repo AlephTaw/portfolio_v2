@@ -44,8 +44,12 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+__marimo__/
 
 /dist/
 /.wrangler/
 /outputs/
 /work/
+
+# generated MLPHD database web assets; canonical files live in /database
+/public/bootcamp/data/*.sqlite

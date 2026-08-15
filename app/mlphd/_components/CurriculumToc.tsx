@@ -12,6 +12,7 @@ const VIEW_LEVELS = [
 
 type CurriculumTocProps = {
   activeUnitId: string;
+  onIntent: (unitId: string) => void;
   onSelect: (unitId: string) => void;
   unitsById: Map<string, CurriculumUnit>;
   view: CurriculumView;
@@ -19,6 +20,7 @@ type CurriculumTocProps = {
 
 export function CurriculumToc({
   activeUnitId,
+  onIntent,
   onSelect,
   unitsById,
   view,
@@ -70,6 +72,7 @@ export function CurriculumToc({
                 item={item}
                 key={item.type === "unit" ? item.unit : item.id}
                 maxDepth={viewLevel}
+                onIntent={onIntent}
                 onSelect={onSelect}
                 openSections={openSections}
                 setOpenSections={setOpenSections}

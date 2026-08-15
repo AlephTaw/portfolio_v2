@@ -12,6 +12,7 @@ type CurriculumBranchProps = {
   depth: number;
   item: CurriculumViewItem;
   maxDepth: number;
+  onIntent: (unitId: string) => void;
   onSelect: (unitId: string) => void;
   openSections: Set<string>;
   setOpenSections: Dispatch<SetStateAction<Set<string>>>;
@@ -23,6 +24,7 @@ export function CurriculumBranch({
   depth,
   item,
   maxDepth,
+  onIntent,
   onSelect,
   openSections,
   setOpenSections,
@@ -44,6 +46,8 @@ export function CurriculumBranch({
             ? "border-black text-[#191714]"
             : "border-[#d8d0c1] text-[#766b5d] hover:border-[#766b5d] hover:text-[#191714]"
         }`}
+        onFocus={() => onIntent(unit.id)}
+        onPointerEnter={() => onIntent(unit.id)}
         onClick={() => onSelect(unit.id)}
         style={{ marginLeft: inset }}
         type="button"
@@ -90,6 +94,7 @@ export function CurriculumBranch({
                 item={child}
                 key={child.type === "unit" ? child.unit : child.id}
                 maxDepth={maxDepth}
+                onIntent={onIntent}
                 onSelect={onSelect}
                 openSections={openSections}
                 setOpenSections={setOpenSections}

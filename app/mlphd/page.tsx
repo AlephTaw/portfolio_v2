@@ -5,6 +5,7 @@ import { HighlightDetailPage } from "../components/HighlightDetailPage";
 import { work } from "../data/content";
 import type { CurriculumCatalog } from "../lib/curriculum";
 import { CurriculumReader } from "./_components/CurriculumReader";
+import "./mlphd.css";
 
 const highlight = work.find((item) => item.slug === "mlphd")!;
 

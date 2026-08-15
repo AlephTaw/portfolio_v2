@@ -66,6 +66,348 @@
       "requires": [
         "storage-hierarchy"
       ]
+    },
+    {
+      "id": "python-values-names",
+      "title": "Values, names, and identity",
+      "requires": []
+    },
+    {
+      "id": "python-expressions-truthiness",
+      "title": "Expressions, truthiness, and built-ins",
+      "requires": [
+        "python-values-names"
+      ]
+    },
+    {
+      "id": "python-control-flow",
+      "title": "Control flow and pattern matching",
+      "requires": [
+        "python-expressions-truthiness"
+      ]
+    },
+    {
+      "id": "python-functions",
+      "title": "Functions and parameter forms",
+      "requires": [
+        "python-control-flow"
+      ]
+    },
+    {
+      "id": "python-containers",
+      "title": "Containers, comprehensions, and unpacking",
+      "requires": [
+        "python-functions"
+      ]
+    },
+    {
+      "id": "python-iteration",
+      "title": "Iteration and generators",
+      "requires": [
+        "python-containers"
+      ]
+    },
+    {
+      "id": "python-exceptions-resources",
+      "title": "Exceptions and resource handling",
+      "requires": [
+        "python-functions"
+      ]
+    },
+    {
+      "id": "python-classes-protocols",
+      "title": "Classes and protocols",
+      "requires": [
+        "python-functions"
+      ]
+    },
+    {
+      "id": "python-type-hints",
+      "title": "Type hints",
+      "requires": [
+        "python-functions"
+      ]
+    },
+    {
+      "id": "python-decorators",
+      "title": "Decorators",
+      "requires": [
+        "python-functions"
+      ]
+    },
+    {
+      "id": "python-modules-packages",
+      "title": "Modules and packages",
+      "requires": [
+        "python-functions"
+      ]
+    },
+    {
+      "id": "python-io-json",
+      "title": "Input, output, and structured data",
+      "requires": [
+        "python-containers"
+      ]
+    },
+    {
+      "id": "python-custom-exceptions",
+      "title": "Errors and custom exceptions",
+      "requires": [
+        "python-exceptions-resources"
+      ]
+    },
+    {
+      "id": "python-standard-library",
+      "title": "Standard-library tools",
+      "requires": [
+        "python-modules-packages"
+      ]
+    },
+    {
+      "id": "python-environments-cli",
+      "title": "Virtual environments and interpreter commands",
+      "requires": [
+        "python-modules-packages"
+      ]
+    },
+    {
+      "id": "python-algorithmic-complexity",
+      "title": "Complexity and algorithmic patterns",
+      "requires": []
+    },
+    {
+      "id": "python-algorithms-hash-maps",
+      "title": "Arrays and hash maps",
+      "requires": [
+        "python-algorithmic-complexity"
+      ]
+    },
+    {
+      "id": "python-algorithms-searching",
+      "title": "Sorting and binary search",
+      "requires": [
+        "python-algorithms-hash-maps"
+      ]
+    },
+    {
+      "id": "python-algorithms-sliding-window",
+      "title": "Two pointers and sliding windows",
+      "requires": [
+        "python-algorithms-searching"
+      ]
+    },
+    {
+      "id": "python-algorithms-stacks-queues",
+      "title": "Stacks and queues",
+      "requires": [
+        "python-algorithms-sliding-window"
+      ]
+    },
+    {
+      "id": "python-algorithms-trees-graphs",
+      "title": "Trees and graph traversal",
+      "requires": [
+        "python-algorithms-stacks-queues"
+      ]
+    },
+    {
+      "id": "python-algorithms-heaps-top-k",
+      "title": "Heaps and top-k patterns",
+      "requires": [
+        "python-algorithms-trees-graphs"
+      ]
+    },
+    {
+      "id": "python-algorithms-testing",
+      "title": "Testing and explaining algorithm solutions",
+      "requires": [
+        "python-algorithms-heaps-top-k"
+      ]
+    },
+    {
+      "id": "docker-images-containers",
+      "title": "Images and containers",
+      "requires": []
+    },
+    {
+      "id": "docker-cli-lifecycle",
+      "title": "The Docker CLI lifecycle",
+      "requires": [
+        "docker-images-containers"
+      ]
+    },
+    {
+      "id": "docker-dockerfiles",
+      "title": "Dockerfiles",
+      "requires": [
+        "docker-images-containers"
+      ]
+    },
+    {
+      "id": "docker-builds-registries",
+      "title": "Builds, cache, tags, and registries",
+      "requires": [
+        "docker-dockerfiles"
+      ]
+    },
+    {
+      "id": "docker-runtime-configuration",
+      "title": "Networking, ports, volumes, and environment",
+      "requires": [
+        "docker-cli-lifecycle"
+      ]
+    },
+    {
+      "id": "docker-compose-fundamentals",
+      "title": "Docker Compose fundamentals",
+      "requires": [
+        "docker-runtime-configuration"
+      ]
+    },
+    {
+      "id": "docker-compose-development",
+      "title": "Compose development workflows",
+      "requires": [
+        "docker-compose-fundamentals"
+      ]
+    },
+    {
+      "id": "docker-container-testing",
+      "title": "Testing Docker containers",
+      "requires": [
+        "docker-compose-development"
+      ]
+    },
+    {
+      "id": "docker-security",
+      "title": "Security and image quality",
+      "requires": [
+        "docker-dockerfiles"
+      ]
+    },
+    {
+      "id": "docker-production",
+      "title": "Docker in production",
+      "requires": [
+        "docker-container-testing",
+        "docker-security"
+      ]
+    },
+    {
+      "id": "docker-troubleshooting",
+      "title": "Troubleshooting and operations",
+      "requires": [
+        "docker-compose-fundamentals"
+      ]
+    },
+    {
+      "id": "stats-probability-conditional-independence",
+      "title": "Probability, conditioning, and independence",
+      "requires": []
+    },
+    {
+      "id": "stats-bayes-base-rates",
+      "title": "Bayes' theorem and base rates",
+      "requires": [
+        "stats-probability-conditional-independence"
+      ]
+    },
+    {
+      "id": "stats-random-variables-distributions",
+      "title": "Random variables and distributions",
+      "requires": [
+        "stats-bayes-base-rates"
+      ]
+    },
+    {
+      "id": "stats-expectation-variance-covariance",
+      "title": "Expectation, variance, and covariance",
+      "requires": [
+        "stats-random-variables-distributions"
+      ]
+    },
+    {
+      "id": "stats-sampling-clt",
+      "title": "Sampling distributions and the central limit theorem",
+      "requires": [
+        "stats-expectation-variance-covariance"
+      ]
+    },
+    {
+      "id": "stats-estimation-confidence-intervals",
+      "title": "Estimation and confidence intervals",
+      "requires": [
+        "stats-sampling-clt"
+      ]
+    },
+    {
+      "id": "stats-hypothesis-testing-power",
+      "title": "Hypothesis tests, errors, and power",
+      "requires": [
+        "stats-estimation-confidence-intervals"
+      ]
+    },
+    {
+      "id": "stats-experimentation-ab-tests",
+      "title": "Experimentation and A/B tests",
+      "requires": [
+        "stats-hypothesis-testing-power"
+      ]
+    },
+    {
+      "id": "ml-problem-framing-splits",
+      "title": "Problem framing, splits, and leakage",
+      "requires": []
+    },
+    {
+      "id": "ml-linear-logistic-regularization",
+      "title": "Linear models and regularization",
+      "requires": [
+        "ml-problem-framing-splits"
+      ]
+    },
+    {
+      "id": "ml-trees-ensembles",
+      "title": "Decision trees and ensembles",
+      "requires": [
+        "ml-linear-logistic-regularization"
+      ]
+    },
+    {
+      "id": "ml-classification-metrics-thresholds",
+      "title": "Classification metrics and thresholds",
+      "requires": [
+        "ml-problem-framing-splits"
+      ]
+    },
+    {
+      "id": "ml-preprocessing-pipelines",
+      "title": "Preprocessing and feature pipelines",
+      "requires": [
+        "ml-problem-framing-splits"
+      ]
+    },
+    {
+      "id": "ml-cross-validation-tuning",
+      "title": "Cross-validation and hyperparameter tuning",
+      "requires": [
+        "ml-preprocessing-pipelines",
+        "ml-classification-metrics-thresholds"
+      ]
+    },
+    {
+      "id": "ml-unsupervised-dimensionality",
+      "title": "Clustering and dimensionality reduction",
+      "requires": [
+        "ml-preprocessing-pipelines"
+      ]
+    },
+    {
+      "id": "ml-production-monitoring",
+      "title": "Production inference and monitoring",
+      "requires": [
+        "ml-cross-validation-tuning"
+      ]
     }
   ],
   "units": [
@@ -74,6 +416,7 @@
       "title": "SELECT and Filtering",
       "notebook": "notebooks/data-science/sql/select-and-filtering.py",
       "outputPath": "/bootcamp/sql-select-and-filtering.html",
+      "kind": "exposition",
       "difficulty": "easy",
       "teaches": [
         "sql-select",
@@ -96,10 +439,35 @@
       ]
     },
     {
+      "id": "sql-select-and-filtering-exercise",
+      "title": "SELECT and Filtering: Exercise",
+      "notebook": "notebooks/data-science/sql/select-and-filtering-exercise.py",
+      "outputPath": "/bootcamp/sql-select-and-filtering-exercise.html",
+      "kind": "exercise",
+      "difficulty": "easy",
+      "teaches": [],
+      "assesses": [
+        "sql-select",
+        "sql-filtering"
+      ],
+      "topics": [
+        "sql",
+        "querying"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-analyst"
+      ],
+      "goals": [
+        "query-data"
+      ]
+    },
+    {
       "id": "sql-aggregation",
       "title": "Aggregation",
       "notebook": "notebooks/data-science/sql/aggregation.py",
       "outputPath": "/bootcamp/sql-aggregation.html",
+      "kind": "exposition",
       "difficulty": "medium",
       "teaches": [
         "sql-grouping",
@@ -126,6 +494,7 @@
       "title": "Storage Systems by Access Pattern",
       "notebook": "notebooks/data-science/data-storage/storage-systems.py",
       "outputPath": "/bootcamp/data-storage-and-retrieval.html",
+      "kind": "exposition",
       "difficulty": "easy",
       "teaches": [
         "storage-hierarchy",
@@ -147,6 +516,1285 @@
       "goals": [
         "choose-storage-systems"
       ]
+    },
+    {
+      "id": "python-values-names",
+      "title": "Values, names, and identity",
+      "notebook": "notebooks/data-science/python/python-language/units/python-values-names.py",
+      "outputPath": "/bootcamp/python-values-names.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-values-names"
+      ],
+      "assesses": [
+        "python-values-names"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-expressions-truthiness",
+      "title": "Expressions, truthiness, and built-ins",
+      "notebook": "notebooks/data-science/python/python-language/units/python-expressions-truthiness.py",
+      "outputPath": "/bootcamp/python-expressions-truthiness.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-expressions-truthiness"
+      ],
+      "assesses": [
+        "python-expressions-truthiness"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-control-flow",
+      "title": "Control flow and pattern matching",
+      "notebook": "notebooks/data-science/python/python-language/units/python-control-flow.py",
+      "outputPath": "/bootcamp/python-control-flow.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-control-flow"
+      ],
+      "assesses": [
+        "python-control-flow"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-functions",
+      "title": "Functions and parameter forms",
+      "notebook": "notebooks/data-science/python/python-language/units/python-functions.py",
+      "outputPath": "/bootcamp/python-functions.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-functions"
+      ],
+      "assesses": [
+        "python-functions"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-containers",
+      "title": "Containers, comprehensions, and unpacking",
+      "notebook": "notebooks/data-science/python/python-language/units/python-containers.py",
+      "outputPath": "/bootcamp/python-containers.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-containers"
+      ],
+      "assesses": [
+        "python-containers"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-iteration",
+      "title": "Iteration and generators",
+      "notebook": "notebooks/data-science/python/python-language/units/python-iteration.py",
+      "outputPath": "/bootcamp/python-iteration.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-iteration"
+      ],
+      "assesses": [
+        "python-iteration"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-exceptions-resources",
+      "title": "Exceptions and resource handling",
+      "notebook": "notebooks/data-science/python/python-language/units/python-exceptions-resources.py",
+      "outputPath": "/bootcamp/python-exceptions-resources.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-exceptions-resources"
+      ],
+      "assesses": [
+        "python-exceptions-resources"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-classes-protocols",
+      "title": "Classes and protocols",
+      "notebook": "notebooks/data-science/python/python-language/units/python-classes-protocols.py",
+      "outputPath": "/bootcamp/python-classes-protocols.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-classes-protocols"
+      ],
+      "assesses": [
+        "python-classes-protocols"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-type-hints",
+      "title": "Type hints",
+      "notebook": "notebooks/data-science/python/python-language/units/python-type-hints.py",
+      "outputPath": "/bootcamp/python-type-hints.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-type-hints"
+      ],
+      "assesses": [
+        "python-type-hints"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-decorators",
+      "title": "Decorators",
+      "notebook": "notebooks/data-science/python/python-language/units/python-decorators.py",
+      "outputPath": "/bootcamp/python-decorators.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "python-decorators"
+      ],
+      "assesses": [
+        "python-decorators"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-modules-packages",
+      "title": "Modules and packages",
+      "notebook": "notebooks/data-science/python/python-language/units/python-modules-packages.py",
+      "outputPath": "/bootcamp/python-modules-packages.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-modules-packages"
+      ],
+      "assesses": [
+        "python-modules-packages"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-io-json",
+      "title": "Input, output, and structured data",
+      "notebook": "notebooks/data-science/python/python-language/units/python-io-json.py",
+      "outputPath": "/bootcamp/python-io-json.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-io-json"
+      ],
+      "assesses": [
+        "python-io-json"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-custom-exceptions",
+      "title": "Errors and custom exceptions",
+      "notebook": "notebooks/data-science/python/python-language/units/python-custom-exceptions.py",
+      "outputPath": "/bootcamp/python-custom-exceptions.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-custom-exceptions"
+      ],
+      "assesses": [
+        "python-custom-exceptions"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-standard-library",
+      "title": "Standard-library tools",
+      "notebook": "notebooks/data-science/python/python-language/units/python-standard-library.py",
+      "outputPath": "/bootcamp/python-standard-library.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-standard-library"
+      ],
+      "assesses": [
+        "python-standard-library"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-environments-cli",
+      "title": "Virtual environments and interpreter commands",
+      "notebook": "notebooks/data-science/python/python-language/units/python-environments-cli.py",
+      "outputPath": "/bootcamp/python-environments-cli.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-environments-cli"
+      ],
+      "assesses": [
+        "python-environments-cli"
+      ],
+      "topics": [
+        "python",
+        "programming"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "learn-python"
+      ]
+    },
+    {
+      "id": "python-algorithms-complexity",
+      "title": "Complexity and algorithmic patterns",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-complexity.py",
+      "outputPath": "/bootcamp/python-algorithms-complexity.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithmic-complexity"
+      ],
+      "assesses": [
+        "python-algorithmic-complexity"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-hash-maps",
+      "title": "Arrays and hash maps",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-hash-maps.py",
+      "outputPath": "/bootcamp/python-algorithms-hash-maps.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithms-hash-maps"
+      ],
+      "assesses": [
+        "python-algorithms-hash-maps"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-searching",
+      "title": "Sorting and binary search",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-searching.py",
+      "outputPath": "/bootcamp/python-algorithms-searching.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-searching"
+      ],
+      "assesses": [
+        "python-algorithms-searching"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-sliding-window",
+      "title": "Two pointers and sliding windows",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-sliding-window.py",
+      "outputPath": "/bootcamp/python-algorithms-sliding-window.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-sliding-window"
+      ],
+      "assesses": [
+        "python-algorithms-sliding-window"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-stacks-queues",
+      "title": "Stacks and queues",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-stacks-queues.py",
+      "outputPath": "/bootcamp/python-algorithms-stacks-queues.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-stacks-queues"
+      ],
+      "assesses": [
+        "python-algorithms-stacks-queues"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-trees-graphs",
+      "title": "Trees and graph traversal",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-trees-graphs.py",
+      "outputPath": "/bootcamp/python-algorithms-trees-graphs.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-trees-graphs"
+      ],
+      "assesses": [
+        "python-algorithms-trees-graphs"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-heaps-top-k",
+      "title": "Heaps and top-k patterns",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-heaps-top-k.py",
+      "outputPath": "/bootcamp/python-algorithms-heaps-top-k.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "python-algorithms-heaps-top-k"
+      ],
+      "assesses": [
+        "python-algorithms-heaps-top-k"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithms-interview-testing",
+      "title": "Testing and explaining algorithm solutions",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithms-interview-testing.py",
+      "outputPath": "/bootcamp/python-algorithms-interview-testing.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithms-testing"
+      ],
+      "assesses": [
+        "python-algorithms-testing"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "docker-images-containers",
+      "title": "Images and containers",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-images-containers.py",
+      "outputPath": "/bootcamp/docker-images-containers.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "docker-images-containers"
+      ],
+      "assesses": [
+        "docker-images-containers"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-cli-lifecycle",
+      "title": "The Docker CLI lifecycle",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-cli-lifecycle.py",
+      "outputPath": "/bootcamp/docker-cli-lifecycle.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "docker-cli-lifecycle"
+      ],
+      "assesses": [
+        "docker-cli-lifecycle"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-dockerfiles",
+      "title": "Dockerfiles",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-dockerfiles.py",
+      "outputPath": "/bootcamp/docker-dockerfiles.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "docker-dockerfiles"
+      ],
+      "assesses": [
+        "docker-dockerfiles"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-builds-registries",
+      "title": "Builds, cache, tags, and registries",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-builds-registries.py",
+      "outputPath": "/bootcamp/docker-builds-registries.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-builds-registries"
+      ],
+      "assesses": [
+        "docker-builds-registries"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-runtime-configuration",
+      "title": "Networking, ports, volumes, and environment",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-runtime-configuration.py",
+      "outputPath": "/bootcamp/docker-runtime-configuration.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-runtime-configuration"
+      ],
+      "assesses": [
+        "docker-runtime-configuration"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-compose-fundamentals",
+      "title": "Docker Compose fundamentals",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-compose-fundamentals.py",
+      "outputPath": "/bootcamp/docker-compose-fundamentals.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-compose-fundamentals"
+      ],
+      "assesses": [
+        "docker-compose-fundamentals"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-compose-development",
+      "title": "Compose development workflows",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-compose-development.py",
+      "outputPath": "/bootcamp/docker-compose-development.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-compose-development"
+      ],
+      "assesses": [
+        "docker-compose-development"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-container-testing",
+      "title": "Testing Docker containers",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-container-testing.py",
+      "outputPath": "/bootcamp/docker-container-testing.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-container-testing"
+      ],
+      "assesses": [
+        "docker-container-testing"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-security",
+      "title": "Security and image quality",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-security.py",
+      "outputPath": "/bootcamp/docker-security.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "docker-security"
+      ],
+      "assesses": [
+        "docker-security"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-production",
+      "title": "Docker in production",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-production.py",
+      "outputPath": "/bootcamp/docker-production.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "docker-production"
+      ],
+      "assesses": [
+        "docker-production"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "docker-troubleshooting",
+      "title": "Troubleshooting and operations",
+      "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-troubleshooting.py",
+      "outputPath": "/bootcamp/docker-troubleshooting.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "docker-troubleshooting"
+      ],
+      "assesses": [
+        "docker-troubleshooting"
+      ],
+      "topics": [
+        "docker",
+        "containers",
+        "ml-engineering"
+      ],
+      "roles": [
+        "data-scientist",
+        "data-engineer",
+        "ml-engineer"
+      ],
+      "goals": [
+        "containerize-applications"
+      ]
+    },
+    {
+      "id": "stats-probability-conditional-independence",
+      "title": "Probability, conditioning, and independence",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-probability-conditional-independence.py",
+      "outputPath": "/bootcamp/stats-probability-conditional-independence.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "stats-probability-conditional-independence"
+      ],
+      "assesses": [
+        "stats-probability-conditional-independence"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-bayes-base-rates",
+      "title": "Bayes' theorem and base rates",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-bayes-base-rates.py",
+      "outputPath": "/bootcamp/stats-bayes-base-rates.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-bayes-base-rates"
+      ],
+      "assesses": [
+        "stats-bayes-base-rates"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-random-variables-distributions",
+      "title": "Random variables and distributions",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-random-variables-distributions.py",
+      "outputPath": "/bootcamp/stats-random-variables-distributions.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-random-variables-distributions"
+      ],
+      "assesses": [
+        "stats-random-variables-distributions"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-expectation-variance-covariance",
+      "title": "Expectation, variance, and covariance",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-expectation-variance-covariance.py",
+      "outputPath": "/bootcamp/stats-expectation-variance-covariance.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-expectation-variance-covariance"
+      ],
+      "assesses": [
+        "stats-expectation-variance-covariance"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-sampling-clt",
+      "title": "Sampling distributions and the central limit theorem",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-sampling-clt.py",
+      "outputPath": "/bootcamp/stats-sampling-clt.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-sampling-clt"
+      ],
+      "assesses": [
+        "stats-sampling-clt"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-estimation-confidence-intervals",
+      "title": "Estimation and confidence intervals",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-estimation-confidence-intervals.py",
+      "outputPath": "/bootcamp/stats-estimation-confidence-intervals.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "stats-estimation-confidence-intervals"
+      ],
+      "assesses": [
+        "stats-estimation-confidence-intervals"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-hypothesis-testing-power",
+      "title": "Hypothesis tests, errors, and power",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-hypothesis-testing-power.py",
+      "outputPath": "/bootcamp/stats-hypothesis-testing-power.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "stats-hypothesis-testing-power"
+      ],
+      "assesses": [
+        "stats-hypothesis-testing-power"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "stats-experimentation-ab-tests",
+      "title": "Experimentation and A/B tests",
+      "notebook": "notebooks/data-science/mathematics/probability-statistics-interviews/units/stats-experimentation-ab-tests.py",
+      "outputPath": "/bootcamp/stats-experimentation-ab-tests.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "stats-experimentation-ab-tests"
+      ],
+      "assesses": [
+        "stats-experimentation-ab-tests"
+      ],
+      "topics": [
+        "probability",
+        "statistics",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-problem-framing-splits",
+      "title": "Problem framing, splits, and leakage",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-problem-framing-splits.py",
+      "outputPath": "/bootcamp/ml-problem-framing-splits.html",
+      "kind": "exposition",
+      "difficulty": "easy",
+      "teaches": [
+        "ml-problem-framing-splits"
+      ],
+      "assesses": [
+        "ml-problem-framing-splits"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-linear-logistic-regularization",
+      "title": "Linear models and regularization",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-linear-logistic-regularization.py",
+      "outputPath": "/bootcamp/ml-linear-logistic-regularization.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-linear-logistic-regularization"
+      ],
+      "assesses": [
+        "ml-linear-logistic-regularization"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-trees-ensembles",
+      "title": "Decision trees and ensembles",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-trees-ensembles.py",
+      "outputPath": "/bootcamp/ml-trees-ensembles.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-trees-ensembles"
+      ],
+      "assesses": [
+        "ml-trees-ensembles"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-classification-metrics-thresholds",
+      "title": "Classification metrics and thresholds",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-classification-metrics-thresholds.py",
+      "outputPath": "/bootcamp/ml-classification-metrics-thresholds.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-classification-metrics-thresholds"
+      ],
+      "assesses": [
+        "ml-classification-metrics-thresholds"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-preprocessing-pipelines",
+      "title": "Preprocessing and feature pipelines",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-preprocessing-pipelines.py",
+      "outputPath": "/bootcamp/ml-preprocessing-pipelines.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-preprocessing-pipelines"
+      ],
+      "assesses": [
+        "ml-preprocessing-pipelines"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-cross-validation-tuning",
+      "title": "Cross-validation and hyperparameter tuning",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-cross-validation-tuning.py",
+      "outputPath": "/bootcamp/ml-cross-validation-tuning.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "ml-cross-validation-tuning"
+      ],
+      "assesses": [
+        "ml-cross-validation-tuning"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-unsupervised-dimensionality",
+      "title": "Clustering and dimensionality reduction",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-unsupervised-dimensionality.py",
+      "outputPath": "/bootcamp/ml-unsupervised-dimensionality.html",
+      "kind": "exposition",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-unsupervised-dimensionality"
+      ],
+      "assesses": [
+        "ml-unsupervised-dimensionality"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-production-monitoring",
+      "title": "Production inference and monitoring",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-production-monitoring.py",
+      "outputPath": "/bootcamp/ml-production-monitoring.html",
+      "kind": "exposition",
+      "difficulty": "hard",
+      "teaches": [
+        "ml-production-monitoring"
+      ],
+      "assesses": [
+        "ml-production-monitoring"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
     }
   ],
   "views": {
@@ -161,6 +1809,89 @@
           "children": [
             {
               "type": "section",
+              "id": "python-language",
+              "title": "Python Language",
+              "order": 5,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "python-values-names",
+                  "order": 10
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-expressions-truthiness",
+                  "order": 20
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-control-flow",
+                  "order": 30
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-functions",
+                  "order": 40
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-containers",
+                  "order": 50
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-iteration",
+                  "order": 60
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-exceptions-resources",
+                  "order": 70
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-classes-protocols",
+                  "order": 80
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-type-hints",
+                  "order": 90
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-decorators",
+                  "order": 100
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-modules-packages",
+                  "order": 110
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-io-json",
+                  "order": 120
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-custom-exceptions",
+                  "order": 130
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-standard-library",
+                  "order": 140
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-environments-cli",
+                  "order": 150
+                }
+              ]
+            },
+            {
+              "type": "section",
               "id": "sql",
               "title": "SQL",
               "order": 10,
@@ -172,8 +1903,13 @@
                 },
                 {
                   "type": "unit",
-                  "unit": "sql-aggregation",
+                  "unit": "sql-select-and-filtering-exercise",
                   "order": 20
+                },
+                {
+                  "type": "unit",
+                  "unit": "sql-aggregation",
+                  "order": 30
                 }
               ]
             },
@@ -187,6 +1923,213 @@
                   "type": "unit",
                   "unit": "data-storage-and-retrieval",
                   "order": 10
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "id": "probability-and-statistics",
+              "title": "Probability and Statistics",
+              "order": 25,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "stats-probability-conditional-independence",
+                  "order": 10
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-bayes-base-rates",
+                  "order": 20
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-random-variables-distributions",
+                  "order": 30
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-expectation-variance-covariance",
+                  "order": 40
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-sampling-clt",
+                  "order": 50
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-estimation-confidence-intervals",
+                  "order": 60
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-hypothesis-testing-power",
+                  "order": 70
+                },
+                {
+                  "type": "unit",
+                  "unit": "stats-experimentation-ab-tests",
+                  "order": 80
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "id": "python-algorithms",
+              "title": "Python Algorithms",
+              "order": 30,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-complexity",
+                  "order": 10
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-hash-maps",
+                  "order": 20
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-searching",
+                  "order": 30
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-sliding-window",
+                  "order": 40
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-stacks-queues",
+                  "order": 50
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-trees-graphs",
+                  "order": 60
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-heaps-top-k",
+                  "order": 70
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithms-interview-testing",
+                  "order": 80
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "id": "machine-learning-interviews",
+              "title": "Machine Learning",
+              "order": 35,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "ml-problem-framing-splits",
+                  "order": 10
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-linear-logistic-regularization",
+                  "order": 20
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-trees-ensembles",
+                  "order": 30
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-classification-metrics-thresholds",
+                  "order": 40
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-preprocessing-pipelines",
+                  "order": 50
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-cross-validation-tuning",
+                  "order": 60
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-unsupervised-dimensionality",
+                  "order": 70
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-production-monitoring",
+                  "order": 80
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "id": "docker-compose",
+              "title": "Docker and Docker Compose",
+              "order": 40,
+              "children": [
+                {
+                  "type": "unit",
+                  "unit": "docker-images-containers",
+                  "order": 10
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-cli-lifecycle",
+                  "order": 20
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-dockerfiles",
+                  "order": 30
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-builds-registries",
+                  "order": 40
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-runtime-configuration",
+                  "order": 50
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-compose-fundamentals",
+                  "order": 60
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-compose-development",
+                  "order": 70
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-container-testing",
+                  "order": 80
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-security",
+                  "order": 90
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-production",
+                  "order": 100
+                },
+                {
+                  "type": "unit",
+                  "unit": "docker-troubleshooting",
+                  "order": 110
                 }
               ]
             }
@@ -203,6 +2146,103 @@
         },
         {
           "type": "section",
+          "id": "python-language",
+          "title": "Python Language",
+          "order": 5,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "python-values-names",
+          "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-expressions-truthiness",
+          "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-control-flow",
+          "order": 30,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-functions",
+          "order": 40,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-containers",
+          "order": 50,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-iteration",
+          "order": 60,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-exceptions-resources",
+          "order": 70,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-classes-protocols",
+          "order": 80,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-type-hints",
+          "order": 90,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-decorators",
+          "order": 100,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-modules-packages",
+          "order": 110,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-io-json",
+          "order": 120,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-custom-exceptions",
+          "order": 130,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-standard-library",
+          "order": 140,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-environments-cli",
+          "order": 150,
+          "depth": 3
+        },
+        {
+          "type": "section",
           "id": "sql",
           "title": "SQL",
           "order": 10,
@@ -216,8 +2256,14 @@
         },
         {
           "type": "unit",
-          "unit": "sql-aggregation",
+          "unit": "sql-select-and-filtering-exercise",
           "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "sql-aggregation",
+          "order": 30,
           "depth": 3
         },
         {
@@ -231,6 +2277,244 @@
           "type": "unit",
           "unit": "data-storage-and-retrieval",
           "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "section",
+          "id": "probability-and-statistics",
+          "title": "Probability and Statistics",
+          "order": 25,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "stats-probability-conditional-independence",
+          "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-bayes-base-rates",
+          "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-random-variables-distributions",
+          "order": 30,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-expectation-variance-covariance",
+          "order": 40,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-sampling-clt",
+          "order": 50,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-estimation-confidence-intervals",
+          "order": 60,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-hypothesis-testing-power",
+          "order": 70,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "stats-experimentation-ab-tests",
+          "order": 80,
+          "depth": 3
+        },
+        {
+          "type": "section",
+          "id": "python-algorithms",
+          "title": "Python Algorithms",
+          "order": 30,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-complexity",
+          "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-hash-maps",
+          "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-searching",
+          "order": 30,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-sliding-window",
+          "order": 40,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-stacks-queues",
+          "order": 50,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-trees-graphs",
+          "order": 60,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-heaps-top-k",
+          "order": 70,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithms-interview-testing",
+          "order": 80,
+          "depth": 3
+        },
+        {
+          "type": "section",
+          "id": "machine-learning-interviews",
+          "title": "Machine Learning",
+          "order": 35,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "ml-problem-framing-splits",
+          "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-linear-logistic-regularization",
+          "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-trees-ensembles",
+          "order": 30,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-classification-metrics-thresholds",
+          "order": 40,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-preprocessing-pipelines",
+          "order": 50,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-cross-validation-tuning",
+          "order": 60,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-unsupervised-dimensionality",
+          "order": 70,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-production-monitoring",
+          "order": 80,
+          "depth": 3
+        },
+        {
+          "type": "section",
+          "id": "docker-compose",
+          "title": "Docker and Docker Compose",
+          "order": 40,
+          "depth": 2
+        },
+        {
+          "type": "unit",
+          "unit": "docker-images-containers",
+          "order": 10,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-cli-lifecycle",
+          "order": 20,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-dockerfiles",
+          "order": 30,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-builds-registries",
+          "order": 40,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-runtime-configuration",
+          "order": 50,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-compose-fundamentals",
+          "order": 60,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-compose-development",
+          "order": 70,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-container-testing",
+          "order": 80,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-security",
+          "order": 90,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-production",
+          "order": 100,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "docker-troubleshooting",
+          "order": 110,
           "depth": 3
         }
       ]

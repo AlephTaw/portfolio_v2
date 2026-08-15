@@ -8,6 +8,7 @@ const sourcePath = path.join(root, "curriculum", "mlphd.yaml");
 const generatedPath = path.join(root, "app", "generated", "curriculum-catalog.json");
 const publicPath = path.join(root, "public", "bootcamp", "catalog.json");
 const difficulties = new Set(["easy", "medium", "hard"]);
+const unitKinds = new Set(["exposition", "exercise"]);
 
 function fail(message) {
   throw new Error(`Curriculum validation failed: ${message}`);
@@ -119,6 +120,7 @@ async function main() {
     requireString(unit.title, `unit ${unit.id}.title`);
     requireString(unit.notebook, `unit ${unit.id}.notebook`);
     requireString(unit.outputPath, `unit ${unit.id}.outputPath`);
+    if (!unitKinds.has(unit.kind)) fail(`unit "${unit.id}" has invalid kind "${unit.kind}"`);
     if (!difficulties.has(unit.difficulty)) fail(`unit "${unit.id}" has invalid difficulty "${unit.difficulty}"`);
     await access(path.join(root, unit.notebook)).catch(() => fail(`unit "${unit.id}" notebook does not exist: ${unit.notebook}`));
 

@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  useCallback,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -16,6 +18,29 @@ type PortfolioViewContextValue = {
 };
 
 const PortfolioViewContext = createContext<PortfolioViewContextValue | null>(null);
+
+function getViewFromUrl(): PortfolioView {
+  return new URLSearchParams(window.location.search).get("view") ===
+    "character-sheet"
+    ? "character-sheet"
+    : "traditional";
+}
+
+function updateUrlForView(view: PortfolioView) {
+  const url = new URL(window.location.href);
+
+  if (view === "character-sheet") {
+    url.searchParams.set("view", "character-sheet");
+  } else {
+    url.searchParams.delete("view");
+  }
+
+  window.history.replaceState(
+    window.history.state,
+    "",
+    `${url.pathname}${url.search}${url.hash}`,
+  );
+}
 
 function usePortfolioView() {
   const context = useContext(PortfolioViewContext);
@@ -35,15 +60,33 @@ export function PortfolioViewProvider({
   initialView?: PortfolioView;
 }) {
   const [view, setView] = useState<PortfolioView>(initialView);
+  const toggleView = useCallback(() => {
+    const nextView =
+      getViewFromUrl() === "traditional" ? "character-sheet" : "traditional";
+
+    updateUrlForView(nextView);
+    setView(nextView);
+  }, []);
+
+  useEffect(() => {
+    const syncViewFromUrl = () => {
+      setView(getViewFromUrl());
+    };
+
+    syncViewFromUrl();
+    window.addEventListener("popstate", syncViewFromUrl);
+
+    return () => {
+      window.removeEventListener("popstate", syncViewFromUrl);
+    };
+  }, []);
+
   const value = useMemo(
     () => ({
       view,
-      toggleView: () =>
-        setView((current) =>
-          current === "traditional" ? "character-sheet" : "traditional",
-        ),
+      toggleView,
     }),
-    [view],
+    [toggleView, view],
   );
 
   return (
@@ -81,6 +124,10 @@ export function PortfolioViewPane({
   children: ReactNode;
 }) {
   const { view } = usePortfolioView();
+
+  useEffect(() => {
+    window.dispatchEvent(new Event("portfolio-view-change"));
+  }, [view]);
 
   return (
     <div className="py-10 lg:py-10">
