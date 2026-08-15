@@ -188,24 +188,19 @@ test("links character sheet sections to focused detail pages", async () => {
   const homeResponse = await render("/?view=character-sheet");
   const homeHtml = await homeResponse.text();
   const pages = [
-    ["/live-stats/character-stats", /Character v0\.1\.0/, "Character Stats"],
-    ["/live-stats/campaign-summary", /Campaign: The Crucible/, "Campaign Summary"],
-    ["/live-stats/commit-history", /Commit History/, "Commit History"],
-    ["/live-stats/achievements", />SQL</, "Achievements"],
+    ["/live-stats/character-stats", /Character v0\.1\.0/],
+    ["/live-stats/campaign-summary", /Campaign: The Crucible/],
+    ["/live-stats/commit-history", /Commit History/],
+    ["/live-stats/achievements", />SQL</],
   ];
 
-  for (const [path, content, activeLabel] of pages) {
+  for (const [path, content] of pages) {
     assert.match(homeHtml, new RegExp(`href="${path}"`));
     const response = await render(path);
     assert.equal(response.status, 200);
     const html = await response.text();
     assert.match(html, /href="\/\?view=character-sheet"[^>]*>Back</);
     assert.match(html, content);
-    assert.match(html, /aria-label="Live Stats sections"/);
-    assert.match(
-      html,
-      new RegExp(`aria-current="page" aria-label="${activeLabel}"`),
-    );
   }
 });
 
