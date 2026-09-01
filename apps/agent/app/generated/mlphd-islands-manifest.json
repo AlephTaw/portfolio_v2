@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runtime": {
     "script": "https://cdn.jsdelivr.net/npm/@marimo-team/islands@0.23.16/dist/main.js",
-    "payloadUrl": "/bootcamp/islands/runtime.json?v=24af70367fca"
+    "payloadUrl": "/bootcamp/islands/runtime.json?v=2e00a6e83f1d"
   },
   "layers": [
     {
@@ -26,7 +26,7 @@
         "python-standard-library",
         "python-environments-cli"
       ],
-      "url": "/bootcamp/islands/python-language.json?v=c3be260068cb"
+      "url": "/bootcamp/islands/python-language.json?v=0c2fbec406cf"
     },
     {
       "id": "sql",
@@ -37,7 +37,7 @@
         "sql-select-and-filtering-exercise",
         "sql-aggregation"
       ],
-      "url": "/bootcamp/islands/sql.json?v=dcc8eb162d57"
+      "url": "/bootcamp/islands/sql.json?v=41a90ecc4f86"
     },
     {
       "id": "data-storage-and-retrieval",
@@ -62,7 +62,7 @@
         "stats-hypothesis-testing-power",
         "stats-experimentation-ab-tests"
       ],
-      "url": "/bootcamp/islands/probability-and-statistics.json?v=ca43091bfcc8"
+      "url": "/bootcamp/islands/probability-and-statistics.json?v=8f3aad27bb70"
     },
     {
       "id": "python-algorithms",
@@ -76,9 +76,12 @@
         "python-algorithms-stacks-queues",
         "python-algorithms-trees-graphs",
         "python-algorithms-heaps-top-k",
-        "python-algorithms-interview-testing"
+        "python-algorithms-interview-testing",
+        "python-algorithm-interview-easy",
+        "python-algorithm-interview-medium",
+        "python-algorithm-interview-hard"
       ],
-      "url": "/bootcamp/islands/python-algorithms.json?v=17bc126c6ed8"
+      "url": "/bootcamp/islands/python-algorithms.json?v=1c96c7c33031"
     },
     {
       "id": "machine-learning-interviews",
@@ -92,9 +95,12 @@
         "ml-preprocessing-pipelines",
         "ml-cross-validation-tuning",
         "ml-unsupervised-dimensionality",
-        "ml-production-monitoring"
+        "ml-production-monitoring",
+        "ml-interview-problem-set-easy",
+        "ml-interview-problem-set-medium",
+        "ml-interview-problem-set-hard"
       ],
-      "url": "/bootcamp/islands/machine-learning-interviews.json?v=aa604e809035"
+      "url": "/bootcamp/islands/machine-learning-interviews.json?v=5d93e264d649"
     },
     {
       "id": "docker-compose",
@@ -113,7 +119,7 @@
         "docker-production",
         "docker-troubleshooting"
       ],
-      "url": "/bootcamp/islands/docker-compose.json?v=24958b16ed7b"
+      "url": "/bootcamp/islands/docker-compose.json?v=7698f7f8b1aa"
     }
   ]
 }

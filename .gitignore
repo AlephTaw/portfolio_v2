@@ -47,10 +47,21 @@ __pycache__/
 .ruff_cache/
 __marimo__/
 
+# reproducible local databases
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+
+# local problem-bank source captures
+/apps/agent/machine_learning_problems/Screenshot*.png
+/apps/agent/python_algorithm_problems/Screenshot*.png
+
 /dist/
 /.wrangler/
 /outputs/
 /work/
 
-# generated MLPHD database web assets; canonical files live in /database
+# generated MLPHD database web assets; builder modules are the source of truth
 /public/bootcamp/data/*.sqlite

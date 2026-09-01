@@ -1,0 +1,26 @@
+[project]
+name = "game-api"
+version = "0.1.0"
+description = "FastAPI service for the game domain."
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi[standard]>=0.115,<1.0",
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.28,<1.0",
+  "pytest>=8.3,<9.0",
+  "ruff>=0.12,<1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

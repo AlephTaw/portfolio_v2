@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
+import { TelemetryProvider } from "@/src/apps/telemetry/TelemetryProvider";
 import { SmoothScroll } from "./SmoothScroll";
+import { GlobalNavigation } from "./components/GlobalNavigation";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,9 +28,9 @@ export async function generateMetadata(): Promise<Metadata> {
     ? "http"
     : (requestHeaders.get("x-forwarded-proto") ?? "https");
   const baseUrl = new URL(`${protocol}://${host}`);
-  const title = "Steven Wilcox - CV and Work";
+  const title = "Steven Wilcox Agent";
   const description =
-    "A clean public CV and compact presentation of Steven Wilcox's work.";
+    "A minimal workspace for Steven Wilcox's personal agent.";
 
   return {
     metadataBase: baseUrl,
@@ -64,7 +66,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>
+          <TelemetryProvider>
+            <div className="pb-[6.75rem] xl:pb-[7.25rem]">{children}</div>
+            <GlobalNavigation />
+          </TelemetryProvider>
+        </SmoothScroll>
       </body>
     </html>
   );

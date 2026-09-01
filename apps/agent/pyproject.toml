@@ -5,7 +5,11 @@ description = "Browser-compatible exercise helpers for the MLPHD curriculum."
 requires-python = ">=3.10"
 dependencies = [
   "marimo[sql]>=0.19.7",
+  "matplotlib>=3.10.9",
+  "pandas>=2.3.3",
   "polars>=1.43.2",
+  "pydantic>=2.13.4",
+  "typeguard>=4.6.0",
 ]
 
 [dependency-groups]

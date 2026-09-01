@@ -26,6 +26,7 @@ ERROR_MARKERS = (
     "MultipleDefinitionError",
     "Traceback (most recent call last)",
 )
+UNIT_BODY = "_mlphd_unit_body = True"
 SHARED_SETUP = (
     "import sys as _sys\n"
     "if _sys.platform == 'emscripten':\n"
@@ -275,6 +276,7 @@ async def build() -> None:
     generator = MarimoIslandGenerator(app_id="mlphd")
     generator.add_code(SHARED_SETUP, display_code=False)
     unit_ranges: dict[str, tuple[int, int]] = {}
+    loaded_preambles: set[Path] = set()
 
     with tempfile.TemporaryDirectory(prefix="mlphd-islands-") as directory:
         temp_dir = Path(directory)
@@ -287,8 +289,23 @@ async def build() -> None:
                 source = MarimoIslandGenerator.from_file(
                     str(staged_notebook), display_code=False
                 )
+                stubs = source.stubs[1:]
+                body_index = next(
+                    (
+                        index
+                        for index, stub in enumerate(stubs)
+                        if UNIT_BODY in stub.code
+                    ),
+                    None,
+                )
+                if body_index is not None:
+                    preamble_key = notebook.parent
+                    if preamble_key in loaded_preambles:
+                        stubs = stubs[body_index:]
+                    else:
+                        loaded_preambles.add(preamble_key)
                 start = len(generator.stubs)
-                for stub in source.stubs[1:]:
+                for stub in stubs:
                     generator.add_code(stub.code, display_code=False)
                 unit_ranges[unit_id] = (start, len(generator.stubs))
 

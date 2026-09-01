@@ -14,32 +14,31 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     from mlphd_bootcamp import open_seed_database
+
     return mo, open_seed_database
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        # SELECT and Filtering: Exercise
+    mo.md("""
+    # SELECT and Filtering: Exercise
 
-        ## Task
+    ## Task
 
-        Write a query that returns one column named `name` containing everyone whose
-        `field` is not `physics`. Sort the result alphabetically by `name`.
+    Write a query that returns one column named `name` containing everyone whose
+    `field` is not `physics`. Sort the result alphabetically by `name`.
 
-        The browser-local table contains:
+    The browser-local table contains:
 
-        | id | name | field |
-        |---:|:-----|:------|
-        | 1 | Ada | mathematics |
-        | 2 | Grace | computing |
-        | 3 | Katherine | physics |
+    | id | name | field |
+    |---:|:-----|:------|
+    | 1 | Ada | mathematics |
+    | 2 | Grace | computing |
+    | 3 | Katherine | physics |
 
-        Edit the starter query, then select **Run and check**. Equivalent SQL solutions are
-        accepted because the result—not the query text—is assessed.
-        """
-    )
+    Edit the starter query, then select **Run and check**. Equivalent SQL solutions are
+    accepted because the result—not the query text—is assessed.
+    """)
     return
 
 
@@ -57,9 +56,9 @@ def _(open_seed_database):
 def _(mo):
     select_query_editor = mo.ui.code_editor(
         value="""SELECT name
-FROM people
--- Add the filtering clause here.
-ORDER BY name;""",
+    FROM people
+    -- Add the filtering clause here.
+    ORDER BY name;""",
         language="sql",
         label="SQL query",
         min_height=140,
@@ -113,15 +112,13 @@ def _(mo, select_database, select_query_editor):
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        ## Review
+    mo.md("""
+    ## Review
 
-        A valid solution projects `name`, filters rows using `WHERE`, and establishes a
-        deterministic result order with `ORDER BY`. The checker intentionally accepts any
-        SQL text that produces the required result.
-        """
-    )
+    A valid solution projects `name`, filters rows using `WHERE`, and establishes a
+    deterministic result order with `ORDER BY`. The checker intentionally accepts any
+    SQL text that produces the required result.
+    """)
     return
 
 

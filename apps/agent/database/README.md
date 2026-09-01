@@ -1,8 +1,9 @@
-# MLPHD SQLite source databases
+# MLPHD SQLite database builders
 
-This directory contains the canonical SQLite databases used by MLPHD lessons.
-Their schemas and seed rows are defined in `database/builders/`, which is the
-editable source of truth. Rebuild the canonical files with:
+This directory receives the local SQLite databases used by MLPHD lessons.
+Database files are reproducible and ignored by Git. Their schemas and seed rows
+are defined in `database/builders/`, which is the editable source of truth.
+Rebuild the local files with:
 
 ```bash
 npm run bootcamp:databases:build

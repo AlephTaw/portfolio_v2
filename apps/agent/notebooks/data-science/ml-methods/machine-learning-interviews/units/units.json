@@ -135,6 +135,57 @@
       ],
       "order": 80,
       "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-production-monitoring.py"
+    },
+    {
+      "id": "ml-interview-problem-set-easy",
+      "title": "Machine-learning interview problem set: easy",
+      "kind": "exercise",
+      "difficulty": "easy",
+      "teaches": [
+        "ml-problem-framing-splits"
+      ],
+      "assesses": [
+        "ml-problem-framing-splits"
+      ],
+      "requires": [
+        "ml-production-monitoring"
+      ],
+      "order": 90,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-interview-problem-set-easy.py"
+    },
+    {
+      "id": "ml-interview-problem-set-medium",
+      "title": "Machine-learning interview problem set: medium",
+      "kind": "exercise",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-trees-ensembles"
+      ],
+      "assesses": [
+        "ml-trees-ensembles"
+      ],
+      "requires": [
+        "ml-interview-problem-set-easy"
+      ],
+      "order": 100,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-interview-problem-set-medium.py"
+    },
+    {
+      "id": "ml-interview-problem-set-hard",
+      "title": "Machine-learning interview problem set: hard",
+      "kind": "exercise",
+      "difficulty": "hard",
+      "teaches": [
+        "ml-production-monitoring"
+      ],
+      "assesses": [
+        "ml-production-monitoring"
+      ],
+      "requires": [
+        "ml-interview-problem-set-medium"
+      ],
+      "order": 110,
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-interview-problem-set-hard.py"
     }
   ]
 }

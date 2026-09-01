@@ -1312,6 +1312,70 @@ def _(grade_sql_problem, q01_form, q01_reveal):
 
 
 @app.cell
+def _(mo, pl, sql_problem_connection):
+    import re
+
+    mo.md("""
+    ### Q1 SQL sandbox
+
+    Experiment with read-only SQLite queries against Q1's `events` table.
+    Use `events` in the editor; the notebook maps it to the isolated Q1 table.
+    """)
+
+    q1_sandbox_editor = mo.ui.code_editor(
+        value="""SELECT
+      app_id,
+      event_id,
+      timestamp
+    FROM events
+    LIMIT 10""",
+        language="sql",
+        label="Q1 sandbox query",
+        min_height=180,
+    )
+    q1_sandbox_form = q1_sandbox_editor.form(
+        submit_button_label="Run query",
+        clear_on_submit=False,
+        bordered=False,
+    )
+
+    if q1_sandbox_form.value is None:
+        q1_sandbox_output = mo.callout(
+            "Edit the query, then select **Run query**.",
+            kind="neutral",
+        )
+    else:
+        try:
+            q1_sandbox_sql = q1_sandbox_form.value
+            q1_sandbox_sql = re.sub(
+                r"(?<![\w])events(?![\w])",
+                '"q01__events"',
+                q1_sandbox_sql,
+                flags=re.IGNORECASE,
+            )
+            if not re.match(r"^\s*(SELECT|WITH)\b", q1_sandbox_sql, re.IGNORECASE):
+                raise ValueError("Only read-only SELECT or WITH queries are allowed.")
+            if re.search(
+                r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|REPLACE|ATTACH|DETACH|PRAGMA|VACUUM)\b",
+                q1_sandbox_sql,
+                re.IGNORECASE,
+            ):
+                raise ValueError("Only read-only SELECT or WITH queries are allowed.")
+            q1_sandbox_output = pl.read_database(
+                query=q1_sandbox_sql,
+                connection=sql_problem_connection,
+            )
+        except Exception as q1_sandbox_error:
+            q1_sandbox_output = mo.callout(
+                f"{type(q1_sandbox_error).__name__}: {q1_sandbox_error}",
+                kind="danger",
+            )
+
+    mo.vstack([q1_sandbox_form, q1_sandbox_output], gap=1)
+    return q1_sandbox_form, q1_sandbox_editor
+
+
+@app.cell
 def _(make_sql_problem):
     _q02_problem, q02_form, q02_reveal = make_sql_problem("q02")
     _q02_problem

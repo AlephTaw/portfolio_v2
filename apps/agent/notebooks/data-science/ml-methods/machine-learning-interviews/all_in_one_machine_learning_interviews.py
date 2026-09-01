@@ -19,7 +19,7 @@ def _():
     return assertion, execute_submission, mo, problem
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     # Machine learning for data scientist interviews
@@ -33,18 +33,83 @@ def _(mo):
     return
 
 
-# === MLPHD UNIT START ===
-# id: ml-problem-framing-splits
-# title: Problem framing, splits, and leakage
-# kind: exposition
-# difficulty: easy
-# teaches: ml-problem-framing-splits
-# assesses: ml-problem-framing-splits
-# requires:
-# ===
+@app.cell(hide_code=True)
+def _(assertion, mo):
+    import json as _json
+    import re as _re
 
-@app.cell
+    from mlphd_bootcamp import open_seed_database as _open_seed_database
+
+    _ml_bank = _open_seed_database(
+        "machine_learning_problem_bank.sqlite",
+        seed_url="/bootcamp/data/machine_learning_problem_bank.sqlite",
+        local_seed="database/machine_learning_problem_bank.sqlite",
+    )
+
+    def _ml_record(question_id):
+        return _ml_bank.execute(
+            """
+            SELECT source_number, company, title, difficulty, question, answer,
+                   checker_spec, notes, source_solution_status
+            FROM questions WHERE question_id = ?
+            """,
+            (question_id,),
+        ).fetchone()
+
+    def _ml_evaluate(question_id, source):
+        if not isinstance(source, str) or len(source.strip()) < 40:
+            raise AssertionError("Give a concise explanation of at least 40 characters.")
+        groups = _json.loads(_ml_record(question_id)[6])["required_concept_groups"]
+        normalized = _re.sub(r"[^a-z0-9+^-]+", " ", source.casefold())
+        return [group for group in groups if not any(term.casefold() in normalized for term in group)]
+
+    def _ml_assert(missing):
+        assert not missing, "Address these missing ideas: " + "; ".join(" / ".join(group) for group in missing)
+
+    def ml_make_problem(question_id):
+        source_number, company, title, difficulty, question, answer, _spec, notes, status = _ml_record(question_id)
+        text = (
+            f"### {question_id.upper()} · {company}: {title}\n\n"
+            f"**Exercise:** {question}\n\n"
+            f"**Difficulty:** {difficulty.title()} · **Source:** {source_number}"
+        )
+        if notes:
+            text += f"\n\n**Reconciliation note:** {notes}"
+        if status == "missing":
+            text += "\n\n*The source screenshots did not include a solution; the reference answer was authored during reconciliation.*"
+        editor = mo.ui.text_area(
+            value="", label=f"{question_id.upper()} written answer", full_width=True, rows=8
+        )
+        form = editor.form(
+            submit_button_label="Submit answer", clear_on_submit=False, bordered=False
+        )
+        reveal = mo.accordion({"Reveal reference answer": mo.md(answer)})
+        return mo.vstack([mo.md(text), form, reveal], gap=1), form
+
+    def ml_grade_problem(question_id, source):
+        if source is None:
+            return mo.callout("Write your answer, then select **Submit answer**.", kind="neutral")
+
+        @assertion(_ml_assert)
+        def _submission(submitted_source):
+            return _ml_evaluate(question_id, submitted_source)
+
+        return _submission(source)
+
+    return ml_grade_problem, ml_make_problem
+
+
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-problem-framing-splits
+    # title: Problem framing, splits, and leakage
+    # kind: exposition
+    # difficulty: easy
+    # teaches: ml-problem-framing-splits
+    # assesses: ml-problem-framing-splits
+    # requires:
+    # ===
     mo.md("""
     ## 1. Problem framing, splits, and leakage
 
@@ -61,7 +126,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_01_description = mo.md("""
     ### Exercise
@@ -74,11 +139,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=170,
     )
     ml_exercise_01_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_01_description, ml_exercise_01_starter, ml_exercise_01_submit
+    return (
+        ml_exercise_01_description,
+        ml_exercise_01_starter,
+        ml_exercise_01_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_01_description, ml_exercise_01_starter, ml_exercise_01_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_01_description,
+    ml_exercise_01_starter,
+    ml_exercise_01_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -91,21 +168,18 @@ def _(assertion, execute_submission, ml_exercise_01_description, ml_exercise_01_
     problem(mo, ml_exercise_01_description, ml_exercise_01_starter, _submission, ml_exercise_01_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-linear-logistic-regularization
-# title: Linear models and regularization
-# kind: exposition
-# difficulty: medium
-# teaches: ml-linear-logistic-regularization
-# assesses: ml-linear-logistic-regularization
-# requires: ml-problem-framing-splits
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-linear-logistic-regularization
+    # title: Linear models and regularization
+    # kind: exposition
+    # difficulty: medium
+    # teaches: ml-linear-logistic-regularization
+    # assesses: ml-linear-logistic-regularization
+    # requires: ml-problem-framing-splits
+    # ===
     mo.md("""
     ## 2. Linear models and regularization
 
@@ -123,7 +197,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_02_description = mo.md("""
     ### Exercise
@@ -136,11 +210,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=180,
     )
     ml_exercise_02_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_02_description, ml_exercise_02_starter, ml_exercise_02_submit
+    return (
+        ml_exercise_02_description,
+        ml_exercise_02_starter,
+        ml_exercise_02_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_02_description, ml_exercise_02_starter, ml_exercise_02_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_02_description,
+    ml_exercise_02_starter,
+    ml_exercise_02_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -152,21 +238,18 @@ def _(assertion, execute_submission, ml_exercise_02_description, ml_exercise_02_
     problem(mo, ml_exercise_02_description, ml_exercise_02_starter, _submission, ml_exercise_02_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-trees-ensembles
-# title: Decision trees and ensembles
-# kind: exposition
-# difficulty: medium
-# teaches: ml-trees-ensembles
-# assesses: ml-trees-ensembles
-# requires: ml-linear-logistic-regularization
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-trees-ensembles
+    # title: Decision trees and ensembles
+    # kind: exposition
+    # difficulty: medium
+    # teaches: ml-trees-ensembles
+    # assesses: ml-trees-ensembles
+    # requires: ml-linear-logistic-regularization
+    # ===
     mo.md("""
     ## 3. Decision trees and ensembles
 
@@ -182,7 +265,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_03_description = mo.md("""
     ### Exercise
@@ -195,11 +278,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=170,
     )
     ml_exercise_03_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_03_description, ml_exercise_03_starter, ml_exercise_03_submit
+    return (
+        ml_exercise_03_description,
+        ml_exercise_03_starter,
+        ml_exercise_03_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_03_description, ml_exercise_03_starter, ml_exercise_03_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_03_description,
+    ml_exercise_03_starter,
+    ml_exercise_03_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -211,21 +306,18 @@ def _(assertion, execute_submission, ml_exercise_03_description, ml_exercise_03_
     problem(mo, ml_exercise_03_description, ml_exercise_03_starter, _submission, ml_exercise_03_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-classification-metrics-thresholds
-# title: Classification metrics and thresholds
-# kind: exposition
-# difficulty: medium
-# teaches: ml-classification-metrics-thresholds
-# assesses: ml-classification-metrics-thresholds
-# requires: ml-problem-framing-splits
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-classification-metrics-thresholds
+    # title: Classification metrics and thresholds
+    # kind: exposition
+    # difficulty: medium
+    # teaches: ml-classification-metrics-thresholds
+    # assesses: ml-classification-metrics-thresholds
+    # requires: ml-problem-framing-splits
+    # ===
     mo.md("""
     ## 4. Classification metrics and thresholds
 
@@ -241,7 +333,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_04_description = mo.md("""
     ### Exercise
@@ -254,11 +346,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=190,
     )
     ml_exercise_04_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_04_description, ml_exercise_04_starter, ml_exercise_04_submit
+    return (
+        ml_exercise_04_description,
+        ml_exercise_04_starter,
+        ml_exercise_04_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_04_description, ml_exercise_04_starter, ml_exercise_04_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_04_description,
+    ml_exercise_04_starter,
+    ml_exercise_04_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -271,21 +375,18 @@ def _(assertion, execute_submission, ml_exercise_04_description, ml_exercise_04_
     problem(mo, ml_exercise_04_description, ml_exercise_04_starter, _submission, ml_exercise_04_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-preprocessing-pipelines
-# title: Preprocessing and feature pipelines
-# kind: exposition
-# difficulty: medium
-# teaches: ml-preprocessing-pipelines
-# assesses: ml-preprocessing-pipelines
-# requires: ml-problem-framing-splits
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-preprocessing-pipelines
+    # title: Preprocessing and feature pipelines
+    # kind: exposition
+    # difficulty: medium
+    # teaches: ml-preprocessing-pipelines
+    # assesses: ml-preprocessing-pipelines
+    # requires: ml-problem-framing-splits
+    # ===
     mo.md("""
     ## 5. Preprocessing and feature pipelines
 
@@ -302,7 +403,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_05_description = mo.md("""
     ### Exercise
@@ -315,11 +416,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=150,
     )
     ml_exercise_05_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_05_description, ml_exercise_05_starter, ml_exercise_05_submit
+    return (
+        ml_exercise_05_description,
+        ml_exercise_05_starter,
+        ml_exercise_05_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_05_description, ml_exercise_05_starter, ml_exercise_05_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_05_description,
+    ml_exercise_05_starter,
+    ml_exercise_05_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -329,21 +442,18 @@ def _(assertion, execute_submission, ml_exercise_05_description, ml_exercise_05_
     problem(mo, ml_exercise_05_description, ml_exercise_05_starter, _submission, ml_exercise_05_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-cross-validation-tuning
-# title: Cross-validation and hyperparameter tuning
-# kind: exposition
-# difficulty: hard
-# teaches: ml-cross-validation-tuning
-# assesses: ml-cross-validation-tuning
-# requires: ml-preprocessing-pipelines, ml-classification-metrics-thresholds
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-cross-validation-tuning
+    # title: Cross-validation and hyperparameter tuning
+    # kind: exposition
+    # difficulty: hard
+    # teaches: ml-cross-validation-tuning
+    # assesses: ml-cross-validation-tuning
+    # requires: ml-preprocessing-pipelines, ml-classification-metrics-thresholds
+    # ===
     mo.md("""
     ## 6. Cross-validation and hyperparameter tuning
 
@@ -360,7 +470,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_06_description = mo.md("""
     ### Exercise
@@ -373,11 +483,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=170,
     )
     ml_exercise_06_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_06_description, ml_exercise_06_starter, ml_exercise_06_submit
+    return (
+        ml_exercise_06_description,
+        ml_exercise_06_starter,
+        ml_exercise_06_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_06_description, ml_exercise_06_starter, ml_exercise_06_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_06_description,
+    ml_exercise_06_starter,
+    ml_exercise_06_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -389,21 +511,18 @@ def _(assertion, execute_submission, ml_exercise_06_description, ml_exercise_06_
     problem(mo, ml_exercise_06_description, ml_exercise_06_starter, _submission, ml_exercise_06_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-unsupervised-dimensionality
-# title: Clustering and dimensionality reduction
-# kind: exposition
-# difficulty: medium
-# teaches: ml-unsupervised-dimensionality
-# assesses: ml-unsupervised-dimensionality
-# requires: ml-preprocessing-pipelines
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-unsupervised-dimensionality
+    # title: Clustering and dimensionality reduction
+    # kind: exposition
+    # difficulty: medium
+    # teaches: ml-unsupervised-dimensionality
+    # assesses: ml-unsupervised-dimensionality
+    # requires: ml-preprocessing-pipelines
+    # ===
     mo.md("""
     ## 7. Clustering and dimensionality reduction
 
@@ -419,7 +538,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_07_description = mo.md("""
     ### Exercise
@@ -432,11 +551,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=170,
     )
     ml_exercise_07_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_07_description, ml_exercise_07_starter, ml_exercise_07_submit
+    return (
+        ml_exercise_07_description,
+        ml_exercise_07_starter,
+        ml_exercise_07_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_07_description, ml_exercise_07_starter, ml_exercise_07_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_07_description,
+    ml_exercise_07_starter,
+    ml_exercise_07_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -448,21 +579,18 @@ def _(assertion, execute_submission, ml_exercise_07_description, ml_exercise_07_
     problem(mo, ml_exercise_07_description, ml_exercise_07_starter, _submission, ml_exercise_07_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: ml-production-monitoring
-# title: Production inference and monitoring
-# kind: exposition
-# difficulty: hard
-# teaches: ml-production-monitoring
-# assesses: ml-production-monitoring
-# requires: ml-cross-validation-tuning
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-production-monitoring
+    # title: Production inference and monitoring
+    # kind: exposition
+    # difficulty: hard
+    # teaches: ml-production-monitoring
+    # assesses: ml-production-monitoring
+    # requires: ml-cross-validation-tuning
+    # ===
     mo.md("""
     ## 8. Production inference and monitoring
 
@@ -479,7 +607,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     ml_exercise_08_description = mo.md("""
     ### Exercise
@@ -493,11 +621,23 @@ def _(mo):
         language="python", label="Your Python answer", min_height=160,
     )
     ml_exercise_08_submit = mo.ui.run_button(label="Submit answer")
-    return ml_exercise_08_description, ml_exercise_08_starter, ml_exercise_08_submit
+    return (
+        ml_exercise_08_description,
+        ml_exercise_08_starter,
+        ml_exercise_08_submit,
+    )
 
 
-@app.cell
-def _(assertion, execute_submission, ml_exercise_08_description, ml_exercise_08_starter, ml_exercise_08_submit, mo, problem):
+@app.cell(hide_code=True)
+def _(
+    assertion,
+    execute_submission,
+    ml_exercise_08_description,
+    ml_exercise_08_starter,
+    ml_exercise_08_submit,
+    mo,
+    problem,
+):
     @assertion(lambda _ns: None)
     def _submission(source):
         _ns = execute_submission(source)
@@ -510,7 +650,532 @@ def _(assertion, execute_submission, ml_exercise_08_description, ml_exercise_08_
     problem(mo, ml_exercise_08_description, ml_exercise_08_starter, _submission, ml_exercise_08_submit)
     return
 
-# === MLPHD UNIT END ===
+
+@app.cell(hide_code=True)
+def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-interview-problem-set-easy
+    # title: Machine-learning interview problem set: easy
+    # kind: exercise
+    # difficulty: easy
+    # teaches: ml-problem-framing-splits
+    # assesses: ml-problem-framing-splits
+    # requires: ml-production-monitoring
+    # ===
+    mo.md("""
+    ## Screenshot problem set · Easy
+
+    **Motivation:** Foundational questions test whether model behavior can be explained accurately and connected to practical decisions.
+
+    **Goal:** Answer source questions 7.1–7.11 with concise explanations covering every essential concept.
+
+    Each exercise is independent. Submit an answer for automatic feedback, and use
+    the disclosure only when you want to inspect the reference solution.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q01_problem, ml_interview_q01_form = ml_make_problem("q01")
+    _q01_problem
+    return (ml_interview_q01_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q01_form):
+    ml_grade_problem("q01", ml_interview_q01_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q02_problem, ml_interview_q02_form = ml_make_problem("q02")
+    _q02_problem
+    return (ml_interview_q02_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q02_form):
+    ml_grade_problem("q02", ml_interview_q02_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q03_problem, ml_interview_q03_form = ml_make_problem("q03")
+    _q03_problem
+    return (ml_interview_q03_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q03_form):
+    ml_grade_problem("q03", ml_interview_q03_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q04_problem, ml_interview_q04_form = ml_make_problem("q04")
+    _q04_problem
+    return (ml_interview_q04_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q04_form):
+    ml_grade_problem("q04", ml_interview_q04_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q05_problem, ml_interview_q05_form = ml_make_problem("q05")
+    _q05_problem
+    return (ml_interview_q05_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q05_form):
+    ml_grade_problem("q05", ml_interview_q05_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q06_problem, ml_interview_q06_form = ml_make_problem("q06")
+    _q06_problem
+    return (ml_interview_q06_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q06_form):
+    ml_grade_problem("q06", ml_interview_q06_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q07_problem, ml_interview_q07_form = ml_make_problem("q07")
+    _q07_problem
+    return (ml_interview_q07_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q07_form):
+    ml_grade_problem("q07", ml_interview_q07_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q08_problem, ml_interview_q08_form = ml_make_problem("q08")
+    _q08_problem
+    return (ml_interview_q08_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q08_form):
+    ml_grade_problem("q08", ml_interview_q08_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q09_problem, ml_interview_q09_form = ml_make_problem("q09")
+    _q09_problem
+    return (ml_interview_q09_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q09_form):
+    ml_grade_problem("q09", ml_interview_q09_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q10_problem, ml_interview_q10_form = ml_make_problem("q10")
+    _q10_problem
+    return (ml_interview_q10_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q10_form):
+    ml_grade_problem("q10", ml_interview_q10_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q11_problem, ml_interview_q11_form = ml_make_problem("q11")
+    _q11_problem
+    return (ml_interview_q11_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q11_form):
+    ml_grade_problem("q11", ml_interview_q11_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-interview-problem-set-medium
+    # title: Machine-learning interview problem set: medium
+    # kind: exercise
+    # difficulty: medium
+    # teaches: ml-trees-ensembles
+    # assesses: ml-trees-ensembles
+    # requires: ml-interview-problem-set-easy
+    # ===
+    mo.md("""
+    ## Screenshot problem set · Medium
+
+    **Motivation:** Applied interview questions require joining statistical principles, validation discipline, and product constraints.
+
+    **Goal:** Answer source questions 7.12–7.25 with technically complete, decision-oriented reasoning.
+
+    Each exercise is independent. Submit an answer for automatic feedback, and use
+    the disclosure only when you want to inspect the reference solution.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q12_problem, ml_interview_q12_form = ml_make_problem("q12")
+    _q12_problem
+    return (ml_interview_q12_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q12_form):
+    ml_grade_problem("q12", ml_interview_q12_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q13_problem, ml_interview_q13_form = ml_make_problem("q13")
+    _q13_problem
+    return (ml_interview_q13_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q13_form):
+    ml_grade_problem("q13", ml_interview_q13_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q14_problem, ml_interview_q14_form = ml_make_problem("q14")
+    _q14_problem
+    return (ml_interview_q14_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q14_form):
+    ml_grade_problem("q14", ml_interview_q14_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q15_problem, ml_interview_q15_form = ml_make_problem("q15")
+    _q15_problem
+    return (ml_interview_q15_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q15_form):
+    ml_grade_problem("q15", ml_interview_q15_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q16_problem, ml_interview_q16_form = ml_make_problem("q16")
+    _q16_problem
+    return (ml_interview_q16_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q16_form):
+    ml_grade_problem("q16", ml_interview_q16_form.value)
+    return
+
+
+@app.cell(hide_code=True)
+def _(ml_make_problem):
+    _q17_problem, ml_interview_q17_form = ml_make_problem("q17")
+    _q17_problem
+    return (ml_interview_q17_form,)
+
+
+@app.cell(hide_code=True)
+def _(ml_grade_problem, ml_interview_q17_form):
+    ml_grade_problem("q17", ml_interview_q17_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q18_problem, ml_interview_q18_form = ml_make_problem("q18")
+    _q18_problem
+    return (ml_interview_q18_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q18_form):
+    ml_grade_problem("q18", ml_interview_q18_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q19_problem, ml_interview_q19_form = ml_make_problem("q19")
+    _q19_problem
+    return (ml_interview_q19_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q19_form):
+    ml_grade_problem("q19", ml_interview_q19_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q20_problem, ml_interview_q20_form = ml_make_problem("q20")
+    _q20_problem
+    return (ml_interview_q20_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q20_form):
+    ml_grade_problem("q20", ml_interview_q20_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q21_problem, ml_interview_q21_form = ml_make_problem("q21")
+    _q21_problem
+    return (ml_interview_q21_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q21_form):
+    ml_grade_problem("q21", ml_interview_q21_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q22_problem, ml_interview_q22_form = ml_make_problem("q22")
+    _q22_problem
+    return (ml_interview_q22_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q22_form):
+    ml_grade_problem("q22", ml_interview_q22_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q23_problem, ml_interview_q23_form = ml_make_problem("q23")
+    _q23_problem
+    return (ml_interview_q23_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q23_form):
+    ml_grade_problem("q23", ml_interview_q23_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q24_problem, ml_interview_q24_form = ml_make_problem("q24")
+    _q24_problem
+    return (ml_interview_q24_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q24_form):
+    ml_grade_problem("q24", ml_interview_q24_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q25_problem, ml_interview_q25_form = ml_make_problem("q25")
+    _q25_problem
+    return (ml_interview_q25_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q25_form):
+    ml_grade_problem("q25", ml_interview_q25_form.value)
+    return
+
+
+@app.cell
+def _(mo):
+    # === MLPHD UNIT START ===
+    # id: ml-interview-problem-set-hard
+    # title: Machine-learning interview problem set: hard
+    # kind: exercise
+    # difficulty: hard
+    # teaches: ml-production-monitoring
+    # assesses: ml-production-monitoring
+    # requires: ml-interview-problem-set-medium
+    # ===
+    mo.md("""
+    ## Screenshot problem set · Hard
+
+    **Motivation:** Advanced interviews combine mathematical derivation with end-to-end system design and operational judgment.
+
+    **Goal:** Answer source questions 7.26–7.35, including the five transparently authored solutions missing from the captured source.
+
+    Each exercise is independent. Submit an answer for automatic feedback, and use
+    the disclosure only when you want to inspect the reference solution.
+    """)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q26_problem, ml_interview_q26_form = ml_make_problem("q26")
+    _q26_problem
+    return (ml_interview_q26_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q26_form):
+    ml_grade_problem("q26", ml_interview_q26_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q27_problem, ml_interview_q27_form = ml_make_problem("q27")
+    _q27_problem
+    return (ml_interview_q27_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q27_form):
+    ml_grade_problem("q27", ml_interview_q27_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q28_problem, ml_interview_q28_form = ml_make_problem("q28")
+    _q28_problem
+    return (ml_interview_q28_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q28_form):
+    ml_grade_problem("q28", ml_interview_q28_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q29_problem, ml_interview_q29_form = ml_make_problem("q29")
+    _q29_problem
+    return (ml_interview_q29_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q29_form):
+    ml_grade_problem("q29", ml_interview_q29_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q30_problem, ml_interview_q30_form = ml_make_problem("q30")
+    _q30_problem
+    return (ml_interview_q30_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q30_form):
+    ml_grade_problem("q30", ml_interview_q30_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q31_problem, ml_interview_q31_form = ml_make_problem("q31")
+    _q31_problem
+    return (ml_interview_q31_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q31_form):
+    ml_grade_problem("q31", ml_interview_q31_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q32_problem, ml_interview_q32_form = ml_make_problem("q32")
+    _q32_problem
+    return (ml_interview_q32_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q32_form):
+    ml_grade_problem("q32", ml_interview_q32_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q33_problem, ml_interview_q33_form = ml_make_problem("q33")
+    _q33_problem
+    return (ml_interview_q33_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q33_form):
+    ml_grade_problem("q33", ml_interview_q33_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q34_problem, ml_interview_q34_form = ml_make_problem("q34")
+    _q34_problem
+    return (ml_interview_q34_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q34_form):
+    ml_grade_problem("q34", ml_interview_q34_form.value)
+    return
+
+
+@app.cell
+def _(ml_make_problem):
+    _q35_problem, ml_interview_q35_form = ml_make_problem("q35")
+    _q35_problem
+    return (ml_interview_q35_form,)
+
+
+@app.cell
+def _(ml_grade_problem, ml_interview_q35_form):
+    ml_grade_problem("q35", ml_interview_q35_form.value)
+    return
 
 
 if __name__ == "__main__":

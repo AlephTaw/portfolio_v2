@@ -74,54 +74,16 @@ function LenisRouteSync() {
     };
   }, [lenis]);
 
-  useEffect(() => {
-    if (!lenis) {
-      return;
-    }
-
-    let frame = 0;
-    const handlePortfolioViewChange = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        frame = window.requestAnimationFrame(() => {
-          lenis.resize();
-          lenis.scrollTo(0, { force: true, immediate: true });
-        });
-      });
-    };
-
-    window.addEventListener("portfolio-view-change", handlePortfolioViewChange);
-    return () => {
-      window.removeEventListener(
-        "portfolio-view-change",
-        handlePortfolioViewChange,
-      );
-      window.cancelAnimationFrame(frame);
-    };
-  }, [lenis]);
-
   return null;
 }
 
 export function SmoothScroll({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-
-  if (pathname === "/mlphd") {
-    return (
-      <>
-        <DevResizeObserverGuard />
-        {children}
-      </>
-    );
-  }
-
   return (
     <ReactLenis
       root
       options={{
-        autoResize: false,
-        lerp: 0.08,
-        duration: 1.15,
+        autoResize: true,
+        lerp: 0.16,
         smoothWheel: true,
         stopInertiaOnNavigate: true,
       }}

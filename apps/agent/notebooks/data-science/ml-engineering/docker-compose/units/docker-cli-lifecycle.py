@@ -122,6 +122,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
+    _mlphd_unit_body = True
     mo.md("""
     ## 2. The Docker CLI lifecycle
 

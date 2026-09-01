@@ -37,6 +37,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    _mlphd_unit_body = True
     mo.md("""
     ## 8. Classes and protocols
 

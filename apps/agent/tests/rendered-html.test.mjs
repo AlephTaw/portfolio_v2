@@ -23,22 +23,24 @@ async function render(path = "/") {
   );
 }
 
-test("server-renders the public CV page", async () => {
+test("server-renders the minimal agent workspace as the home page", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Steven Wilcox - CV and Work<\/title>/i);
-  assert.match(html, /Career Highlights/);
-  assert.match(html, /Welcome to the game of life/);
-  assert.match(html, /Curriculum Vitae/);
-  assert.match(html, /Want to see your idea come to life or solve a challenging/);
-  assert.match(html, /Experience/);
-  assert.match(html, /Achievements/);
-  assert.match(html, /top 14th percentile in the nation on the Putnam Exam/);
-  assert.match(html, /Capabilities/);
-  assert.match(html, /Selected Courses/);
+  assert.match(html, /<title>Steven Wilcox Agent<\/title>/i);
+  assert.match(html, /Agent workspace/);
+  assert.match(html, /Agent dock/);
+  assert.match(html, /Agent composer/);
+  assert.match(html, /Campaign minimap/);
+  assert.match(html, /href="\/character-sheet"/);
+  assert.match(html, /aria-label="Add to composer"/);
+  assert.match(html, /aria-label="Submit message"/);
+  assert.doesNotMatch(html, /Character Sheet/);
+  assert.doesNotMatch(html, /Career Highlights/);
+  assert.doesNotMatch(html, /Welcome to the game of life/);
+  assert.doesNotMatch(html, /Curriculum Vitae/);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
 
@@ -158,8 +160,8 @@ test("publishes complete error-free MLPHD lazy interactive layers", async () => 
   );
 });
 
-test("opens the character sheet in the homepage portfolio pane", async () => {
-  const response = await render("/?view=character-sheet");
+test("renders the character sheet on its dedicated page", async () => {
+  const response = await render("/character-sheet");
   assert.equal(response.status, 200);
 
   const html = await response.text();
@@ -171,21 +173,24 @@ test("opens the character sheet in the homepage portfolio pane", async () => {
   assert.match(html, />Deployments</);
   assert.match(html, /Commit History/);
   assert.match(html, />B-Code</);
+  assert.match(html, /aria-label="Return to agent workspace"/);
+  assert.match(html, /href="\/"/);
+  assert.match(html, /Campaign minimap/);
   assert.match(html, /chore: removed comment and commented out original paper color/);
   assert.match(html, /feat: character sheet, mlphd quest component integration/);
 });
 
-test("redirects the legacy live stats page to the character sheet view", async () => {
+test("redirects the legacy live stats page to the character sheet home", async () => {
   const response = await render("/live-stats");
   assert.equal(response.status, 307);
   assert.equal(
     response.headers.get("location"),
-    "http://localhost/?view=character-sheet",
+    "http://localhost/character-sheet",
   );
 });
 
 test("links character sheet sections to focused detail pages", async () => {
-  const homeResponse = await render("/?view=character-sheet");
+  const homeResponse = await render("/character-sheet");
   const homeHtml = await homeResponse.text();
   const pages = [
     ["/live-stats/character-stats", /Character v0\.1\.0/],
@@ -199,20 +204,9 @@ test("links character sheet sections to focused detail pages", async () => {
     const response = await render(path);
     assert.equal(response.status, 200);
     const html = await response.text();
-    assert.match(html, /href="\/\?view=character-sheet"[^>]*>Back</);
+    assert.match(html, /href="\/character-sheet"[^>]*>Back</);
     assert.match(html, content);
   }
-});
-
-test("links the profile icons to the anonymized CV and social profiles", async () => {
-  const response = await render();
-  const html = await response.text();
-
-  assert.match(html, /href="https:\/\/github\.com\/workbench-a"/);
-  assert.match(html, /href="https:\/\/www\.linkedin\.com\/in\/steven-wilcox-0002"/);
-  assert.match(html, /href="\/cv"/);
-  assert.match(html, /href="\/contact"/);
-  assert.match(html, /aria-label="Email"/);
 });
 
 test("keeps unpublished highlight routes inaccessible", async () => {

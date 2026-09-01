@@ -129,8 +129,9 @@ for the reconciliation, canonical-data, inline-context, grading, and validation 
 1. Create a tutorial-family directory with an `all_in_one_*.py` source under `notebooks/`.
 2. Use the notebook script header to declare Python and wheel dependencies.
 3. Edit interactively with `uv run marimo edit <notebook-path>`.
-4. Wrap independently executable cell groups in `MLPHD UNIT START/END` comments; source
-   order becomes generated unit order.
+4. Put an `MLPHD UNIT START` metadata block inside the first cell of every independently
+   executable unit; the next marked cell starts the next unit, and source order becomes
+   generated unit order. In-cell comments survive Marimo browser-editor saves.
 5. Run `npm run curriculum:units` and inspect `units/units.json`.
 6. Register selected generated units and concepts in `curriculum/mlphd.yaml`.
 7. Add units to the intended view in manifest order unless editorial order intentionally

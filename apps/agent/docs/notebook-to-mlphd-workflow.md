@@ -26,21 +26,20 @@ all-in-one tutorials until they contain substantive, unit-marked content.
 
 ## How unit boundaries are represented
 
-Unit boundaries are explicit top-level comments in the Marimo `.py` source:
+Unit boundaries are explicit comments inside the first cell owned by each unit:
 
 ```python
-# === MLPHD UNIT START ===
-# id: binary-search
-# title: Sorting and binary search
-# kind: exposition
-# difficulty: medium
-# teaches: binary-search
-# assesses: binary-search
-# requires: arrays-and-hash-maps
-# ===
-
 @app.cell
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: binary-search
+    # title: Sorting and binary search
+    # kind: exposition
+    # difficulty: medium
+    # teaches: binary-search
+    # assesses: binary-search
+    # requires: arrays-and-hash-maps
+    # ===
     mo.md("""
     ## Sorting and binary search
 
@@ -53,11 +52,14 @@ def _(mo):
     # Demonstration or concept check.
     return
 
-# === MLPHD UNIT END ===
 ```
 
-Markers belong in source code, outside Marimo cells. A unit may begin with a
-Markdown cell; everything between the markers belongs to that unit.
+Keeping the marker inside the cell is important: Marimo may discard standalone
+comments between cells when it saves a notebook from the browser editor. The
+unit continues until the next marked cell, so source order is its implicit
+ordering. The legacy top-level `MLPHD UNIT START/END` format remains supported
+for existing tutorials, but new or actively edited tutorials should use the
+in-cell start format.
 
 Metadata fields are mandatory:
 
@@ -75,7 +77,7 @@ An empty list is written as an empty value, for example `# requires:`.
 
 ## Source order is curriculum order
 
-Unit order is implicit in the order of `MLPHD UNIT START` blocks in the source
+Unit order is implicit in the order of marked cells in the source
 file. The splitter assigns orders `10`, `20`, `30`, and so on and writes them to
 `units/units.json`. Moving a complete marked block changes the generated order.
 
@@ -104,7 +106,7 @@ Every extracted unit must execute independently. A unit must not depend on state
 created only by an earlier marked unit. Put reusable browser-safe helpers in
 `src/mlphd_bootcamp/`, import them in the source preamble, or repeat a small
 fixture inside the unit. The splitter includes the source preamble before the
-first marker in every generated notebook.
+first marked cell in every generated notebook.
 
 Independence is an execution requirement, not only a content requirement. Test
 every generated notebook as its own Marimo application. Imports, fixtures,

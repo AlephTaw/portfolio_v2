@@ -184,23 +184,20 @@ test("redirects the legacy live stats page to the character sheet view", async (
   );
 });
 
-test("links character sheet sections to focused detail pages", async () => {
+test("keeps character sheet sections static and omits focused detail pages", async () => {
   const homeResponse = await render("/?view=character-sheet");
   const homeHtml = await homeResponse.text();
-  const pages = [
-    ["/live-stats/character-stats", /Character v0\.1\.0/],
-    ["/live-stats/campaign-summary", /Campaign: The Crucible/],
-    ["/live-stats/commit-history", /Commit History/],
-    ["/live-stats/achievements", />SQL</],
+  const paths = [
+    "/live-stats/character-stats",
+    "/live-stats/campaign-summary",
+    "/live-stats/commit-history",
+    "/live-stats/achievements",
   ];
 
-  for (const [path, content] of pages) {
-    assert.match(homeHtml, new RegExp(`href="${path}"`));
+  for (const path of paths) {
+    assert.doesNotMatch(homeHtml, new RegExp(`href="${path}"`));
     const response = await render(path);
-    assert.equal(response.status, 200);
-    const html = await response.text();
-    assert.match(html, /href="\/\?view=character-sheet"[^>]*>Back</);
-    assert.match(html, content);
+    assert.equal(response.status, 404);
   }
 });
 

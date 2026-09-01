@@ -35,6 +35,7 @@ def _(mo):
 
 @app.cell
 def _(mo):
+    _mlphd_unit_body = True
     mo.md(r"""
     ## 2. Bayes' theorem and base rates
 

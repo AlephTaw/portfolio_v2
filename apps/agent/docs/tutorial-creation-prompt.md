@@ -71,21 +71,21 @@ for the combined MLPHD runtime.
 
 The source notebook is an all-in-one authoring artifact, but it must be
 splittable into independently addressable MLPHD units. Place machine-readable
-comments outside Marimo cells around every complete unit:
+comments inside the first cell of every complete unit so Marimo browser saves
+preserve them:
 
 ```python
-# === MLPHD UNIT START ===
-# id: topic-name-exposition
-# title: Topic name
-# kind: exposition
-# difficulty: easy
-# teaches: concept-id
-# assesses:
-# requires: prerequisite-concept-id
-# ===
-
 @app.cell
 def _(mo):
+    # === MLPHD UNIT START ===
+    # id: topic-name-exposition
+    # title: Topic name
+    # kind: exposition
+    # difficulty: easy
+    # teaches: concept-id
+    # assesses:
+    # requires: prerequisite-concept-id
+    # ===
     mo.md("""
     ## Topic name
 
@@ -93,15 +93,15 @@ def _(mo):
     """)
     return
 
-# === MLPHD UNIT END ===
 ```
 
 Follow these rules:
 
-- Markers must be ordinary top-level source comments, not text inside a
-  Markdown or Python cell.
+- Markers must be Python comments inside the first unit-owned cell, before its
+  executable statements. Do not place them between cells; Marimo can remove
+  inter-cell comments when saving from the browser editor.
 - The first cell in a unit may be a Markdown exposition cell.
-- Everything between `MLPHD UNIT START` and `MLPHD UNIT END` belongs to that
+- Everything from one marked cell up to the next marked cell belongs to that
   unit, including all Markdown, code, UI, and checking cells.
 - Each unit must be independently executable after extraction. Repeat small
   setup code or import helpers from a shared module when necessary.

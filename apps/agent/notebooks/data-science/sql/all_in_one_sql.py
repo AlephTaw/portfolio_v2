@@ -6,7 +6,7 @@
 #     "polars>=1.43.2",
 # ]
 # [tool.uv.sources]
-# mlphd-bootcamp = { path = "../../../dist/mlphd_bootcamp-0.1.0-py3-none-any.whl" }
+# mlphd-bootcamp = { path = "../../../../../dist/mlphd_bootcamp-0.1.0-py3-none-any.whl" }
 # ///
 
 import marimo
@@ -18,8 +18,9 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+    import re
 
-    return (mo,)
+    return mo, re
 
 
 @app.cell
@@ -42,20 +43,20 @@ def _(mo):
 def _():
     import polars as pl
 
-    import sqlite3
-    from pathlib import Path
+    import sqlite3 as _sqlite3
+    from pathlib import Path as _Path
 
-    db_path = (
-        Path("/Users/stevenwilcox/Desktop/swdev")
+    _db_path = (
+        _Path(__file__).resolve().parents[3]
         / "database"
         / "omnichannel_ecommerce_full.sqlite"
     )
 
-    if not db_path.is_file():
-        raise FileNotFoundError(db_path)
+    if not _db_path.is_file():
+        raise FileNotFoundError(_db_path)
 
-    connection = sqlite3.connect(
-        f"file:{db_path}?mode=ro",
+    connection = _sqlite3.connect(
+        f"file:{_db_path}?mode=ro",
         uri=True,
     )
     return connection, pl
@@ -1023,9 +1024,8 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(assertion, mo, sql_problem_connection):
+def _(assertion, mo, re, sql_problem_connection):
     import json
-    import re
 
     def _question_record(question_id):
         return sql_problem_connection.execute(
@@ -1302,12 +1302,20 @@ def _(assertion, mo, sql_problem_connection):
 def _(make_sql_problem):
     _q01_problem, q01_form, q01_reveal = make_sql_problem("q01")
     _q01_problem
-    return q01_form, q01_reveal
+    return
 
 
-@app.cell
-def _(grade_sql_problem, q01_form, q01_reveal):
-    grade_sql_problem("q01", q01_form.value, q01_reveal.value)
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    SELECT
+        app_id,
+        1.0 * SUM(CASE WHEN event_id = 'click' THEN 1 ELSE 0 END)
+        / NULLIF(SUM(CASE WHEN event_id = 'impression' THEN 1 ELSE 0 END), 0)
+    FROM events
+    WHERE timestamp < '2020-01-01' AND timestamp > '2018-12-31'
+    GROUP BY app_id;
+    """)
     return
 
 
@@ -1316,6 +1324,21 @@ def _(make_sql_problem):
     _q02_problem, q02_form, q02_reveal = make_sql_problem("q02")
     _q02_problem
     return q02_form, q02_reveal
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    SELECT
+      city,
+      COUNT(order_id) AS num_orders
+    FROM trades AS t JOIN users as u ON t.user_id = u.user_id
+    WHERE status = 'complete'
+    GROUP BY city
+    ORDER BY num_orders DESC, city ASC
+    LIMIT 3;
+    """)
+    return
 
 
 @app.cell
@@ -1329,6 +1352,18 @@ def _(make_sql_problem):
     _q03_problem, q03_form, q03_reveal = make_sql_problem("q03")
     _q03_problem
     return q03_form, q03_reveal
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    SELECT
+      SUM(CASE WHEN device_type = 'laptop' THEN 1 ELSE 0 END) AS laptop_views,
+      SUM(CASE WHEN device_type = 'tablet' THEN 1
+            WHEN device_type = 'phone' THEN 1 ELSE 0 END) AS mobile_views
+    FROM viewership
+    """)
+    return
 
 
 @app.cell
@@ -1357,6 +1392,30 @@ def _(make_sql_problem):
     return q05_form, q05_reveal
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    -- ranked customers by
+    -- -- most distinct product ids
+    -- -- who total spent at least 1000
+    -- limited to 10
+
+    -- ? what tables, what steps, what graph execution order?
+    -- -- table: user_transactions
+    -- -- steps (spoken): order customers, by count( distinct product_id ) group by user_id, desc; filter by total spend ? 1000 per customer
+
+    SELECT
+        user_id,
+        COUNT(DISTINCT product_id) as product_count
+    FROM user_transactions
+    GROUP BY user_id
+    HAVING SUM(spend) > 1000
+    ORDER BY product_count DESC, user_id ASC
+    LIMIT 10;
+    """)
+    return
+
+
 @app.cell
 def _(grade_sql_problem, q05_form, q05_reveal):
     grade_sql_problem("q05", q05_form.value, q05_reveal.value)
@@ -1368,6 +1427,30 @@ def _(make_sql_problem):
     _q06_problem, q06_form, q06_reveal = make_sql_problem("q06")
     _q06_problem
     return q06_form, q06_reveal
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    -- count of tweets posted grouped by user id and limited to the year 2020
+    -- count the number of users for each tweet total to get tweet total frequencies and return with tweet total.
+
+    WITH totals AS(
+      SELECT
+        user_id,
+        COUNT(tweet_id) as tweet_count
+      FROM tweets
+      WHERE tweet_date > '2019-12-31' AND tweet_date < '2021-01-01'
+      GROUP BY user_id
+    )
+    SELECT
+      tweet_count,
+      COUNT(user_id) as num_users
+    FROM totals
+    GROUP BY tweet_count
+    ORDER BY tweet_count ASC;
+    """)
+    return
 
 
 @app.cell
@@ -1383,6 +1466,53 @@ def _(make_sql_problem):
     return q07_form, q07_reveal
 
 
+app._unparsable_cell(
+    r"""
+    SELECT
+      COUNT(DISTINCT user_id)
+    FROM (
+      SELECT
+        user_id, product_id
+        FROM purchases
+        GROUP BY user_id, product_id
+        HAVING COUNT(DISTINCT date(purchase_time)) > 1
+    );
+
+    # Q: Count users who purchased the same product on more than one distinct day
+    # Goal 1: purchases -> purchase_count: user_id | product_id | distinct_day_purchase_count
+    # Goal 2: purchase_count -> product_id | user_count
+    # -- count the unique days in the purchase time for each user and product pair
+    # -- -- This will label the users and product id with the count of distinct day purchases
+
+    # -- Now, group by products and count user_ids where day purchases greater than 1
+
+
+    # group by users, product, count(DISTINCT purchase_time::DATE)
+
+    # WITH purchase_count AS (
+    #     SELECT
+    #         user_id,
+    #         product_id,
+    #         COUNT(DISTINCT purchase_time::DATE) as distinct_date_purchases
+    #     FROM purchases
+    #     GROUP BY user_id, product_id
+    # ),
+    # WITH multiply_purchased_products AS (
+    # SELECT
+    #     COUNT(user_id),
+    #     product_id
+    # FROM purchase_count
+    # WHERE distinct_date_purchases > 1
+    # GROUP BY product_id
+    # )
+    # SELECT COUNT(user_id)
+    # FROM multiply_purchased_products
+
+    """,
+    name="_"
+)
+
+
 @app.cell
 def _(grade_sql_problem, q07_form, q07_reveal):
     grade_sql_problem("q07", q07_form.value, q07_reveal.value)
@@ -1394,6 +1524,22 @@ def _(make_sql_problem):
     _q08_problem, q08_form, q08_reveal = make_sql_problem("q08")
     _q08_problem
     return q08_form, q08_reveal
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    SELECT
+      COUNT(DISTINCT company_id)
+    FROM (
+      SELECT
+        company_id
+      FROM job_listings
+      GROUP BY company_id, title, description
+      HAVING COUNT(*) > 1
+    );
+    """)
+    return
 
 
 @app.cell
@@ -1422,6 +1568,33 @@ def _(make_sql_problem):
     return q10_form, q10_reveal
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    --- sum users tweet count for each (user, date) separately
+    -- average a user's daily tweet counts, over a rolling seven day window
+
+    WITH tweet_count AS (
+      SELECT
+        user_id,
+        date(tweet_date) AS tweet_date,
+        count(*) as msg_count
+      FROM tweets
+      GROUP BY user_id, date(tweet_date)
+    )
+    SELECT
+      user_id,
+      tweet_date,
+      AVG(msg_count) OVER (
+        PARTITION BY user_id ORDER BY user_id, tweet_date
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+        ) AS moving_average_7d
+    FROM tweet_count
+    ORDER BY user_id, tweet_date;
+    """)
+    return
+
+
 @app.cell
 def _(grade_sql_problem, q10_form, q10_reveal):
     grade_sql_problem("q10", q10_form.value, q10_reveal.value)
@@ -1435,6 +1608,29 @@ def _(make_sql_problem):
     return q11_form, q11_reveal
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    -- rank transactions for each user by date
+    -- -- (rank column occurs in the execution of select statement)
+    -- choose the rows with rank 3 for each user
+
+    WITH ranked AS (
+      SELECT
+        user_id,
+        spend,
+        transaction_date,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY transaction_date ASC) AS rank
+      FROM transactions
+    )
+    SELECT user_id, spend, transaction_date
+    FROM ranked
+    WHERE rank = 3
+    ORDER BY user_id;
+    """)
+    return
+
+
 @app.cell
 def _(grade_sql_problem, q11_form, q11_reveal):
     grade_sql_problem("q11", q11_form.value, q11_reveal.value)
@@ -1446,6 +1642,37 @@ def _(make_sql_problem):
     _q12_problem, q12_form, q12_reveal = make_sql_problem("q12")
     _q12_problem
     return q12_form, q12_reveal
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    -- get purchases for the year 2020
+    -- compute cumulative spend for each product
+    -- RANK cumululative spend for each product (using ROW_NUMBER()) partitioned by category
+    -- Return the top 3 products in each category parititioned by category
+    -- -- and ordered by spend within each category
+
+    WITH cumulative_spend AS(
+      SELECT
+        *,
+        SUM(spend) AS total_spend
+      FROM product_spend
+      WHERE transaction_date < 2021-01-01 AND transaction_date > 2019-12-31
+      GROUP BY category_id, product_id
+    ), ranked AS (
+    SELECT
+      *,
+      ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY total_spend DESC
+      ) AS rank
+    FROM cumulative_spend
+
+    SELECT category_id, product_id, total_spend
+    FROM ranked
+    WHERE rank < 4
+    ORDER BY category_id, total_spend DESC, product_id;
+    """)
+    return
 
 
 @app.cell
@@ -1708,6 +1935,57 @@ def _(make_sql_problem):
     return q32_form, q32_reveal
 
 
+app._unparsable_cell(
+    r"""
+    # windowed average
+    AVG(spend) OVER(PARTITION BY product_id ORDER BY transaction_date)
+                  BETWEEN 2 PRECEDING AND CURRENT ROW
+    # rolling average
+    AVG(spend) OVER(ORDER BY transaction_date)
+                  BETWEEN 2 PRECEDING AND CURRENT ROW
+    # running total
+    # max value
+    MAX(spend) OVER(PARTITION BY user_id ORDER BY user_id)
+                    BETWEEN 2 PRECEDING AND CURRENT ROW
+    # min value
+    Min(spend) OVER(ORDER BY transaction_date)
+
+    # ranked (duplicate ranks duplicated, skipping the number of ranks equal to the number of duplicates)
+    RANK(spend) OVER(PARTITION BY product_id)
+    # dense rank (duplicate ranks duplicated, skipping numbers)
+    DENSE_RANK(spend) OVER(PARTITION BY product_id ORDER BY transaction_date)
+    # row number (assignes a unique sequential positive natural number to each row)
+
+    # lagged values
+    LAG(spend, 2) OVER(PARTITION BY user_id, product_id ORDER BY transaction_date)
+    # lead values
+    LEAD(spend, 1) OVER(PARTITION BY user_id, product_id ORDER BY transaction_date)
+    # first value
+    FIRST_VALUE(spend) OVER(PARTITION BY user_id, product_id ORDER BY transaction_date)
+
+    # last value
+    LAST_VALUE(spend)
+    # percentile rank
+    PERCENT_RANK(spend) OVER( PARTITION BY product_id
+                              WHERE transaction_id < ""
+                              AND transaction_id > ""
+                              ORDER BY transaction_id)
+    # n-tile distribution
+    NTILE(spend) OVER(ORDER BY transaction_id)
+
+    # VALID: Sums up ONLY sales above 150 within each department's window
+        SUM(sale_amount) FILTER (WHERE sale_amount > 150) OVER (
+            PARTITION BY department
+        ) as large_sales_dept_total
+
+    SELECT
+    * # insert your favorite window function computation
+    FROM user_transactions;
+    """,
+    name="_"
+)
+
+
 @app.cell
 def _(grade_sql_problem, q32_form, q32_reveal):
     grade_sql_problem("q32", q32_form.value, q32_reveal.value)
@@ -1750,6 +2028,36 @@ def _(make_sql_problem):
 @app.cell
 def _(grade_sql_problem, q35_form, q35_reveal):
     grade_sql_problem("q35", q35_form.value, q35_reveal.value)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
     return
 
 

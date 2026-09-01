@@ -32,7 +32,7 @@ cursor without dividing the reader into visible pages.
 - `src/mlphd_bootcamp/`
   Provides pure-Python, WASM-compatible exercise and presentation helpers shared by units.
 - `database/`
-  Contains canonical SQLite databases and their deterministic Python builders. The builder
+  Contains deterministic Python builders and receives generated local SQLite databases. The builder
   modules are the editable source of truth for schemas and seed rows.
 - `public/bootcamp/data/`
   Contains generated static copies of the canonical databases for browser delivery. These

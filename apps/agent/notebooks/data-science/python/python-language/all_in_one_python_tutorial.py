@@ -35,15 +35,462 @@ def _(mo):
     return
 
 
-# === MLPHD UNIT START ===
-# id: python-values-names
-# title: Values, names, and identity
-# kind: exposition
-# difficulty: easy
-# teaches: python-values-names
-# assesses: python-values-names
-# requires: 
-# ===
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # ALGORITHMS
+    """)
+    return
+
+
+@app.cell
+def _():
+    from pydantic import validate_call
+
+    return (validate_call,)
+
+
+@app.cell
+def _():
+    # Use uv for pyenv (python versions), pip (10-100x package manager), virtualenv, pipx (install on demand), poetry/pip-tools (reproducible app dependency tree, a lock file)
+    # Use pydantic for runtime data validation
+    # Use Ruff for linter and formatter (replaces flake8/pylint, black, isort, mypy)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Python Tutorial
+    """)
+    return
+
+
+app._unparsable_cell(
+    """
+    # patterns
+    ## finite state machine - just wrapp a match-case statement (or if/elif/else statements with a while loop that waits for true / termination state to be reached, and initalize with some state in the set of states.)
+    ## factory patterns - ...
+    ## ...
+    ## object oriented
+    ## functional
+    ## data oriented
+
+
+
+    # variables
+    # control flow
+    ## conditional, case
+    if (condition):
+        #do stuff
+    elif(condition):
+        #do stuff
+    else:
+        #do stuff
+
+    match condition:
+        case value1:
+            #do stuff
+            case value2:
+            #do stuff
+            #...
+        default:
+            #do stuff
+
+    ## for, while
+    for i in [iterable]:
+        #do stuff
+
+    while a < b:
+        #do stuff
+        a+=increment
+
+    ## range(), break, else (clauses in loops), pass, match, enumerate, zip(*iterables, strict=True)
+    range(0,10) -> iterable 0,1, ...,9
+    for i in range(0,10):
+        if i > 12:
+            break
+    else:
+        print(\"i is in range\")
+
+    zip(*iterables, strict=True)
+
+    ## function definitions, arguments, kwarg, special parameters (positional or kawg, positional only, kwarg only), type hints
+    def func(*, kwarg: type -> default,.., kwargn: typen -> defaultn, **kwarg_dict:??) -> return_type:
+    ## arbitrary argument list
+
+    ## assignment (swapping / permutations)
+    a, b, c  = c, a, b
+
+    ## unpacking arguement lists
+    head,*tail = [1,2,3,4]
+    a, b, c = [1,2,3]
+
+    ## throw away variables
+    for _ i range(0,10):
+        print(f\"{_}\")
+
+    for index, value in enumerate(my_list):
+        print(index, value)
+
+    for name, score in zip(name, score):
+        print(f\"{name}: {score}\")
+
+    ## Comprehensions
+    ### list
+    [for i in zip(a,b) f\"{a} and {b}}\"]
+    ### dictionary
+    square_dict = {x: x**2 for x in range(5)}
+    ### set
+    unique_lengths = {len(word) for word in [\"apple\", \"banana\", \"pear\"]}
+    ### expressions
+    sum(x**2 for x in range(0,10))
+
+    ## Misc
+    ### safe dictionary fetches
+    value - my_dict.get(\"missing_key\", \"defaut_value\")
+    ### initialize default dictionary
+    from collections import defaultdict
+    word_counts = defaultdict(int)
+    word_counts[\"apple\"] += 1
+
+    ### count frequencies with Counter
+    from collectinos import Counter
+    counts = Counter([\"apple\", \"banana\", \"apple\"])
+
+    ### extract unique elements with set()
+
+    ### slicing to copy or reverse collectinons
+
+    reversed = my_list[::-1]
+    shallow_copy = my_list[:]
+
+    ## Conditional and truth value testing
+    if my_list:
+        pass
+
+    if value is None:
+        pass
+
+    if 250<=age:
+        print(\"old\")
+
+    ### ternary conditional expressions
+    status = \"old\" if age >= 250 else \"child\"
+
+    ### test membership
+    if color in {\"red\", \"green\", \"blue\"}:
+        # primary color test
+        pass
+
+    ### Error Handling & Resource Management
+    try:
+        # do something
+    except NameOfError:
+        # do something else
+
+    ### shallow copy vs. deep copy distinction and usage
+
+    # f strings - idiom
+    name = 'Alice'
+    age = '12'
+    print(f\"hello, {name}. You are {age}.}\")
+
+    str1.join(current_str)
+    # instead of
+    str1 = str1 + current_str # (since string is immutable this creates a new string)
+    # del statement
+    del i[10:]
+    ### instead of ...
+    i = i[0:10]
+
+    # tuples, lists, sets, looping techniques, dictionaries
+    my_tuple = (a, b, c, d)
+    # IO
+    with open(\"text_file_name.txt\", \"rw\") as file:
+        contents = file.read()
+        contents = file.write(\"..text to add to the file...\")
+
+    # Erors and Exceptions - Handling, raising, chainging, defining exceptions
+    from exceptions import NameOfException
+    if (condition):
+        raise NameOfException
+    try:
+        # do something
+    catch:
+        # do something else, possibly raise a specific exception
+        raise SpecificException
+
+    # Classes - class definitions, class objects, class methods, constructors
+    class MyClass:
+        \"\"\"
+        \"\"\"
+        def __init__(self, *, kwarg1:type =kwarg1_default, ...):
+            \"\"\"
+            \"\"\"
+            self.kwarg1 = karg1
+
+        @getter
+        def my_getter():
+            \"\"\"
+            \"\"\"
+
+        @setter
+        def my_setter:
+            \"\"\"
+            \"\"\"
+
+    # Decorators - @property, @classmethod, @staticmethod, @dataclasses.dataclass, @setter?, @getter?, @YourCustomDecoratorOrWrapper
+    ### Decorators are just syntactic sugar for function wrappers? ... they return and modify functions??
+
+    from dataclass import dataclass
+
+    @dataclass
+    class User:
+        first_name: str
+        last_name: str
+
+        @property
+        def full_name(self):
+            return f\"{self.first_name} {self.last_name}\"
+
+    ### @property
+
+    # Iterators, generators
+
+    # Data Structures - linkedlist, stack, queue, dictionary, tree, heap, bst, graph
+
+    # Algorithms - create, retrieve, update, delete
+    # logging
+
+    # main script execution guard - idiom
+    if __name__ == \"__main__\":
+        main()
+
+    # modules
+    ## create and import your own module 101
+
+    # packaging
+    ## your own toml
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    ## Manual vs. Pydantic Data validation
+
+    ### MANUAL
+
+    from dataclasses import dataclass
+    import re
+
+    @dataclass
+    class User:
+        id: int
+        email: str
+
+        def __post_init__(self):
+            # 1. Manual type checking (since Python ignores the hints)
+            if not isinstance(self.id, int):
+                # Try to force it, otherwise crash
+                try:
+                    self.id = int(self.id)
+                except (ValueError, TypeError):
+                    raise TypeError("id must be an integer")
+
+            # 2. Manual business logic validation
+            if self.id <= 0:
+                raise ValueError("id must be positive")
+
+            # 3. Complex manual string parsing
+            email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+            if not re.match(email_regex, self.email):
+                raise ValueError("Invalid email format")
+
+    ### Pydantic
+    from pydantic import BaseModel, Field, EmailStr
+
+    class User(BaseModel):
+        id: int = Field(gt=0) # Automatically guarantees integers > 0
+        email: EmailStr       # Automatically guarantees valid email structure
+
+    return
+
+
+@app.cell
+def _(validate_call):
+    # @validate_call # infers and converts types automatically
+    # pydantic auto converts type if it can
+    @validate_call(config={"strict": True}) # forces an error instead of converting types automatically
+    def test_function(*, arg1: int | None = None, arg2: str | None = None) -> None:
+        '''
+        '''
+        print(arg1)
+        print(arg2)
+
+    test_function(arg1='1', arg2='fsd')
+    # apparently type hints are not enforced.
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+app._unparsable_cell(
+    r"""
+    # Linked List
+
+    class Node():
+        def __init__(self, value: any, next) -> None:
+            self.value = None
+            self.next = None
+
+        def setValue(self, value: any) -> None:
+            self.value = value
+
+        def getValue(self, value) -> any:
+            return self.value
+
+        def setNext(self, next: Node()) -> None:
+            self.next = next
+
+        def setNext(self, next: Node()) -> None:
+            return self.next
+
+    class LinkedList(Node()):
+        def __init__(self, head: Node) -> None:
+            self.head = Node()
+
+        def peek() -> Node:
+            '''
+            '''
+            return self.head.value
+
+        def isEmpty() -> bool:
+            '''
+            '''
+            return self.head is None
+
+        def size() -> int:
+            '''
+            '''
+            i = 1
+            while self.next is not None:
+                i+=1
+            return i
+
+        def isFull()
+            '''
+            '''
+
+        def clear() -> bool:
+            '''
+            '''
+            if self.head = None:
+                return True
+            current = self.head
+            while current.next is not None:
+                next = current.next
+                current.next = None
+                current = next
+            return True
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    # Doubly Linked List
+    return
+
+
+app._unparsable_cell(
+    r"""
+    # Stack
+
+    class Stack():
+        def __init__():
+            '''
+            '''
+            self.base = LinkedList()
+            self.top = self.base
+
+
+        def push():
+            '''
+            '''
+            self.top.next = ...
+            self.top = self.top.next
+
+
+        def pop():
+            '''
+            '''
+            self.top.
+
+
+        def peek():
+            '''
+            '''
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    # Queue
+    return
+
+
+@app.cell
+def _():
+    # Heap
+    return
+
+
+@app.cell
+def _():
+    # BST
+    return
+
+
+@app.cell
+def _():
+    # Graph
+    return
+
+
+@app.cell
+def _():
+    # BFS
+    return
+
+
+@app.cell
+def _():
+    # DFS
+    return
+
+
+@app.cell
+def _():
+    # Others...
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # THE PYTHON TUTORIAL TOPICS
+    """)
+    return
+
 
 @app.cell(hide_code=True)
 def _(mo):
@@ -82,10 +529,15 @@ def _(mo):
     return exercise_01_description, exercise_01_starter, exercise_01_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_01_description, exercise_01_starter, exercise_01_submit):
+def _(
+    assertion,
+    exercise_01_description,
+    exercise_01_starter,
+    exercise_01_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = {"value": None}
@@ -98,20 +550,8 @@ def _(assertion, mo, problem, exercise_01_description, exercise_01_starter, exer
     problem(mo, exercise_01_description, exercise_01_starter, _submission, exercise_01_submit)
     return
 
-# === MLPHD UNIT END ===
 
-
-# === MLPHD UNIT START ===
-# id: python-expressions-truthiness
-# title: Expressions, truthiness, and built-ins
-# kind: exposition
-# difficulty: easy
-# teaches: python-expressions-truthiness
-# assesses: python-expressions-truthiness
-# requires: python-values-names
-# ===
-
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 2. Expressions, truthiness, and built-ins
@@ -145,10 +585,15 @@ def _(mo):
     return exercise_02_description, exercise_02_starter, exercise_02_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_02_description, exercise_02_starter, exercise_02_submit):
+def _(
+    assertion,
+    exercise_02_description,
+    exercise_02_starter,
+    exercise_02_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: ns)
     def _submission(source):
         calls = []
@@ -167,18 +612,6 @@ def _(assertion, mo, problem, exercise_02_description, exercise_02_starter, exer
     problem(mo, exercise_02_description, exercise_02_starter, _submission, exercise_02_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-control-flow
-# title: Control flow and pattern matching
-# kind: exposition
-# difficulty: easy
-# teaches: python-control-flow
-# assesses: python-control-flow
-# requires: python-expressions-truthiness
-# ===
 
 @app.cell
 def _(mo):
@@ -214,10 +647,15 @@ def _(mo):
     return exercise_03_description, exercise_03_starter, exercise_03_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_03_description, exercise_03_starter, exercise_03_submit):
+def _(
+    assertion,
+    exercise_03_description,
+    exercise_03_starter,
+    exercise_03_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = {"command": ("move", "north")}
@@ -228,18 +666,6 @@ def _(assertion, mo, problem, exercise_03_description, exercise_03_starter, exer
     problem(mo, exercise_03_description, exercise_03_starter, _submission, exercise_03_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-functions
-# title: Functions and parameter forms
-# kind: exposition
-# difficulty: easy
-# teaches: python-functions
-# assesses: python-functions
-# requires: python-control-flow
-# ===
 
 @app.cell
 def _(mo):
@@ -275,10 +701,16 @@ def _(mo):
     return exercise_04_description, exercise_04_starter, exercise_04_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, execute_submission, mo, problem, exercise_04_description, exercise_04_starter, exercise_04_submit):
+def _(
+    assertion,
+    execute_submission,
+    exercise_04_description,
+    exercise_04_starter,
+    exercise_04_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = execute_submission(source)
@@ -290,18 +722,6 @@ def _(assertion, execute_submission, mo, problem, exercise_04_description, exerc
     problem(mo, exercise_04_description, exercise_04_starter, _submission, exercise_04_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-containers
-# title: Containers, comprehensions, and unpacking
-# kind: exposition
-# difficulty: easy
-# teaches: python-containers
-# assesses: python-containers
-# requires: python-functions
-# ===
 
 @app.cell
 def _(mo):
@@ -337,10 +757,15 @@ def _(mo):
     return exercise_05_description, exercise_05_starter, exercise_05_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_05_description, exercise_05_starter, exercise_05_submit):
+def _(
+    assertion,
+    exercise_05_description,
+    exercise_05_starter,
+    exercise_05_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = {"numbers": [-2, -1, 0, 2, 3], "defaults": {"a": 1, "b": 2}, "overrides": {"b": 9}}
@@ -352,18 +777,6 @@ def _(assertion, mo, problem, exercise_05_description, exercise_05_starter, exer
     problem(mo, exercise_05_description, exercise_05_starter, _submission, exercise_05_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-iteration
-# title: Iteration and generators
-# kind: exposition
-# difficulty: medium
-# teaches: python-iteration
-# assesses: python-iteration
-# requires: python-containers
-# ===
 
 @app.cell
 def _(mo):
@@ -398,10 +811,15 @@ def _(mo):
     return exercise_06_description, exercise_06_starter, exercise_06_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_06_description, exercise_06_starter, exercise_06_submit):
+def _(
+    assertion,
+    exercise_06_description,
+    exercise_06_starter,
+    exercise_06_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = {"items": ["a", "b"], "limit": 6}
@@ -413,18 +831,6 @@ def _(assertion, mo, problem, exercise_06_description, exercise_06_starter, exer
     problem(mo, exercise_06_description, exercise_06_starter, _submission, exercise_06_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-exceptions-resources
-# title: Exceptions and resource handling
-# kind: exposition
-# difficulty: medium
-# teaches: python-exceptions-resources
-# assesses: python-exceptions-resources
-# requires: python-functions
-# ===
 
 @app.cell
 def _(mo):
@@ -459,10 +865,15 @@ def _(mo):
     return exercise_07_description, exercise_07_starter, exercise_07_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_07_description, exercise_07_starter, exercise_07_submit):
+def _(
+    assertion,
+    exercise_07_description,
+    exercise_07_starter,
+    exercise_07_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         import tempfile
@@ -479,18 +890,6 @@ def _(assertion, mo, problem, exercise_07_description, exercise_07_starter, exer
     problem(mo, exercise_07_description, exercise_07_starter, _submission, exercise_07_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-classes-protocols
-# title: Classes and protocols
-# kind: exposition
-# difficulty: medium
-# teaches: python-classes-protocols
-# assesses: python-classes-protocols
-# requires: python-functions
-# ===
 
 @app.cell
 def _(mo):
@@ -526,10 +925,16 @@ def _(mo):
     return exercise_08_description, exercise_08_starter, exercise_08_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, execute_submission, mo, problem, exercise_08_description, exercise_08_starter, exercise_08_submit):
+def _(
+    assertion,
+    execute_submission,
+    exercise_08_description,
+    exercise_08_starter,
+    exercise_08_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = execute_submission(source)
@@ -541,18 +946,6 @@ def _(assertion, execute_submission, mo, problem, exercise_08_description, exerc
     problem(mo, exercise_08_description, exercise_08_starter, _submission, exercise_08_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-type-hints
-# title: Type hints
-# kind: exposition
-# difficulty: medium
-# teaches: python-type-hints
-# assesses: python-type-hints
-# requires: python-functions
-# ===
 
 @app.cell
 def _(mo):
@@ -588,10 +981,16 @@ def _(mo):
     return exercise_09_description, exercise_09_starter, exercise_09_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, execute_submission, mo, problem, exercise_09_description, exercise_09_starter, exercise_09_submit):
+def _(
+    assertion,
+    execute_submission,
+    exercise_09_description,
+    exercise_09_starter,
+    exercise_09_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = execute_submission(source)
@@ -604,18 +1003,6 @@ def _(assertion, execute_submission, mo, problem, exercise_09_description, exerc
     problem(mo, exercise_09_description, exercise_09_starter, _submission, exercise_09_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-decorators
-# title: Decorators
-# kind: exposition
-# difficulty: hard
-# teaches: python-decorators
-# assesses: python-decorators
-# requires: python-functions
-# ===
 
 @app.cell
 def _(mo):
@@ -651,10 +1038,16 @@ def _(mo):
     return exercise_10_description, exercise_10_starter, exercise_10_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, execute_submission, mo, problem, exercise_10_description, exercise_10_starter, exercise_10_submit):
+def _(
+    assertion,
+    execute_submission,
+    exercise_10_description,
+    exercise_10_starter,
+    exercise_10_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = execute_submission(source)
@@ -671,18 +1064,6 @@ def _(assertion, execute_submission, mo, problem, exercise_10_description, exerc
     problem(mo, exercise_10_description, exercise_10_starter, _submission, exercise_10_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-modules-packages
-# title: Modules and packages
-# kind: exposition
-# difficulty: medium
-# teaches: python-modules-packages
-# assesses: python-modules-packages
-# requires: python-functions
-# ===
 
 @app.cell
 def _(mo):
@@ -718,10 +1099,16 @@ def _(mo):
     return exercise_11_description, exercise_11_starter, exercise_11_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, execute_submission, mo, problem, exercise_11_description, exercise_11_starter, exercise_11_submit):
+def _(
+    assertion,
+    execute_submission,
+    exercise_11_description,
+    exercise_11_starter,
+    exercise_11_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = execute_submission(source)
@@ -732,18 +1119,6 @@ def _(assertion, execute_submission, mo, problem, exercise_11_description, exerc
     problem(mo, exercise_11_description, exercise_11_starter, _submission, exercise_11_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-io-json
-# title: Input, output, and structured data
-# kind: exposition
-# difficulty: easy
-# teaches: python-io-json
-# assesses: python-io-json
-# requires: python-containers
-# ===
 
 @app.cell
 def _(mo):
@@ -778,10 +1153,15 @@ def _(mo):
     return exercise_12_description, exercise_12_starter, exercise_12_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_12_description, exercise_12_starter, exercise_12_submit):
+def _(
+    assertion,
+    exercise_12_description,
+    exercise_12_starter,
+    exercise_12_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         import json
@@ -795,18 +1175,6 @@ def _(assertion, mo, problem, exercise_12_description, exercise_12_starter, exer
     problem(mo, exercise_12_description, exercise_12_starter, _submission, exercise_12_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-custom-exceptions
-# title: Errors and custom exceptions
-# kind: exposition
-# difficulty: medium
-# teaches: python-custom-exceptions
-# assesses: python-custom-exceptions
-# requires: python-exceptions-resources
-# ===
 
 @app.cell
 def _(mo):
@@ -842,10 +1210,15 @@ def _(mo):
     return exercise_13_description, exercise_13_starter, exercise_13_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_13_description, exercise_13_starter, exercise_13_submit):
+def _(
+    assertion,
+    exercise_13_description,
+    exercise_13_starter,
+    exercise_13_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = {"host": ""}
@@ -861,18 +1234,6 @@ def _(assertion, mo, problem, exercise_13_description, exercise_13_starter, exer
     problem(mo, exercise_13_description, exercise_13_starter, _submission, exercise_13_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-standard-library
-# title: Standard-library tools
-# kind: exposition
-# difficulty: medium
-# teaches: python-standard-library
-# assesses: python-standard-library
-# requires: python-modules-packages
-# ===
 
 @app.cell
 def _(mo):
@@ -907,10 +1268,15 @@ def _(mo):
     return exercise_14_description, exercise_14_starter, exercise_14_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, mo, problem, exercise_14_description, exercise_14_starter, exercise_14_submit):
+def _(
+    assertion,
+    exercise_14_description,
+    exercise_14_starter,
+    exercise_14_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = {"words": ["python", "data", "python"]}
@@ -922,18 +1288,6 @@ def _(assertion, mo, problem, exercise_14_description, exercise_14_starter, exer
     problem(mo, exercise_14_description, exercise_14_starter, _submission, exercise_14_submit)
     return
 
-# === MLPHD UNIT END ===
-
-
-# === MLPHD UNIT START ===
-# id: python-environments-cli
-# title: Virtual environments and interpreter commands
-# kind: exposition
-# difficulty: easy
-# teaches: python-environments-cli
-# assesses: python-environments-cli
-# requires: python-modules-packages
-# ===
 
 @app.cell
 def _(mo):
@@ -969,10 +1323,16 @@ def _(mo):
     return exercise_15_description, exercise_15_starter, exercise_15_submit
 
 
-
-
 @app.cell(hide_code=True)
-def _(assertion, execute_submission, mo, problem, exercise_15_description, exercise_15_starter, exercise_15_submit):
+def _(
+    assertion,
+    execute_submission,
+    exercise_15_description,
+    exercise_15_starter,
+    exercise_15_submit,
+    mo,
+    problem,
+):
     @assertion(lambda ns: None)
     def _submission(source):
         ns = execute_submission(source)
@@ -986,8 +1346,6 @@ def _(assertion, execute_submission, mo, problem, exercise_15_description, exerc
     problem(mo, exercise_15_description, exercise_15_starter, _submission, exercise_15_submit)
     return
 
-# === MLPHD UNIT END ===
-
 
 @app.cell
 def _(mo):
@@ -999,6 +1357,379 @@ def _(mo):
     [Standard Library](https://docs.python.org/3/library/), and
     [Glossary](https://docs.python.org/3/glossary.html).
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Practice
+    """)
+    return
+
+
+app._unparsable_cell(
+    r"""
+    _a = 5
+    _b = 6
+
+    _a, _b = _b, _a
+
+    print('a is {a} and b is {}'.format(_b, a=_a))
+
+    ##
+
+    for _i in range(0,10):
+        print(_i)
+
+    ##
+
+    _i = 0
+    while _i<10:
+        print(_i)
+        _i+=1
+
+    if elif else
+
+    if():
+        # do stuff
+    elif():
+        # do stuff
+    else:
+        # do stuff
+
+    match():
+        case:
+
+    # Python functions
+    # Function arguments
+            - default values
+            - keyword arguments
+            - positional
+            keyword only
+            functional
+            arbutrary argument lists
+            unpacking
+            lamda expressions
+            doc strings
+            function annotation
+    # Keyword arguments
+    # Data structyres
+    ## lists
+    ## stacks
+    ## queues
+    ## list comprehensions
+    ## nested list comprehensions
+    ## dictionaries
+
+    # Modules
+    # Packages
+    # IO
+    # errors and exception handling
+    # Classes
+    # polymorphism
+    # single/multiple dispatch
+    # decorators
+    # iterators
+    # generators
+    # regular expression / pattern matching
+    # logging
+    # virtual env (UV and Rust thingy)
+
+    # PYTHON IDIOMS
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    # list comprehensions
+    print([2*_i + 1 for _i in {1,2,3}])
+    print([2*_i + 1 for _i in range(1,4)])
+    return
+
+
+app._unparsable_cell(
+    r"""
+    try
+        with open(file: example.txt):
+            ...
+    except
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    # Custom exception define
+
+    Exception
+    return
+
+
+@app.cell
+def _():
+    # Idioms
+    return
+
+
+@app.cell
+def _():
+    # Type hints...
+    return
+
+
+@app.cell
+def _():
+    # linting rules
+    # formatting rules
+    return
+
+
+@app.cell
+def _():
+    # REST api: fast api, flask
+    return
+
+
+@app.cell
+def _():
+    # Cloud functions
+    return
+
+
+@app.cell
+def _():
+    # Schema validation
+    return
+
+
+@app.cell
+def _():
+    # Logging
+    return
+
+
+@app.cell
+def _():
+    # Packaging
+    return
+
+
+@app.cell
+def _():
+    # Model implementations
+    return
+
+
+app._unparsable_cell(
+    r"""
+    # MLOps Example System - DS/ML Learning App
+    # # ...
+
+    # Data Science
+    # # Imbalanced Data Sets
+    # # # Evaluation Metrics
+    # # # Over and Undersampling
+    # # # Ensemble Menthods
+    # # # Cost Sensitive Learning
+
+    # # Machine Learning Identifiability and Interpetability
+    # # # Identifiable models
+    # # # Interpretable models
+    # # # White boxed models
+    # # # Post Hoc Methods
+    # # # Surrogates
+
+    # # Feature Engineering
+    # # # Variable Types and Characteristics
+    # # # Missing Data Imputation (Single and Multivariate)
+    # # # Categorical Encoding
+    # # # Variable Transformation (Normalization/Feature Scaling, etc.)
+    # # # Discretization
+    # # # Outlier Handling
+    # # # Date Time Variables
+    # # # Mixed Variables and Tabular Data Consideration
+    # # # Feature Engineering Pipeline Considerations
+
+    # # Feature Selection
+    # # # Filter
+    # # # Wrapper
+    # # # Embedded Methods
+    # # # Hybrid Feature Selection Methods
+
+    # # Hyperparameter Optimization
+    # # # Performance Metrics
+    # # # Cross-Validation
+    # # # Basic Search Algorithms
+    # # # Bayesian Optimization
+    # # # SMBO Algorithims
+
+    # # # (Omit) Libraries (Scikit-Opimize, Optuna, etc.)
+
+    # Task Specific DL
+    # # Evals, etc.
+
+    # Traditional ML Models
+    # # Classification
+    # # Regression
+    # # Time-Series Forcasting and Simulation (Dynamical Systems)
+    # # Hypothesis Testing
+    # # Clustering
+    # # Anomaly Detection
+
+    # LLM System Engineering
+    # # Vector Databases
+    # # Fine-Tuning
+    # # Model Compression (Quantization, etc.)
+
+    # ML Model Development Life Cycle & QA
+    # # Value Proposition and Evaluation Criteria: Business Use Case, KPIs, etc.
+    # # System Requirements & Solution Design (Is ML a good fit?)
+    # # Initial Feasability Study, POC
+    # # Data Acquisition (Engineering)
+    # # Lab Environment
+    # # # Exploratory Data Analysis (EDA)
+    # # # Feature Engineering*
+    # # # Feature Selection*
+    # # # Model Development & and Training
+    # # # Local Model Pipeline Testing
+    # # Integration Environement
+    # # # Integration Testing
+    # # Production Environment
+    # # # Testing Prod - Smoke testing, User Acceptance Testing, End-to-End Testing
+    # # # Release System (w/ Shadow, Canary, A/B or Bandits, Graceful Degradation, Rollbacks, etc.)
+    # # Continue System Development and Automation
+    # # # Deployment Requirements
+    # # # MLOps Automation Levels
+
+    # MLOPS System Design
+    # # Dependency Tracking (Versioned Containers, Versioned Model Package, Data Versioning)
+
+    # # Experiment Tracking
+    # # Full Model / Data Provenance (Versioning)
+    # # Meta Data
+    # # Logging, Performance Monitoring & Alerting
+    # # ReGraceful Degredation, Rollbacks
+    # # Data
+    # # # Data Validation
+    # # # Schema Validation
+    # Automation / CX
+    # # CI/CD
+    # # CT
+    # # ...
+
+    # Testing
+
+    # # ML Pipeline
+    # # # Model
+    # # # Model Config
+    # # # Model Performance (Unit Tests)
+    # # # Differential Testing
+
+
+    # # UI
+    # # # Unit Tests
+    # # # Service Tests
+    # # # UI Tests
+
+    # # Backend
+    # # Unit Tests
+
+    # # Development Workflow
+    # # # Dev
+    # # # Integration (# 1)
+    # # # Integration (# 2)
+    # # # Production
+
+
+    # Basic SDLC:
+
+    ### AGILE + QA WRAPPER ###
+    # # Requirements: Application, Security, Data, and Governance Considerations
+    # # Secure design and threat modeling
+    # # Code and Code reviews
+    # # Testing
+    # # Secure deployment and Configuration
+    # # Observability and Maintenance
+    # # Vulnerability managment, patch / release lifecycle tracking.
+    # # Retirement / Transition
+
+    # DevSec Ops Deployment Scoring Rubric
+
+    # # Security Checks & Scans - Sonar Cube (Vuln DB, )
+    # # Code Quality
+    # # Data Governance
+    # # Observability: Monitoring, Alerting, Metrics, Traces, etc.
+    # # Test Coverage
+    # # Secret / Key Management
+    # # QA Integration / Plan
+    # # Infrastructure as Code
+    # # Networking??
+
+    # Enterprise Specific Standards and Pattern Checklist
+
+    ### ~ In Summary ~ ###
+    # Principles and Best Practices Checklist
+    # # Experiment Tracking
+    # # Metadata Management
+    # # # The Whys?
+    # # # # Reproducibility
+
+    # Machine Learning Test Score
+    # # Two
+    # # ...
+
+    ** References**
+    The machine learning test score
+    The hidden credit card of machine learning technical debt
+    mlops continuous integration and delivery google architecture
+    mlops practitioners guide
+    ml-ops.org
+    martin fowler
+    whatver that noobie LLM eval / llm as a judge guy's blog is...
+    langchain training content - rag, agents, etc. from scratch
+    """,
+    name="_"
+)
+
+
+@app.cell
+def _():
+    # Docker Kubernetes...
+    return
+
+
+@app.cell
+def _():
+    # Data Science and Machine Learning
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
     return
 
 

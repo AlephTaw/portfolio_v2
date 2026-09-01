@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
-export function AfterActionReports() {
-  const [open, setOpen] = useState(false);
+export function AfterActionReports({ initialOpen = false }: { initialOpen?: boolean }) {
+  const [open, setOpen] = useState(initialOpen);
   const [reportComplete, setReportComplete] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 

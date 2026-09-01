@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FiBox, FiDatabase, FiVideo } from "react-icons/fi";
 
 const stats = [
   { label: "Sync Ratio", value: "84%" },
@@ -15,8 +16,24 @@ const stats = [
   { label: "Builds", points: "0 BP", value: "0" },
 ];
 
-function getStatGridRow(index: number, label: string) {
-  return index + 1 + (index >= 2 ? 1 : 0) + (label === "Builds" ? 1 : 0);
+function getStatRowPadding(index: number) {
+  const isFirst = index === 0;
+  const isLast = index === stats.length - 1;
+  const followsSectionBreak = index === 2 || index === 9;
+  const precedesSectionBreak = index === 1 || index === 8;
+
+  const topPadding = isFirst
+    ? "pt-0"
+    : followsSectionBreak
+      ? "pt-[0.625rem] sm:pt-[0.875rem]"
+      : "pt-0.5 sm:pt-1";
+  const bottomPadding = isLast
+    ? "pb-0"
+    : precedesSectionBreak
+      ? "pb-[0.625rem] sm:pb-[0.875rem]"
+      : "pb-0.5 sm:pb-1";
+
+  return `${topPadding} ${bottomPadding}`;
 }
 
 function getAttributeId(label: string) {
@@ -135,15 +152,82 @@ function ArcTimeline() {
   );
 }
 
+function WorldlineTimeline() {
+  const entries = [
+    {
+      command: "$ worldline init --campaign=sirl-genesis",
+      time: "09:14:02",
+      assets: [
+        { label: "origin.mp4", type: "video", Icon: FiVideo },
+        { label: "campaign.db", type: "data", Icon: FiDatabase },
+      ],
+    },
+    {
+      command: "$ agent observe --scope=character",
+      time: "09:18:37",
+      assets: [
+        { label: "telemetry.db", type: "data", Icon: FiDatabase },
+        { label: "observer.bin", type: "executable", Icon: FiBox },
+      ],
+    },
+    {
+      command: "$ worldline commit --message=first-signal",
+      time: "09:26:11",
+      assets: [
+        { label: "signal.mp4", type: "video", Icon: FiVideo },
+        { label: "commit.bin", type: "executable", Icon: FiBox },
+      ],
+    },
+  ];
+
+  return (
+    <section aria-label="Worldline" className="mt-8" id="worldline-timeline">
+      <div className="max-w-2xl border-l border-dotted border-[#7f7f7f] pl-5 sm:pl-7">
+        <div className="grid gap-8">
+          {entries.map((entry) => (
+            <article className="relative" key={entry.command}>
+              <span
+                aria-hidden="true"
+                className="absolute -left-7 top-0 grid size-4 place-items-center rounded-full bg-background sm:-left-9"
+              >
+                <span className="size-2 rounded-full bg-black" />
+              </span>
+              <div className="flex items-baseline justify-between gap-4 font-mono text-[0.52rem] uppercase tracking-[0.08em] text-[#191919] sm:text-[0.58rem]">
+                <code className="min-w-0 break-all">{entry.command}</code>
+                <time className="shrink-0 text-[#8a8a8a]">{entry.time}</time>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {entry.assets.map(({ label, type, Icon }) => (
+                  <div
+                    className="flex items-center gap-2 border border-[#bdbdbd] bg-[#e5e5e5] px-2 py-1.5 font-mono text-[0.45rem] uppercase tracking-[0.08em] text-[#4b4b4b]"
+                    key={label}
+                    title={`${type} asset`}
+                  >
+                    <Icon aria-hidden="true" className="size-3.5 text-black" />
+                    <span>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function CharacterStats({
   showAttributeWorkspace = false,
 }: {
   showAttributeWorkspace?: boolean;
 } = {}) {
-  const [reportsOpen, setReportsOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(showAttributeWorkspace);
+  const [timelineView, setTimelineView] = useState<"arc" | "worldline">("arc");
   const [activeAttribute, setActiveAttribute] = useState<string | null>(null);
-  const activeStat =
-    stats.find(({ label }) => label === activeAttribute) ?? null;
+  const [previewAttribute, setPreviewAttribute] = useState<string | null>(null);
+  const visibleAttribute = previewAttribute ?? activeAttribute;
+  const visibleStat =
+    stats.find(({ label }) => label === visibleAttribute) ?? null;
 
   return (
     <div className="mt-4 w-full">
@@ -157,6 +241,7 @@ export function CharacterStats({
           }
 
           setActiveAttribute(null);
+          setPreviewAttribute(null);
           setReportsOpen(false);
         }}
       >
@@ -198,33 +283,31 @@ export function CharacterStats({
               }`}
               onClick={() => {
                 setActiveAttribute(null);
-                setReportsOpen((open) => !open);
+                setPreviewAttribute(null);
+                setReportsOpen((open) => {
+                  if (open) setTimelineView("arc");
+                  return !open;
+                });
               }}
               type="button"
             >
-              ARC
+              DEVLOGS
             </button>
           ) : (
             <div className="w-[7.75rem] border border-black bg-transparent px-2 py-1 text-center text-[0.45rem] font-semibold uppercase tracking-[0.1em] text-black sm:w-[9.5rem] sm:text-[0.5rem] sm:tracking-[0.12em]">
-              ARC
+              DEVLOGS
             </div>
           )}
         </div>
 
-        <dl className="grid min-w-0 w-full max-w-[23rem] auto-rows-[0.75rem] grid-cols-[max-content_minmax(0,1fr)_max-content] gap-x-2 gap-y-1 sm:gap-x-4 sm:gap-y-2">
+        <dl className="grid min-w-0 w-full max-w-[23rem] grid-cols-[max-content_minmax(0,1fr)_max-content] gap-x-2 sm:gap-x-4">
           {stats.map((stat, index) => {
             const isActive = activeAttribute === stat.label;
 
             return (
               <div
-                className={`group col-span-3 grid min-w-0 grid-cols-subgrid items-center ${
-                  showAttributeWorkspace
-                    ? `cursor-pointer hover:bg-black hover:shadow-[0_0_0_4px_black] ${
-                        isActive
-                          ? "bg-black shadow-[0_0_0_4px_black]"
-                          : ""
-                      }`
-                    : ""
+                className={`group col-span-3 grid min-w-0 grid-cols-subgrid ${getStatRowPadding(index)} ${
+                  showAttributeWorkspace ? "cursor-pointer" : ""
                 }`}
                 key={stat.label}
                 onClick={
@@ -232,62 +315,80 @@ export function CharacterStats({
                     ? (event) => {
                         event.stopPropagation();
                         setReportsOpen(false);
+                        setPreviewAttribute(null);
                         setActiveAttribute((attribute) =>
                           attribute === stat.label ? null : stat.label,
                         );
                       }
                     : undefined
                 }
-                style={{ gridRow: getStatGridRow(index, stat.label) }}
+                onMouseEnter={
+                  showAttributeWorkspace
+                    ? () => setPreviewAttribute(stat.label)
+                    : undefined
+                }
+                onMouseLeave={
+                  showAttributeWorkspace
+                    ? () => setPreviewAttribute(null)
+                    : undefined
+                }
               >
-                <dt
-                  className={`col-start-1 whitespace-nowrap text-left text-[0.55rem] uppercase tracking-[0.28em] ${
+                <div
+                  className={`col-span-3 grid min-h-3 min-w-0 grid-cols-subgrid items-center ${
                     showAttributeWorkspace
-                      ? "group-hover:text-[#f5f5f5]"
+                      ? `group-hover:bg-black group-hover:shadow-[0_0_0_4px_black] ${
+                          isActive
+                            ? "bg-black shadow-[0_0_0_4px_black]"
+                            : ""
+                        }`
                       : ""
-                  } ${
-                    isActive ? "text-[#f5f5f5]" : "text-[#7f7f7f]"
                   }`}
                 >
-                  {showAttributeWorkspace ? (
-                    <button
-                      aria-controls={`${getAttributeId(stat.label)}-workspace`}
-                      aria-expanded={activeAttribute === stat.label}
-                      className={`text-left hover:text-[#f5f5f5] focus:outline-none focus-visible:underline ${
-                        isActive
-                          ? "font-semibold text-[#f5f5f5] hover:text-[#f5f5f5] focus-visible:text-[#f5f5f5]"
-                          : ""
-                      }`}
-                      type="button"
-                    >
-                      {stat.label}
-                    </button>
-                  ) : (
-                    stat.label
-                  )}
-                </dt>
-                <dd
-                  className={`col-start-2 text-right text-[0.55rem] uppercase tracking-[0.28em] ${
-                    showAttributeWorkspace
-                      ? "group-hover:text-[#f5f5f5]"
-                      : ""
-                  } ${
-                    isActive ? "text-[#f5f5f5]" : "text-black"
-                  }`}
-                >
-                  {stat.value}
-                </dd>
-                <dd
-                  className={`col-start-3 text-right text-[0.55rem] uppercase tracking-[0.28em] ${
-                    showAttributeWorkspace
-                      ? "group-hover:text-[#f5f5f5]"
-                      : ""
-                  } ${
-                    isActive ? "text-[#f5f5f5]" : "text-black"
-                  }`}
-                >
-                  {stat.points ?? ""}
-                </dd>
+                  <dt
+                    className={`col-start-1 whitespace-nowrap text-left text-[0.55rem] uppercase tracking-[0.28em] ${
+                      showAttributeWorkspace
+                        ? "group-hover:text-[#f5f5f5]"
+                        : ""
+                    } ${
+                      isActive ? "text-[#f5f5f5]" : "text-[#7f7f7f]"
+                    }`}
+                  >
+                    {showAttributeWorkspace ? (
+                      <button
+                        aria-controls={`${getAttributeId(stat.label)}-workspace`}
+                        aria-expanded={activeAttribute === stat.label}
+                        className={`text-left hover:text-[#f5f5f5] focus:outline-none focus-visible:underline ${
+                          isActive
+                            ? "font-semibold text-[#f5f5f5] hover:text-[#f5f5f5] focus-visible:text-[#f5f5f5]"
+                            : ""
+                        }`}
+                        type="button"
+                      >
+                        {stat.label}
+                      </button>
+                    ) : (
+                      stat.label
+                    )}
+                  </dt>
+                  <dd
+                    className={`col-start-2 text-right text-[0.55rem] uppercase tracking-[0.28em] ${
+                      showAttributeWorkspace
+                        ? "group-hover:text-[#f5f5f5]"
+                        : ""
+                    } ${isActive ? "text-[#f5f5f5]" : "text-black"}`}
+                  >
+                    {stat.value}
+                  </dd>
+                  <dd
+                    className={`col-start-3 text-right text-[0.55rem] uppercase tracking-[0.28em] ${
+                      showAttributeWorkspace
+                        ? "group-hover:text-[#f5f5f5]"
+                        : ""
+                    } ${isActive ? "text-[#f5f5f5]" : "text-black"}`}
+                  >
+                    {stat.points ?? ""}
+                  </dd>
+                </div>
               </div>
             );
           })}
@@ -295,11 +396,45 @@ export function CharacterStats({
         </div>
       </div>
 
-      {showAttributeWorkspace && activeStat ? (
-        <AttributeWorkspace stat={activeStat} />
+      {showAttributeWorkspace && visibleStat ? (
+        <AttributeWorkspace stat={visibleStat} />
       ) : null}
 
-      {showAttributeWorkspace && reportsOpen ? <ArcTimeline /> : null}
+      {showAttributeWorkspace && reportsOpen && !visibleStat ? (
+        <>
+          <div className="mt-8 flex justify-end">
+            <div
+              aria-label="Devlogs view"
+              className="inline-flex rounded-full border border-black p-0.5"
+              role="group"
+            >
+              {([
+                ["arc", "ARC"],
+                ["worldline", "WORLDLINE"],
+              ] as const).map(([view, label]) => (
+                <button
+                  aria-pressed={timelineView === view}
+                  className={`rounded-full px-3 py-1 text-[0.45rem] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-black sm:px-4 sm:text-[0.5rem] ${
+                    timelineView === view
+                      ? "bg-black text-[#f5f5f5]"
+                      : "text-black hover:bg-black/10"
+                  }`}
+                  key={view}
+                  onClick={() => setTimelineView(view)}
+                  type="button"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {timelineView === "arc" ? (
+            <ArcTimeline />
+          ) : (
+            <WorldlineTimeline />
+          )}
+        </>
+      ) : null}
     </div>
   );
 }

@@ -13,68 +13,63 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        r"""
-        # SELECT and Filtering
+    mo.md(r"""
+    # SELECT and Filtering
 
-        ## Learning objective
+    ## Learning objective
 
-        Retrieve a precise subset of a relation by combining `SELECT`, `FROM`, and
-        `WHERE`.
+    Retrieve a precise subset of a relation by combining `SELECT`, `FROM`, and
+    `WHERE`.
 
-        ## Exposition
+    ## Exposition
 
-        A query answers three separate questions:
+    A query answers three separate questions:
 
-        1. **What columns should be returned?** `SELECT` defines the output shape.
-        2. **Where does the data come from?** `FROM` names the relation.
-        3. **Which rows qualify?** `WHERE` evaluates a condition for each input row.
+    1. **What columns should be returned?** `SELECT` defines the output shape.
+    2. **Where does the data come from?** `FROM` names the relation.
+    3. **Which rows qualify?** `WHERE` evaluates a condition for each input row.
 
-        Conceptually, filtering happens before the final projection is presented:
+    Conceptually, filtering happens before the final projection is presented:
 
-        $$R' = \{r \in R \mid P(r)\}.$$
+    $$R' = \{r \in R \mid P(r)\}.$$
 
-        Here, $R$ is the source relation, $P$ is the predicate in `WHERE`, and $R'$ is
-        the set of rows that satisfy that predicate.
-        """
-    )
+    Here, $R$ is the source relation, $P$ is the predicate in `WHERE`, and $R'$ is
+    the set of rows that satisfy that predicate.
+    """)
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        | Name | Field |
-        |:--|:--|
-        | Ada | mathematics |
-        | Grace | computing |
-        """
-    )
+    mo.md("""
+    | Name | Field |
+    |:--|:--|
+    | Ada | mathematics |
+    | Grace | computing |
+    """)
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(
-        """
-        The predicate `field <> 'physics'` is evaluated once for each row. Ada and Grace
-        satisfy it; Katherine does not. `SELECT name, field` then determines which columns
-        appear in the result.
+    mo.md("""
+    The predicate `field <> 'physics'` is evaluated once for each row. Ada and Grace
+    satisfy it; Katherine does not. `SELECT name, field` then determines which columns
+    appear in the result.
 
-        ## Concept check
+    ## Concept check
 
-        This check has exactly the same scope as the exposition above. It is part of this
-        unit rather than a separate curriculum unit.
+    This check has exactly the same scope as the exposition above. It is part of this
+    unit rather than a separate curriculum unit.
 
-        Which clause decides whether an individual input row qualifies for the result?
-        """
-    )
+    Which clause decides whether an individual input row qualifies for the result?
+    """)
     return
 
 

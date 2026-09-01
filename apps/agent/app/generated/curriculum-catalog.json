@@ -1100,6 +1100,78 @@
       ]
     },
     {
+      "id": "python-algorithm-interview-easy",
+      "title": "Algorithm interview problem set: easy",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithm-interview-easy.py",
+      "outputPath": "/bootcamp/python-algorithm-interview-easy.html",
+      "kind": "exercise",
+      "difficulty": "easy",
+      "teaches": [
+        "python-algorithms-testing"
+      ],
+      "assesses": [
+        "python-algorithms-testing"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithm-interview-medium",
+      "title": "Algorithm interview problem set: medium",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithm-interview-medium.py",
+      "outputPath": "/bootcamp/python-algorithm-interview-medium.html",
+      "kind": "exercise",
+      "difficulty": "medium",
+      "teaches": [
+        "python-algorithms-testing"
+      ],
+      "assesses": [
+        "python-algorithms-testing"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "python-algorithm-interview-hard",
+      "title": "Algorithm interview problem set: hard",
+      "notebook": "notebooks/data-science/algorithms/python-algorithms/units/python-algorithm-interview-hard.py",
+      "outputPath": "/bootcamp/python-algorithm-interview-hard.html",
+      "kind": "exercise",
+      "difficulty": "hard",
+      "teaches": [
+        "python-algorithms-testing"
+      ],
+      "assesses": [
+        "python-algorithms-testing"
+      ],
+      "topics": [
+        "algorithms",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
       "id": "docker-images-containers",
       "title": "Images and containers",
       "notebook": "notebooks/data-science/ml-engineering/docker-compose/units/docker-images-containers.py",
@@ -1795,6 +1867,81 @@
       "goals": [
         "prepare-for-interviews"
       ]
+    },
+    {
+      "id": "ml-interview-problem-set-easy",
+      "title": "Machine-learning interview problem set: easy",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-interview-problem-set-easy.py",
+      "outputPath": "/bootcamp/ml-interview-problem-set-easy.html",
+      "kind": "exercise",
+      "difficulty": "easy",
+      "teaches": [
+        "ml-problem-framing-splits"
+      ],
+      "assesses": [
+        "ml-problem-framing-splits"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-interview-problem-set-medium",
+      "title": "Machine-learning interview problem set: medium",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-interview-problem-set-medium.py",
+      "outputPath": "/bootcamp/ml-interview-problem-set-medium.html",
+      "kind": "exercise",
+      "difficulty": "medium",
+      "teaches": [
+        "ml-trees-ensembles"
+      ],
+      "assesses": [
+        "ml-trees-ensembles"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
+    },
+    {
+      "id": "ml-interview-problem-set-hard",
+      "title": "Machine-learning interview problem set: hard",
+      "notebook": "notebooks/data-science/ml-methods/machine-learning-interviews/units/ml-interview-problem-set-hard.py",
+      "outputPath": "/bootcamp/ml-interview-problem-set-hard.html",
+      "kind": "exercise",
+      "difficulty": "hard",
+      "teaches": [
+        "ml-production-monitoring"
+      ],
+      "assesses": [
+        "ml-production-monitoring"
+      ],
+      "topics": [
+        "machine-learning",
+        "modeling",
+        "interviewing"
+      ],
+      "roles": [
+        "data-scientist"
+      ],
+      "goals": [
+        "prepare-for-interviews"
+      ]
     }
   ],
   "views": {
@@ -2019,6 +2166,21 @@
                   "type": "unit",
                   "unit": "python-algorithms-interview-testing",
                   "order": 80
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithm-interview-easy",
+                  "order": 90
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithm-interview-medium",
+                  "order": 100
+                },
+                {
+                  "type": "unit",
+                  "unit": "python-algorithm-interview-hard",
+                  "order": 110
                 }
               ]
             },
@@ -2067,6 +2229,21 @@
                   "type": "unit",
                   "unit": "ml-production-monitoring",
                   "order": 80
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-interview-problem-set-easy",
+                  "order": 90
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-interview-problem-set-medium",
+                  "order": 100
+                },
+                {
+                  "type": "unit",
+                  "unit": "ml-interview-problem-set-hard",
+                  "order": 110
                 }
               ]
             },
@@ -2390,6 +2567,24 @@
           "depth": 3
         },
         {
+          "type": "unit",
+          "unit": "python-algorithm-interview-easy",
+          "order": 90,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithm-interview-medium",
+          "order": 100,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "python-algorithm-interview-hard",
+          "order": 110,
+          "depth": 3
+        },
+        {
           "type": "section",
           "id": "machine-learning-interviews",
           "title": "Machine Learning",
@@ -2442,6 +2637,24 @@
           "type": "unit",
           "unit": "ml-production-monitoring",
           "order": 80,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-interview-problem-set-easy",
+          "order": 90,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-interview-problem-set-medium",
+          "order": 100,
+          "depth": 3
+        },
+        {
+          "type": "unit",
+          "unit": "ml-interview-problem-set-hard",
+          "order": 110,
           "depth": 3
         },
         {
