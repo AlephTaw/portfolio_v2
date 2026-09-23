@@ -1,0 +1,325 @@
+{
+  "source": {
+    "catalog": "apps/portfolio/app/generated/curriculum-catalog.json",
+    "document": "apps/portfolio/app/generated/mlphd-static-document.json"
+  },
+  "quests": {
+    "Python": {
+      "sectionId": "python-language",
+      "sectionTitle": "Python Language",
+      "items": [
+        {
+          "id": "python-values-names",
+          "title": "Values, names, and identity",
+          "content": "Python tutorial\nThis notebook turns the Python tutorial cheat sheet into short,\nauto-graded implementation exercises. Each exercise has three parts:\n• a description of the task;\n• an interactive Python code input area;\n• an assertion-decorated submission that reports Correct or Not yet.\nSubmit code that creates the names requested by each prompt. Your code is\nexecuted in an isolated namespace for that exercise.\n\n1. Values, names, and identity\nExposition\nPython programs create values such as numbers, strings, sets, and\ndictionaries, then bind names to those objects. Assignment binds a name;\nis checks object identity, while == checks value equality."
+        },
+        {
+          "id": "python-expressions-truthiness",
+          "title": "Expressions, truthiness, and built-ins",
+          "content": "2. Expressions, truthiness, and built-ins\nExposition\nExpressions produce values using arithmetic, comparison, Boolean, and\nconditional operators. Empty containers and zero are falsey; any,\nall, and conversion built-ins make common checks explicit."
+        },
+        {
+          "id": "python-control-flow",
+          "title": "Control flow and pattern matching",
+          "content": "3. Control flow and pattern matching\nExposition\nBranches select a path, loops repeat work, and break or continue\nrefine iteration. match makes structural cases readable when values\nhave several possible shapes."
+        },
+        {
+          "id": "python-functions",
+          "title": "Functions and parameter forms",
+          "content": "4. Functions and parameter forms\nExposition\nFunctions package behavior for reuse and testing. Defaults, keyword-only\nparameters, positional-only parameters, *args, and **kwargs let a\nfunction express a precise calling interface."
+        },
+        {
+          "id": "python-containers",
+          "title": "Containers, comprehensions, and unpacking",
+          "content": "5. Containers, comprehensions, and unpacking\nExposition\nLists, tuples, dictionaries, and sets organize related values. Slicing,\ncomprehensions, and */** unpacking provide concise transformations\nwhile preserving the underlying container semantics."
+        },
+        {
+          "id": "python-iteration",
+          "title": "Iteration and generators",
+          "content": "6. Iteration and generators\nExposition\nIterables can produce values one at a time, and generators make that\nproduction lazy. enumerate adds positions without manual counters."
+        },
+        {
+          "id": "python-exceptions-resources",
+          "title": "Exceptions and resource handling",
+          "content": "7. Exceptions and resource handling\nExposition\nExceptions separate normal logic from failure paths. Context managers\nguarantee cleanup for files and other resources, even when code fails."
+        },
+        {
+          "id": "python-classes-protocols",
+          "title": "Classes and protocols",
+          "content": "8. Classes and protocols\nExposition\nClasses combine state and behavior, while protocols focus on what an\nobject can do. Special methods such as __len__ let custom objects work\nwith ordinary Python syntax."
+        },
+        {
+          "id": "python-type-hints",
+          "title": "Type hints",
+          "content": "9. Type hints\nExposition\nType hints document intended interfaces and enable editor and static\nchecker feedback. They describe runtime values but are not enforced by\nPython automatically."
+        },
+        {
+          "id": "python-decorators",
+          "title": "Decorators",
+          "content": "10. Decorators\nExposition\nA decorator wraps or modifies a function or class. functools.wraps\npreserves metadata so decorated functions remain discoverable and\ndebuggable."
+        },
+        {
+          "id": "python-modules-packages",
+          "title": "Modules and packages",
+          "content": "11. Modules and packages\nExposition\nModules divide a program into reusable namespaces, and packages organize\nmodules into a larger project. The __main__ guard keeps imports from\naccidentally running a script."
+        },
+        {
+          "id": "python-io-json",
+          "title": "Input, output, and structured data",
+          "content": "12. Input, output, and structured data\nExposition\nInput and output connect programs to people, files, and other systems.\nJSON provides a portable representation for common nested Python data."
+        },
+        {
+          "id": "python-custom-exceptions",
+          "title": "Errors and custom exceptions",
+          "content": "13. Errors and custom exceptions\nExposition\nSpecific exceptions communicate what went wrong and let callers recover\nappropriately. Custom exception classes give an application’s failures a\nmeaningful, catchable vocabulary."
+        },
+        {
+          "id": "python-standard-library",
+          "title": "Standard-library tools",
+          "content": "14. Standard-library tools\nExposition\nPython’s standard library supplies tested building blocks for collections,\ndates, files, testing, logging, debugging, concurrency, and numeric work."
+        },
+        {
+          "id": "python-environments-cli",
+          "title": "Virtual environments and interpreter commands",
+          "content": "15. Virtual environments and interpreter commands\nExposition\nVirtual environments isolate dependencies between projects. Using\npython -m ties package installation and module execution to a specific\ninterpreter."
+        }
+      ]
+    },
+    "SQL": {
+      "sectionId": "sql",
+      "sectionTitle": "SQL",
+      "items": [
+        {
+          "id": "sql-select-and-filtering",
+          "title": "SELECT and Filtering",
+          "content": "SELECT and Filtering\nLearning objective\nRetrieve a precise subset of a relation by combining SELECT, FROM, and\nWHERE.\nExposition\nA query answers three separate questions:\n• What columns should be returned? SELECT defines the output shape.\n• Where does the data come from? FROM names the relation.\n• Which rows qualify? WHERE evaluates a condition for each input row.\nConceptually, filtering happens before the final projection is presented:\nR′={r∈R∣P(r)}.R' = \\{r \\in R \\mid P(r)\\}.\nR\n′\n=\n{\nr\n∈\nR\n∣\nP\n(\nr\n)}\n.\nHere, RR\nR\nis the source relation, PP\nP\nis the predicate in WHERE, and R′R'\nR\n′\nis\nthe set of rows that satisfy that predicate.\n\nName\nField\nAda\nmathematics\nGrace\ncomputing\n\nThe predicate field <> 'physics' is evaluated once for each row. Ada and Grace\nsatisfy it; Katherine does not. SELECT name, field then determines which columns\nappear in the result.\nConcept check\nThis check has exactly the same scope as the exposition above. It is part of this\nunit rather than a separate curriculum unit.\nWhich clause decides whether an individual input row qualifies for the result?"
+        },
+        {
+          "id": "sql-select-and-filtering-exercise",
+          "title": "SELECT and Filtering: Exercise",
+          "content": "SELECT and Filtering: Exercise\nTask\nWrite a query that returns one column named name containing everyone whose\nfield is not physics. Sort the result alphabetically by name.\nThe browser-local table contains:\nid\nname\nfield\n1\nAda\nmathematics\n2\nGrace\ncomputing\n3\nKatherine\nphysics\nEdit the starter query, then select Run and check. Equivalent SQL solutions are\naccepted because the result—not the query text—is assessed.\n\nColumns: ['name']\nRows: [('Ada',), ('Grace',), ('Katherine',)]\n\nReview\nA valid solution projects name, filters rows using WHERE, and establishes a\ndeterministic result order with ORDER BY. The checker intentionally accepts any\nSQL text that produces the required result."
+        },
+        {
+          "id": "sql-aggregation",
+          "title": "Aggregation",
+          "content": "Aggregation\nLearning objectives\nGroup observations and calculate summary statistics with aggregate functions.\nIf a group contains NN\nN\nobservations, its arithmetic mean is\nxˉ=1N∑i=1Nxi.\\bar{x} = \\frac{1}{N}\\sum_{i=1}^{N}x_i.\nx\nˉ\n=\nN\n1\n​\ni\n=\n1\n∑\nN\n​\nx\ni\n​\n.\n\nCategory\nObservations\nMean value\nA\n2\n12.0\nB\n2\n9.0\n\nConcept check\nExtend the query so that it also returns min_value and max_value for each\ncategory. Edit the starter SQL and select Run and check. The checker evaluates\nthe result rather than looking for specific query text.\n\nColumns: ['category', 'observations', 'mean_value']\nRows: [('A', 2, 12.0), ('B', 2, 9.0)]"
+        }
+      ]
+    },
+    "Probability and Statistics": {
+      "sectionId": "probability-and-statistics",
+      "sectionTitle": "Probability and Statistics",
+      "items": [
+        {
+          "id": "stats-probability-conditional-independence",
+          "title": "Probability, conditioning, and independence",
+          "content": "Probability and statistics for data scientist interviews\nPrerequisites: Python arithmetic and basic algebra.\nThese units focus on the reasoning, calculations, assumptions, and concise\nexplanations commonly expected in data scientist interviews. Every unit is\nindependently executable.\n\n1. Probability, conditioning, and independence\nMotivation: Interview probability questions test whether you can reason\ncorrectly when events overlap or new information changes the sample space.\nGoal: Apply complements, unions, conditional probability, and the formal\ntest for independence.\nUse P(Ac)=1−P(A)P(A^c)=1-P(A)\nP\n(\nA\nc\n)\n=\n1\n−\nP\n(\nA\n)\n, P(A∪B)=P(A)+P(B)−P(A∩B)P(A\\cup B)=P(A)+P(B)-P(A\\cap B)\nP\n(\nA\n∪\nB\n)\n=\nP\n(\nA\n)\n+\nP\n(\nB\n)\n−\nP\n(\nA\n∩\nB\n)\n, and\nP(A∣B)=P(A∩B)/P(B)P(A|B)=P(A\\cap B)/P(B)\nP\n(\nA\n∣\nB\n)\n=\nP\n(\nA\n∩\nB\n)\n/\nP\n(\nB\n)\n. Events are independent exactly when\nP(A∩B)=P(A)P(B)P(A\\cap B)=P(A)P(B)\nP\n(\nA\n∩\nB\n)\n=\nP\n(\nA\n)\nP\n(\nB\n)\n; mutually exclusive nonempty events are not independent."
+        },
+        {
+          "id": "stats-bayes-base-rates",
+          "title": "Bayes' theorem and base rates",
+          "content": "2. Bayes' theorem and base rates\nMotivation: A seemingly accurate detector may produce mostly false alarms\nwhen the event it detects is rare.\nGoal: Update a prior probability using evidence and explain why prevalence\nmatters to precision.\nFor a binary test, posterior precision is\nP(D∣+)=P(+∣D)P(D)/(P(+∣D)P(D)+P(+∣Dc)P(Dc))P(D|+)=P(+|D)P(D)/(P(+|D)P(D)+P(+|D^c)P(D^c))\nP\n(\nD\n∣\n+\n)\n=\nP\n(\n+\n∣\nD\n)\nP\n(\nD\n)\n/\n(\nP\n(\n+\n∣\nD\n)\nP\n(\nD\n)\n+\nP\n(\n+\n∣\nD\nc\n)\nP\n(\nD\nc\n))\n. Sensitivity supplies the\nfirst likelihood; the false-positive rate is one minus specificity."
+        },
+        {
+          "id": "stats-random-variables-distributions",
+          "title": "Random variables and distributions",
+          "content": "3. Random variables and distributions\nMotivation: Choosing a distribution encodes the data-generating process\nand determines which summaries and likelihoods are appropriate.\nGoal: Match Bernoulli, binomial, Poisson, exponential, and normal models\nto common interview scenarios.\nBernoulli models one binary trial; binomial counts successes in fixed\nindependent trials; Poisson counts events in an interval; exponential models\nwaiting time under a constant event rate; normal models symmetric continuous\nvariation and often approximates aggregate noise."
+        },
+        {
+          "id": "stats-expectation-variance-covariance",
+          "title": "Expectation, variance, and covariance",
+          "content": "4. Expectation, variance, and covariance\nMotivation: These quantities summarize center, uncertainty, and linear\nco-movement and underpin estimation and modeling.\nGoal: Compute population mean, variance, covariance, and distinguish\ncovariance from correlation.\nExpectation is linear even for dependent variables. Variance is expected\nsquared deviation. Covariance has units; correlation standardizes covariance\nto [−1,1][-1,1]\n[\n−\n1\n,\n1\n]\n. Neither correlation nor zero covariance generally proves\nindependence or causation."
+        },
+        {
+          "id": "stats-sampling-clt",
+          "title": "Sampling distributions and the central limit theorem",
+          "content": "5. Sampling distributions and the central limit theorem\nMotivation: Statistical uncertainty concerns how an estimator changes\nacross repeated samples, not merely how individual observations vary.\nGoal: Explain sampling distributions, standard error, and when the CLT\njustifies a normal approximation for a sample mean.\nFor iid observations with finite variance, the sample mean has standard error\nσ/n\\sigma/\\sqrt{n}\nσ\n/\nn\n​\nand becomes approximately normal as sample size grows.\nDependence, heavy tails, and selection bias can invalidate naive conclusions."
+        },
+        {
+          "id": "stats-estimation-confidence-intervals",
+          "title": "Estimation and confidence intervals",
+          "content": "6. Estimation and confidence intervals\nMotivation: A point estimate without uncertainty can make small, noisy\ndifferences look decisive.\nGoal: Distinguish estimators from estimates and correctly interpret a\nfrequentist confidence interval.\nA 95% confidence procedure covers the fixed true parameter in 95% of repeated\nsamples under its assumptions. It does not assign a 95% probability to the\nparameter after this one interval is observed. Approximate mean intervals use\nestimate ±\\pm\n±\ncritical value ×\\times\n×\nstandard error."
+        },
+        {
+          "id": "stats-hypothesis-testing-power",
+          "title": "Hypothesis tests, errors, and power",
+          "content": "7. Hypothesis tests, errors, and power\nMotivation: Interviews often probe whether you can separate statistical\nevidence from practical importance and avoid common p-value mistakes.\nGoal: Interpret p-values, Type I and Type II errors, power, and multiple\ntesting tradeoffs.\nA p-value is the probability, assuming the null and model are true, of a test\nstatistic at least as extreme as observed. Alpha controls the Type I error\nrate; beta is the Type II error rate; power is 1−β1-\\beta\n1\n−\nβ\n. Larger samples,\nlarger effects, lower noise, or a larger alpha usually increase power."
+        },
+        {
+          "id": "stats-experimentation-ab-tests",
+          "title": "Experimentation and A/B tests",
+          "content": "8. Experimentation and A/B tests\nMotivation: Product data scientists must connect causal identification,\nexperimental design, and business decisions—not merely calculate p-values.\nGoal: Explain randomization, units of assignment and analysis, guardrails,\nsample-ratio mismatch, practical significance, and common experiment threats.\nRandomization balances confounders in expectation. Analyze at a level that\nrespects assignment and dependence. Define one primary metric and guardrails\nbefore launch, check instrumentation and sample-ratio mismatch, and report\neffect sizes with uncertainty. Peeking or testing many metrics needs correction."
+        }
+      ]
+    },
+    "Algorithms": {
+      "sectionId": "python-algorithms",
+      "sectionTitle": "Python Algorithms",
+      "items": [
+        {
+          "id": "python-algorithms-complexity",
+          "title": "Complexity and algorithmic patterns",
+          "content": "Python algorithms for data science interviews\nPrerequisites: Python functions, lists, dictionaries, sets, loops,\nand basic complexity notation.\nThis notebook focuses on reusable algorithmic patterns rather than\nmemorizing isolated solutions. Exercises are automatically graded and\nrun only in an isolated Python namespace; no external services are used.\n\n1. Complexity and algorithmic patterns\nMotivation: Interview solutions must be correct and practical at the\nscale of the input, not merely correct for a toy example.\nGoal: Estimate time and space complexity and identify whether a\nsolution is linear, logarithmic, quadratic, or exponential.\nA single pass is usually O(n). Nested independent passes are still\nO(n) when they do not nest; nested loops over the same input are often\nO(n²). Hash lookup is typically O(1) average-case, while sorting is\ncommonly O(n log n). State the assumptions behind your estimate."
+        },
+        {
+          "id": "python-algorithms-hash-maps",
+          "title": "Arrays and hash maps",
+          "content": "2. Arrays and hash maps\nMotivation: Many interview problems become linear when a set or\ndictionary remembers what has already been seen.\nGoal: Use a hash map to solve a one-pass lookup problem while keeping\nthe original order and handling duplicates explicitly."
+        },
+        {
+          "id": "python-algorithms-searching",
+          "title": "Sorting and binary search",
+          "content": "3. Sorting and binary search\nMotivation: Sorting creates order that enables fast searching and\nsimplifies downstream comparisons.\nGoal: Implement binary search with a shrinking inclusive interval.\nBinary search requires sorted input. At each step compare the midpoint,\nthen discard half the remaining interval. The loop invariant is that a\nmatching value, if present, remains inside [left, right]."
+        },
+        {
+          "id": "python-algorithms-sliding-window",
+          "title": "Two pointers and sliding windows",
+          "content": "4. Two pointers and sliding windows\nMotivation: Recomputing every subarray often creates quadratic work;\nmaintaining a moving window can reduce it to one pass.\nGoal: Maintain the sum of a fixed-size window as it moves across a\nsequence."
+        },
+        {
+          "id": "python-algorithms-stacks-queues",
+          "title": "Stacks and queues",
+          "content": "5. Stacks and queues\nMotivation: LIFO and FIFO behavior model parsing, task scheduling,\nbreadth-first search, and many streaming workflows.\nGoal: Use a stack to validate nested delimiters in one pass."
+        },
+        {
+          "id": "python-algorithms-trees-graphs",
+          "title": "Trees and graph traversal",
+          "content": "6. Trees and graph traversal\nMotivation: Hierarchical and network-shaped data appears in feature\nrelationships, dependency graphs, and search problems.\nGoal: Traverse a graph with breadth-first search while tracking\nvisited nodes so cycles do not cause infinite work."
+        },
+        {
+          "id": "python-algorithms-heaps-top-k",
+          "title": "Heaps and top-k patterns",
+          "content": "7. Heaps and top-k patterns\nMotivation: Data science workloads often need the largest, smallest,\nor most frequent few items without fully sorting a huge collection.\nGoal: Use a heap or equivalent bounded structure to solve a top-k\nproblem and state its space tradeoff."
+        },
+        {
+          "id": "python-algorithms-interview-testing",
+          "title": "Testing and explaining algorithm solutions",
+          "content": "8. Testing and explaining solutions\nMotivation: Interviewers assess reasoning as well as output: edge\ncases, invariants, complexity, and communication distinguish a robust\nsolution from a lucky example.\nGoal: Produce a compact test plan that covers normal, boundary, and\nfailure cases, then state the algorithm’s complexity."
+        }
+      ]
+    },
+    "ML in Practice": {
+      "sectionId": "machine-learning-interviews",
+      "sectionTitle": "Machine Learning",
+      "items": [
+        {
+          "id": "ml-problem-framing-splits",
+          "title": "Problem framing, splits, and leakage",
+          "content": "Machine learning for data scientist interviews\nPrerequisites: Python, basic probability, descriptive statistics, and\nmatrix/vector intuition.\nThe units emphasize model choice, evaluation, leakage prevention, tradeoffs,\nand concise interview communication. Each unit runs independently.\n\n1. Problem framing, splits, and leakage\nMotivation: A sophisticated model cannot rescue a target, metric, or\nvalidation split that does not match the decision being made.\nGoal: Translate a product question into a prediction target, unit of\nobservation, horizon, metric, and leakage-safe split.\nUse random splits only when observations are exchangeable. Use temporal\nsplits for future prediction and grouped splits when records from one entity\nmust not cross train and validation. Fit preprocessing on training data only."
+        },
+        {
+          "id": "ml-linear-logistic-regularization",
+          "title": "Linear models and regularization",
+          "content": "2. Linear models and regularization\nMotivation: Linear and logistic models are strong interpretable baselines\nand reveal whether added model complexity is actually useful.\nGoal: Explain coefficients, logistic probabilities, and the difference\nbetween L1 and L2 regularization.\nLinear regression predicts a continuous response. Logistic regression models\nlog-odds for classification. L1 can produce sparse coefficients; L2 shrinks\ncorrelated coefficients smoothly. Scale features when penalty size should be\ncomparable across coefficients."
+        },
+        {
+          "id": "ml-trees-ensembles",
+          "title": "Decision trees and ensembles",
+          "content": "3. Decision trees and ensembles\nMotivation: Trees capture nonlinear effects and interactions with little\npreprocessing, while ensembles stabilize or strengthen individual trees.\nGoal: Contrast decision trees, random forests, and gradient boosting.\nDeep trees have low bias and high variance. Random forests reduce variance by\naveraging decorrelated trees. Gradient boosting sequentially fits residual\nerrors and often offers stronger accuracy but more tuning sensitivity."
+        },
+        {
+          "id": "ml-classification-metrics-thresholds",
+          "title": "Classification metrics and thresholds",
+          "content": "4. Classification metrics and thresholds\nMotivation: Accuracy can hide failure on rare classes, and the best\nprobability threshold depends on business costs.\nGoal: Compute precision, recall, and F1 and explain ROC-AUC versus PR-AUC.\nPrecision asks how many predicted positives were correct; recall asks how\nmany actual positives were found. PR-AUC is especially informative with rare\npositives. Choose a threshold using validation data and explicit error costs."
+        },
+        {
+          "id": "ml-preprocessing-pipelines",
+          "title": "Preprocessing and feature pipelines",
+          "content": "5. Preprocessing and feature pipelines\nMotivation: Leakage often enters through preprocessing performed before\nsplitting or through features unavailable at prediction time.\nGoal: Build a leakage-safe order for splitting, fitting transforms,\ntransforming validation data, and fitting a model.\nImputation, scaling, encoding, and feature selection learn parameters. Fit\nthem on training data and reuse those fitted transforms everywhere else.\nTrees usually do not require scaling; distance- and penalty-based models do."
+        },
+        {
+          "id": "ml-cross-validation-tuning",
+          "title": "Cross-validation and hyperparameter tuning",
+          "content": "6. Cross-validation and hyperparameter tuning\nMotivation: Reusing a test set during tuning turns it into training data\nand produces an optimistic performance estimate.\nGoal: Separate training/tuning from final evaluation and summarize\ncross-validation results with uncertainty.\nTune preprocessing and model hyperparameters inside each fold. Keep one final\ntest set untouched. Prefer randomized or informed search when the parameter\nspace is large, and compare against a simple baseline."
+        },
+        {
+          "id": "ml-unsupervised-dimensionality",
+          "title": "Clustering and dimensionality reduction",
+          "content": "7. Clustering and dimensionality reduction\nMotivation: Unsupervised methods help explore structure when labels are\nabsent, but their outputs are sensitive to scale and assumptions.\nGoal: State when to use k-means or PCA and identify their main caveats.\nK-means minimizes within-cluster squared Euclidean distance, favoring roughly\nspherical clusters. PCA finds orthogonal directions of maximum variance.\nStandardize features when units differ, and validate usefulness downstream."
+        },
+        {
+          "id": "ml-production-monitoring",
+          "title": "Production inference and monitoring",
+          "content": "8. Production inference and monitoring\nMotivation: Offline accuracy does not guarantee reliable decisions after\ndeployment when data, behavior, latency, or costs change.\nGoal: Distinguish data drift, concept drift, service health, and delayed\noutcome monitoring.\nVersion data, code, features, model, and threshold together. Monitor input\nschema and distributions, prediction distributions, latency/errors, and\nbusiness outcomes. Use shadow or canary releases and retain rollback paths."
+        }
+      ]
+    },
+    "Containerization": {
+      "sectionId": "docker-compose",
+      "sectionTitle": "Docker and Docker Compose",
+      "items": [
+        {
+          "id": "docker-images-containers",
+          "title": "Images and containers",
+          "content": "Docker and Docker Compose tutorial\nThis notebook turns the Docker tutorial into short implementation\nexercises. Each topic has a separate exposition cell followed immediately\nby an exercise cell with:\n• a nested exercise description;\n• an interactive input area;\n• an assertion-decorated submission with automatic grading.\nThe exercises validate Dockerfiles, Compose snippets, and operational\ncommands without starting containers or changing your Docker host.\n\nCommands cheat sheet\nThe examples use IMAGE for an image reference, CONTAINER for a container\nname or ID, and SERVICE for a Compose service name.\n\nImages, builds, and registries\nCommand\nPurpose\ndocker pull IMAGE\nDownload an image from a registry.\ndocker image ls\nList images stored locally.\ndocker image inspect IMAGE\nShow image configuration and metadata.\ndocker build -t IMAGE .\nBuild and tag an image from the current build context.\ndocker tag SOURCE TARGET\nAdd another repository or version tag to an image.\ndocker push IMAGE\nUpload a tagged image to a registry.\ndocker image rm IMAGE\nRemove a local image reference.\nContainers and runtime options\nCommand or option\nPurpose\ndocker run IMAGE\nCreate and start a container from an image.\ndocker run -d --name NAME IMAGE\nRun detached with a stable container name.\ndocker ps --all\nList running and stopped containers.\ndocker logs CONTAINER\nRead a container's standard output and error.\ndocker exec -it CONTAINER COMMAND\nRun a command inside an existing container.\ndocker inspect CONTAINER\nShow detailed runtime configuration and state.\ndocker stop CONTAINER\nGracefully stop a running container.\ndocker rm --force CONTAINER\nStop if necessary and remove a container.\n--rm\nRemove a container automatically when its process exits.\n-p HOST:CONTAINER\nPublish a container port on the host.\n--mount source=VOLUME,target=PATH\nAttach durable named-volume storage.\n-e NAME=VALUE\nSet a container environment variable.\nDockerfile instructions\nInstruction\nPurpose\nFROM\nSelect the base image.\nWORKDIR\nSet the working directory for later instructions and startup.\nCOPY\nCopy files from the build context into the image.\nRUN\nExecute a build-time command and create an image layer.\nUSER\nSelect the non-root runtime user.\nEXPOSE\nDocument the port used by the application.\nCMD\nDefine the default container command.\nDocker Compose\nCommand\nPurpose\ndocker compose config\nMerge, resolve, and validate Compose configuration.\ndocker compose up --build\nBuild changed images and start the project.\ndocker compose up -d\nStart or update the project in the background.\ndocker compose down\nStop and remove the project's containers and network.\ndocker compose ps --all\nShow running and stopped project services.\ndocker compose logs --tail=200 SERVICE\nShow bounded recent service logs.\ndocker compose run --rm SERVICE COMMAND\nRun a disposable one-off service command.\ndocker compose exec SERVICE COMMAND\nRun a command in an existing service container.\ndocker compose pull\nDownload service images.\n-f BASE -f OVERRIDE\nMerge Compose files from left to right.\nup --no-deps -d SERVICE\nRecreate one service without restarting dependencies.\nTesting and observation\nCommand\nPurpose\ncurl --fail URL\nFail when an HTTP health endpoint returns an error status.\ndocker stats\nObserve live container CPU, memory, and network usage.\nEach numbered topic below names the cheat-sheet entries it introduces or\napplies.\n\n1. Images and containers\nExposition\nAn image is a read-only package of application files and dependencies. A\ncontainer is a configured runtime instance of an image and can be removed\nwithout changing the source image.\nCommands covered\n• docker pull IMAGE and docker image ls introduce obtaining and locating\nimmutable image artifacts.\n• docker run IMAGE shows how an image becomes a running container instance.\n• docker ps --all distinguishes existing container instances from images."
+        },
+        {
+          "id": "docker-cli-lifecycle",
+          "title": "The Docker CLI lifecycle",
+          "content": "2. The Docker CLI lifecycle\nExposition\nThe CLI creates, starts, inspects, interacts with, stops, and removes\ncontainers. docker exec runs a process inside an existing container;\nit does not modify the image.\nCommands covered\n• docker run -d --name NAME -p HOST:CONTAINER IMAGE creates a named,\ndetached container and publishes its application port.\n• docker logs, docker exec, and docker inspect observe or interact with\nan existing container without rebuilding its image.\n• docker stop and docker rm --force cover graceful and forced cleanup."
+        },
+        {
+          "id": "docker-dockerfiles",
+          "title": "Dockerfiles",
+          "content": "3. Dockerfiles\nExposition\nDockerfiles describe how to build images. Instruction order affects cache\nreuse, while USER, CMD, and a small build context improve runtime\nsafety and repeatability.\nCommands covered\n• docker build -t IMAGE . executes the Dockerfile against the current build\ncontext.\n• FROM, WORKDIR, COPY, and RUN define the build sequence and cacheable\nlayers.\n• USER, EXPOSE, and JSON-array CMD define safer runtime defaults."
+        },
+        {
+          "id": "docker-builds-registries",
+          "title": "Builds, cache, tags, and registries",
+          "content": "4. Builds, cache, tags, and registries\nExposition\nBuild context determines what the builder can see, and instruction order\ndetermines cache reuse. Tags give images recognizable release identities;\nregistries distribute those tagged artifacts.\nCommands covered\n• docker build -t IMAGE . builds from a context and assigns a local tag.\n• docker image inspect IMAGE verifies the resulting image metadata.\n• docker tag SOURCE TARGET creates a registry-qualified release identity.\n• docker push IMAGE publishes that exact tagged artifact."
+        },
+        {
+          "id": "docker-runtime-configuration",
+          "title": "Networking, ports, volumes, and environment",
+          "content": "5. Networking, ports, volumes, and environment\nExposition\nContainers need explicit interfaces for traffic, configuration, and\ndurable state. Publish ports with HOST:CONTAINER, use service names on\nuser-defined networks, and keep secrets out of images.\nCommands covered\n• docker run -p HOST:CONTAINER publishes a container port through the host.\n• --mount source=VOLUME,target=PATH attaches durable named-volume storage.\n• -e NAME=VALUE supplies runtime configuration without baking it into the\nimage."
+        },
+        {
+          "id": "docker-compose-fundamentals",
+          "title": "Docker Compose fundamentals",
+          "content": "6. Docker Compose fundamentals\nExposition\nCompose describes services, networks, volumes, environment, and health\nchecks in one declarative project. depends_on expresses relationships;\na healthcheck expresses readiness.\nCommands covered\n• docker compose config validates the declarative service model before it\nruns.\n• docker compose up --build builds local services and starts the project.\n• docker compose ps --all reports service-container state.\n• Compose keys covered here are services, build, image, depends_on,\nhealthcheck, and top-level volumes."
+        },
+        {
+          "id": "docker-compose-development",
+          "title": "Compose development workflows",
+          "content": "7. Compose development workflows\nExposition\nCompose overrides let development add source mounts, debug settings, and\noptional services without changing the production definition. Validate a\nmerged configuration before starting it.\nCommands covered\n• docker compose -f BASE -f OVERRIDE config previews and validates the\nleft-to-right merged configuration.\n• docker compose -f BASE -f OVERRIDE up --build starts the development\nvariant with current images.\n• docker compose run --rm SERVICE COMMAND executes disposable tests or\nadministrative tasks in the service environment."
+        },
+        {
+          "id": "docker-container-testing",
+          "title": "Testing Docker containers",
+          "content": "8. Testing Docker containers\nExposition\nA green image build is not enough: test the image, startup behavior,\nhealth endpoint, service integration, logs, exit code, and persistence.\nCI should test the exact artifact that will be published.\nCommands covered\n• docker build -t IMAGE:test . creates a specifically tagged test artifact.\n• docker run --rm IMAGE:test COMMAND runs tests in a disposable container.\n• docker run -d --name NAME -p HOST:CONTAINER IMAGE:test starts the same\nartifact for external checks.\n• curl --fail URL turns an unhealthy HTTP response into a failing check."
+        },
+        {
+          "id": "docker-security",
+          "title": "Security and image quality",
+          "content": "9. Security and image quality\nExposition\nContainers share a host kernel, so image provenance, non-root execution,\nminimal dependencies, secret handling, and resource limits matter. Security\nis part of the build and deployment workflow, not a final manual check.\nCommands covered\n• Dockerfile USER establishes non-root execution in the image itself.\n• docker image inspect IMAGE verifies configured users, entrypoints, and\nother image metadata.\n• .dockerignore limits sensitive or unnecessary build-context files.\n• Image scanning belongs after docker build and before docker push in CI."
+        },
+        {
+          "id": "docker-production",
+          "title": "Docker in production",
+          "content": "10. Docker in production\nExposition\nProduction needs tested immutable artifacts, release-specific\nconfiguration, restart and health behavior, observability, backups, and\nrollback. A production Compose override can adapt a single-server deploy;\nlarger workloads need a platform designed for scheduling and scaling.\nCommands covered\n• docker compose -f BASE -f PRODUCTION pull obtains immutable release\nimages before deployment.\n• docker compose -f BASE -f PRODUCTION up -d applies the production model\nin the background.\n• docker compose ... up --no-deps -d SERVICE replaces one changed service\nwithout deliberately restarting its dependencies."
+        },
+        {
+          "id": "docker-troubleshooting",
+          "title": "Troubleshooting and operations",
+          "content": "11. Troubleshooting and operations\nExposition\nDiagnose the layer that failed: merged configuration, process, logs,\nmounts, network, healthcheck, or host resources. Evidence from inspection\nis more useful than repeatedly restarting a failing service.\nCommands covered\n• docker compose config detects invalid or surprising merged configuration.\n• docker compose ps --all exposes exited as well as running services.\n• docker compose logs --tail=200 SERVICE retrieves focused recent evidence.\n• docker inspect CONTAINER exposes mounts, networks, environment, health,\nand process state; docker stats adds live resource evidence."
+        }
+      ]
+    },
+    "ML Deployments": {
+      "sectionId": "machine-learning-interviews",
+      "sectionTitle": "Machine Learning",
+      "items": [
+        {
+          "id": "ml-production-monitoring",
+          "title": "Production inference and monitoring",
+          "content": "8. Production inference and monitoring\nMotivation: Offline accuracy does not guarantee reliable decisions after\ndeployment when data, behavior, latency, or costs change.\nGoal: Distinguish data drift, concept drift, service health, and delayed\noutcome monitoring.\nVersion data, code, features, model, and threshold together. Monitor input\nschema and distributions, prediction distributions, latency/errors, and\nbusiness outcomes. Use shadow or canary releases and retain rollback paths."
+        }
+      ]
+    },
+    "Robotics": {
+      "sectionId": "robotics",
+      "sectionTitle": "Robotics",
+      "items": []
+    }
+  }
+}

@@ -16,13 +16,13 @@ import type { CompletedActivity, TelemetryState, TelemetryView } from "./types";
 
 export function TelemetryProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<TelemetryState>(emptyTelemetryState);
-  const [isOpen, setIsOpen] = useState(false);
-  const [telemetryView, setTelemetryView] = useState<TelemetryView | null>("current");
+  const [isOpen, setIsOpen] = useState(true);
+  const [telemetryView, setTelemetryView] = useState<TelemetryView | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      setState(loadTelemetryState());
+      setState({ ...loadTelemetryState(), activeWorkspace: null });
       setHydrated(true);
     });
     return () => window.cancelAnimationFrame(frame);

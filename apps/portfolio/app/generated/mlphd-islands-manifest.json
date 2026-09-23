@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runtime": {
     "script": "https://cdn.jsdelivr.net/npm/@marimo-team/islands@0.23.16/dist/main.js",
-    "payloadUrl": "/bootcamp/islands/runtime.json?v=a77eaae6ecc1"
+    "payloadUrl": "/bootcamp/islands/runtime.json?v=9c95f308d096"
   },
   "layers": [
     {
@@ -26,7 +26,7 @@
         "python-standard-library",
         "python-environments-cli"
       ],
-      "url": "/bootcamp/islands/python-language.json?v=bca62b327afc"
+      "url": "/bootcamp/islands/python-language.json?v=a5169bc6ce23"
     },
     {
       "id": "sql",
@@ -37,7 +37,7 @@
         "sql-select-and-filtering-exercise",
         "sql-aggregation"
       ],
-      "url": "/bootcamp/islands/sql.json?v=124e66c9d27f"
+      "url": "/bootcamp/islands/sql.json?v=51a793c4f343"
     },
     {
       "id": "data-storage-and-retrieval",
@@ -62,7 +62,7 @@
         "stats-hypothesis-testing-power",
         "stats-experimentation-ab-tests"
       ],
-      "url": "/bootcamp/islands/probability-and-statistics.json?v=f9a27777a818"
+      "url": "/bootcamp/islands/probability-and-statistics.json?v=bfff463ef7f4"
     },
     {
       "id": "python-algorithms",
@@ -78,7 +78,7 @@
         "python-algorithms-heaps-top-k",
         "python-algorithms-interview-testing"
       ],
-      "url": "/bootcamp/islands/python-algorithms.json?v=00ac18d66c47"
+      "url": "/bootcamp/islands/python-algorithms.json?v=67a489bacf5a"
     },
     {
       "id": "machine-learning-interviews",
@@ -94,7 +94,7 @@
         "ml-unsupervised-dimensionality",
         "ml-production-monitoring"
       ],
-      "url": "/bootcamp/islands/machine-learning-interviews.json?v=a096e744fc39"
+      "url": "/bootcamp/islands/machine-learning-interviews.json?v=f440b7ec37c7"
     },
     {
       "id": "docker-compose",
@@ -113,7 +113,7 @@
         "docker-production",
         "docker-troubleshooting"
       ],
-      "url": "/bootcamp/islands/docker-compose.json?v=3ae3a6f88b3b"
+      "url": "/bootcamp/islands/docker-compose.json?v=d32b3e77db7d"
     }
   ]
 }

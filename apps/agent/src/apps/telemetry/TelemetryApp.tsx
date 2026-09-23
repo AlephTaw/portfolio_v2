@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import {
   FiCheck,
   FiEdit2,
@@ -11,7 +11,15 @@ import {
 } from "react-icons/fi";
 import { useTelemetry } from "./useTelemetry";
 import {
+  ACTIVITY_NAVIGATION_EVENT,
+  ACTIVITY_TIMER_TOGGLE_EVENT,
+  requestActivityFocus,
+  type ActivityNavigationMode,
+} from "./navigationEvents";
+import { QuestCatalog } from "@/app/components/ComposerDock";
+import {
   inventoryCategories,
+  taskWorkspaces,
   type ActiveTimer,
   type ActivityDraft,
   type CompletedActivity,
@@ -28,6 +36,17 @@ import {
   type LifeCategory,
   type LifePlanActivity,
 } from "@/src/life-rpg/data";
+import {
+  getAdjacentItem,
+  useHorizontalSwipeNavigation,
+} from "@/src/hooks/useHorizontalSwipeNavigation";
+
+const telemetryWorkspaceTabs: readonly (TaskWorkspace | null)[] = [
+  ...taskWorkspaces.filter(
+    (workspace) => workspace !== "quests" && workspace !== "training",
+  ),
+  null,
+];
 
 const emptyDraft: ActivityDraft = {
   name: "",
@@ -149,11 +168,6 @@ function formatActivityDate(timestamp: number) {
   }).format(timestamp);
 }
 
-function toLocalDateTimeValue(timestamp: number) {
-  const timezoneOffset = new Date(timestamp).getTimezoneOffset() * 60_000;
-  return new Date(timestamp - timezoneOffset).toISOString().slice(0, 16);
-}
-
 function activityToDraft(activity: CompletedActivity): ActivityDraft {
   return {
     name: activity.name,
@@ -172,7 +186,7 @@ function TelemetryViewToggle({
 }) {
   return (
     <div
-      aria-label="Telemetry view"
+      aria-label="Activity view"
       className="inline-flex shrink-0 rounded-full border border-black p-0.5"
       role="tablist"
     >
@@ -264,17 +278,6 @@ function LifePlanPanel({ onSelectActivity }: { onSelectActivity: (activity: Life
           </section>
         ))}
       </div>
-    </section>
-  );
-}
-
-function ActiveQuestPanel({ category, onSelectActivity }: { category: LifeCategory | "all"; onSelectActivity: (activity: LifePlanActivity) => void }) {
-  const quests = filterByCategory(lifeQuests, category);
-  const activities = filterByCategory(lifePlanActivities, category);
-  return (
-    <section className="mt-4" aria-label="Active quests">
-      <div className="flex items-center justify-between gap-3"><h2 className="text-[0.58rem] font-semibold uppercase tracking-[0.2em]">Active quests</h2><span className="text-[0.5rem] uppercase tracking-[0.12em] text-[#8a8177]">{quests.length} quests · {activities.length} activities</span></div>
-      <div className="mt-3 grid gap-2">{quests.map((quest) => <article className="border border-[#c9c1b4] p-3" key={quest.id}><div className="flex items-baseline justify-between gap-2"><h3 className="text-xs font-medium">L{quest.level} · {quest.name}</h3><span className="text-[0.48rem] uppercase tracking-[0.1em] text-[#8a8177]">{quest.tags.join(" · ")}</span></div><p className="mt-1 text-[0.65rem] text-[#766b5d]">{quest.purpose}</p><div className="mt-2 grid gap-1">{quest.milestones.slice(0, 2).map((milestone, index) => { const activity = lifePlanActivities.find((item) => item.id === `${quest.id}-${index}`); return <button className="border-t border-[#ded7cb] pt-1 text-left text-[0.6rem] hover:text-black" key={`${quest.id}-${index}`} onClick={() => activity && onSelectActivity(activity)} type="button">{milestone.timestamp}: {milestone.outcome}</button>; })}</div></article>)}</div>
     </section>
   );
 }
@@ -619,9 +622,7 @@ export function TelemetryApp() {
     removeTodo,
     resumeTimer,
     setTimerName,
-    setTimerEndedAt,
     setTimerQuest,
-    setTimerStartedAt,
     setWorkspaceFilter,
     startTimer,
     setTelemetryView: setView,
@@ -630,6 +631,7 @@ export function TelemetryApp() {
     toggleTodo,
     updateActivity,
   } = useTelemetry();
+  const modalRef = useRef<HTMLElement>(null);
   const [now, setNow] = useState(() => Date.now());
   const [timerDraft, setTimerDraft] = useState(emptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -640,6 +642,20 @@ export function TelemetryApp() {
   const [tagDraft, setTagDraft] = useState("");
   const [captureDraft, setCaptureDraft] = useState<Record<string, string>>({});
   const [selectedLifeActivity, setSelectedLifeActivity] = useState<LifePlanActivity | null>(null);
+  const navigateWorkspace = useCallback(
+    (direction: -1 | 1) => {
+      const workspace = getAdjacentItem(
+        telemetryWorkspaceTabs,
+        activeWorkspace,
+        direction,
+      );
+      if (workspace !== undefined && workspace !== activeWorkspace) {
+        setWorkspaceFilter(workspace);
+      }
+    },
+    [activeWorkspace, setWorkspaceFilter],
+  );
+  const modalSwipeHandlers = useHorizontalSwipeNavigation(navigateWorkspace);
 
   useEffect(() => {
     if (!activeTimer || activeTimer.runningSince === null) return;
@@ -650,6 +666,90 @@ export function TelemetryApp() {
       window.clearInterval(interval);
     };
   }, [activeTimer]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      document.documentElement.style.removeProperty("--activity-surface-bottom");
+      return;
+    }
+
+    const modal = modalRef.current;
+    if (!modal) return;
+    let updateFrame = 0;
+    const updateSurfaceOffset = () => {
+      window.cancelAnimationFrame(updateFrame);
+      updateFrame = window.requestAnimationFrame(() => {
+        const bottom = Math.round((modal.getBoundingClientRect().bottom + 8) * 100) / 100;
+        document.documentElement.style.setProperty(
+          "--activity-surface-bottom",
+          `${bottom}px`,
+        );
+      });
+    };
+    const observer = new ResizeObserver(updateSurfaceOffset);
+    observer.observe(modal);
+    window.addEventListener("resize", updateSurfaceOffset);
+    updateSurfaceOffset();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateSurfaceOffset);
+      window.cancelAnimationFrame(updateFrame);
+      document.documentElement.style.removeProperty("--activity-surface-bottom");
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleActivityNavigation = (event: Event) => {
+      const mode = (event as CustomEvent<ActivityNavigationMode>).detail;
+      setCaptureDraft({});
+      setSelectedLifeActivity(null);
+
+      if (mode === "quests") {
+        const selected = activeWorkspace === "quests" && view === null;
+        setWorkspaceFilter(selected ? null : "quests");
+        setView(null);
+        return;
+      }
+
+      if (activeWorkspace === "quests") setWorkspaceFilter(null);
+      if (mode === "timeline") {
+        setView(view === "timeline" ? null : "timeline");
+        return;
+      }
+
+      const selected =
+        view === "all" ||
+        view === "todo" ||
+        view === "current" ||
+        view === "completed";
+      setView(selected ? null : "all");
+    };
+
+    window.addEventListener(ACTIVITY_NAVIGATION_EVENT, handleActivityNavigation);
+    return () =>
+      window.removeEventListener(
+        ACTIVITY_NAVIGATION_EVENT,
+        handleActivityNavigation,
+      );
+  }, [activeWorkspace, setView, setWorkspaceFilter, view]);
+
+  useEffect(() => {
+    const toggleTimer = () => {
+      if (activeTimer) {
+        completeTimer();
+        setView("completed");
+        setQuestEditorOpen(false);
+        setTagEditorOpen(false);
+        return;
+      }
+      if (!timerDraft.name.trim()) return;
+      startTimer(timerDraft);
+      setTimerDraft(emptyDraft);
+    };
+    window.addEventListener(ACTIVITY_TIMER_TOGGLE_EVENT, toggleTimer);
+    return () => window.removeEventListener(ACTIVITY_TIMER_TOGGLE_EVENT, toggleTimer);
+  }, [activeTimer, completeTimer, setView, startTimer, timerDraft]);
 
   if (!isOpen) return null;
 
@@ -672,6 +772,8 @@ export function TelemetryApp() {
   const lifeCategory = workspaceLifeCategory(activeWorkspace);
   const kanbanSelected =
     view === "all" || view === "todo" || view === "current" || view === "completed";
+  const showCategoryFilters = view !== null || activeWorkspace !== null;
+  const isCompactPreview = !showCategoryFilters;
 
   function handleStart() {
     if (!timerDraft.name.trim()) return;
@@ -730,117 +832,76 @@ export function TelemetryApp() {
     setCaptureDraft({});
   }
 
-  function selectActiveQuests() {
-    const questsSelected = activeWorkspace === "quests" && view === null;
-    setWorkspaceFilter(questsSelected ? null : "quests");
-    setView(null);
-    setCaptureDraft({});
-    setSelectedLifeActivity(null);
-  }
-
   function selectTelemetryView(nextView: TelemetryView | null) {
     if (activeWorkspace === "quests") setWorkspaceFilter(null);
     setView(nextView);
     setSelectedLifeActivity(null);
   }
 
-  function selectTimelines() {
-    if (activeWorkspace === "quests") setWorkspaceFilter(null);
-    setView(view === "timeline" ? null : "timeline");
-    setSelectedLifeActivity(null);
-  }
-
-  function selectKanban() {
-    if (activeWorkspace === "quests") setWorkspaceFilter(null);
-    setView(kanbanSelected ? null : "all");
-    setSelectedLifeActivity(null);
+  function playQuest(questTitle: string) {
+    if (activeTimer) return;
+    startTimer({ category: "quests", name: questTitle, notes: "" });
+    setTimerQuest(questTitle);
+    setView("current");
   }
 
   return (
     <section
-      aria-label="Telemetry"
+      aria-label="Activity"
       aria-modal="false"
-      className="fixed left-1/2 top-[calc((100dvh-var(--composer-dock-offset,6.5rem))/2)] z-[10002] flex h-[min(44rem,calc(100dvh-var(--composer-dock-offset,6.5rem)-2rem))] w-[calc(100vw-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden bg-background text-[#191714] outline-[16px] outline-background"
+      className={`activity-modal composer-rail-modal fixed z-[10005] flex -translate-x-1/2 touch-pan-y flex-col overflow-hidden border border-black/15 bg-background px-8 text-[#191714] sm:px-10 ${isCompactPreview ? "py-1" : "py-3"}`}
+      onPointerDown={requestActivityFocus}
+      ref={modalRef}
       role="dialog"
+      {...modalSwipeHandlers}
     >
-      <header className="shrink-0 bg-background px-4 py-3 text-black sm:px-5">
-        <div>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em]">
-            Telemetry
-          </p>
-          <p className="mt-1 text-[0.5rem] uppercase tracking-[0.16em] text-[#6d6257]">
-            Activity record
-          </p>
-        </div>
-      </header>
-
       <div
-        className={`pane-scroll flex min-h-0 flex-1 flex-col overscroll-contain px-4 pb-8 pt-3 sm:px-5 ${
-          contentView === "current" ? "overflow-hidden" : "overflow-y-auto"
-        }`}
+        className={`activity-modal-content pane-scroll flex min-h-0 flex-col overflow-y-auto overscroll-contain ${isCompactPreview ? "pb-0" : "pb-1"}`}
         data-lenis-prevent
       >
-        <section aria-label={activeTimer ? "Running timer" : "Timer setup"}>
-            <div className="flex flex-wrap items-end justify-between gap-3">
+        {kanbanSelected ? (
+          <div className="order-2 mb-3 flex justify-end">
+            <TelemetryViewToggle onChange={selectTelemetryView} view={view} />
+          </div>
+        ) : null}
+
+        {activeWorkspace === "quests" && view === null ? (
+          <div className="order-2">
+            <QuestCatalog
+              onPlayQuest={playQuest}
+              playDisabled={Boolean(activeTimer)}
+              questItems={todos.filter((todo) => todo.workspace === "quests")}
+            />
+          </div>
+        ) : null}
+
+        <section
+          aria-label={activeTimer ? "Running timer" : "Timer setup"}
+          className="order-1"
+        >
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
               <time
-                className="block text-left font-mono text-3xl tabular-nums sm:text-4xl"
+                className={`block text-left font-mono tabular-nums ${isCompactPreview ? "text-lg sm:text-xl" : "text-2xl sm:text-3xl"}`}
                 dateTime={`PT${Math.floor(elapsedMs / 1000)}S`}
               >
                 {formatDuration(elapsedMs)}
               </time>
-              <div className="ml-auto flex items-end justify-end gap-2">
-                <label className="grid gap-0.5 text-right">
-                  <span className="text-[0.42rem] font-semibold uppercase tracking-[0.12em] text-[#6d6257]">
-                    Start
-                  </span>
-                  <input
-                    aria-label="Activity start time"
-                    className="w-[9.25rem] border-0 bg-background p-0 text-right font-mono text-[0.58rem] text-black outline-none focus:ring-0 disabled:opacity-60"
-                    disabled={!activeTimer}
-                    max={toLocalDateTimeValue(now)}
-                    onChange={(event) => {
-                      const timestamp = new Date(event.target.value).getTime();
-                      if (Number.isFinite(timestamp)) setTimerStartedAt(timestamp);
-                    }}
-                    type="datetime-local"
-                    value={toLocalDateTimeValue(activeTimer?.startedAt ?? now)}
-                  />
-                </label>
-                <label className="grid gap-0.5 text-right">
-                  <span className="text-[0.42rem] font-semibold uppercase tracking-[0.12em] text-[#6d6257]">
-                    End
-                  </span>
-                  <input
-                    aria-label="Activity end time"
-                    className="w-[9.25rem] border-0 bg-background p-0 text-right font-mono text-[0.58rem] text-black outline-none focus:ring-0 disabled:opacity-60"
-                    disabled={!activeTimer}
-                    max={toLocalDateTimeValue(now)}
-                    min={activeTimer ? toLocalDateTimeValue(activeTimer.startedAt) : undefined}
-                    onChange={(event) => {
-                      const timestamp = new Date(event.target.value).getTime();
-                      if (Number.isFinite(timestamp)) setTimerEndedAt(timestamp);
-                    }}
-                    type="datetime-local"
-                    value={toLocalDateTimeValue(activeTimer ? activeTimer.startedAt + elapsedMs : now)}
-                  />
-                </label>
-              </div>
+              <input
+                aria-label="Current activity name"
+                className={`min-w-0 w-full border-0 bg-transparent p-0 text-right font-medium text-black outline-none placeholder:text-[#8a8177] focus:ring-0 ${isCompactPreview ? "text-sm" : "text-base"}`}
+                onChange={(event) => {
+                  if (activeTimer) setTimerName(event.target.value);
+                  else setTimerDraft((draft) => ({ ...draft, name: event.target.value }));
+                }}
+                placeholder="What are you working on?"
+                value={activeTimer?.name ?? timerDraft.name}
+              />
             </div>
-            <input
-              aria-label="Current activity name"
-              className="mt-2 w-full border-0 bg-transparent p-0 text-lg font-medium text-black outline-none placeholder:text-[#8a8177] focus:ring-0"
-              onChange={(event) => {
-                if (activeTimer) setTimerName(event.target.value);
-                else setTimerDraft((draft) => ({ ...draft, name: event.target.value }));
-              }}
-              placeholder="What are you working on?"
-              value={activeTimer?.name ?? timerDraft.name}
-            />
-            {activeTimer?.category ? (
+            {!isCompactPreview && activeTimer?.category ? (
               <p className="mt-1 text-xs text-[#766b5d]">{activeTimer.category}</p>
             ) : null}
 
-            {activeTimer ? (
+            {!isCompactPreview && activeTimer ? (
               <div className="mt-3 flex flex-wrap items-center gap-2">
                   <button
                     className="inline-flex items-center gap-1.5 rounded-full border border-black px-3 py-1.5 text-[0.55rem] font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-black hover:text-white"
@@ -878,7 +939,7 @@ export function TelemetryApp() {
               </div>
             ) : null}
 
-            {questEditorOpen ? (
+            {!isCompactPreview && questEditorOpen ? (
               <form className="mt-2 flex gap-2" onSubmit={saveQuest}>
                 <input
                   aria-label="Quest"
@@ -893,7 +954,7 @@ export function TelemetryApp() {
               </form>
             ) : null}
 
-            {tagEditorOpen ? (
+            {!isCompactPreview && tagEditorOpen ? (
               <form className="mt-2 flex gap-2" onSubmit={saveTag}>
                 <input
                   aria-label="Tag"
@@ -908,64 +969,20 @@ export function TelemetryApp() {
               </form>
             ) : null}
 
-            <div className="mt-2 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5">
-                <button
-                  aria-pressed={activeWorkspace === "quests" && view === null}
-                  className={`shrink-0 rounded-full border border-black px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    activeWorkspace === "quests" && view === null
-                      ? "bg-black text-white"
-                      : "bg-background text-black hover:bg-black/10"
-                  }`}
-                  onClick={selectActiveQuests}
-                  type="button"
-                >
-                  Active quests
-                </button>
-                <button
-                  aria-pressed={view === "timeline"}
-                  className={`shrink-0 rounded-full border border-black px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    view === "timeline"
-                      ? "bg-black text-white"
-                      : "bg-background text-black hover:bg-black/10"
-                  }`}
-                  onClick={selectTimelines}
-                  type="button"
-                >
-                  Timelines
-                </button>
-              </div>
-              <button
-                aria-pressed={kanbanSelected}
-                className={`ml-auto shrink-0 rounded-full border border-black px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                  kanbanSelected
-                    ? "bg-black text-white"
-                    : "bg-background text-black hover:bg-black/10"
-                }`}
-                onClick={selectKanban}
-                type="button"
-              >
-                Kanban
-              </button>
-            </div>
-
-            {kanbanSelected ? (
-              <div className="mt-3 flex justify-end">
-                <TelemetryViewToggle onChange={selectTelemetryView} view={view} />
-              </div>
-            ) : null}
-
             {contentView === "plan" ? (
               <LifePlanPanel onSelectActivity={setSelectedLifeActivity} />
-            ) : activeWorkspace === "quests" && view === null ? (
-              <ActiveQuestPanel category="all" onSelectActivity={setSelectedLifeActivity} />
             ) : lifeCategory !== "all" ? (
               <CategoryContext category={lifeCategory} onSelectActivity={setSelectedLifeActivity} />
             ) : null}
-            {selectedLifeActivity ? <LifeActivityDetails activity={selectedLifeActivity} /> : null}
+            {activeWorkspace === "quests" && view === null
+              ? null
+              : selectedLifeActivity
+                ? <LifeActivityDetails activity={selectedLifeActivity} />
+                : null}
 
         </section>
 
+        <div className="order-3">
         {contentView === "all" ? (
           <KanbanBoard
             activeTimer={activeTimer}
@@ -1334,7 +1351,36 @@ export function TelemetryApp() {
           )}
         </section>
         ) : null}
+        </div>
       </div>
+
+      {showCategoryFilters ? (
+        <div
+          aria-label="Activity category filters"
+          className="mt-1 flex shrink-0 flex-wrap items-center justify-center gap-1"
+          role="group"
+        >
+          {telemetryWorkspaceTabs.map((workspace) => (
+            <button
+              aria-pressed={activeWorkspace === workspace}
+              className={`rounded-full border px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${
+                activeWorkspace === workspace
+                  ? "border-black bg-black text-background"
+                  : "border-transparent text-[#514a43] hover:bg-black/10"
+              }`}
+              key={workspace ?? "all"}
+              onClick={() => setWorkspaceFilter(workspace)}
+              type="button"
+            >
+              {workspace === null
+                ? "All"
+                : workspace === "plan"
+                  ? "Game Design"
+                  : workspace}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
     </section>
   );

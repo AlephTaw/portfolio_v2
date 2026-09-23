@@ -22,6 +22,7 @@
     "bootcamp:databases": "npm run bootcamp:databases:build && npm run bootcamp:databases:publish",
     "curriculum:export": "npm run curriculum:units && npm run curriculum:catalog && uv run python scripts/export-curriculum.py && uv run python scripts/build-mlphd-islands.py",
     "curriculum:test": "npm run curriculum:units:check && uv run ruff check src database/builders notebooks tests/python scripts/export-curriculum.py scripts/build-mlphd-islands.py scripts/split_all_in_one_notebook.py scripts/split_all_in_one_notebooks.py && uv run pytest",
+    "quests:sync-portfolio": "node scripts/sync-portfolio-quest-content.mjs",
     "db:generate": "drizzle-kit generate",
     "cf:deploy": "npm run build && wrangler deploy",
     "cf:tail": "wrangler tail steven-wilcox-agent"
@@ -31,6 +32,7 @@
     "framer-motion": "^12.42.2",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
+    "katex": "^0.18.5",
     "lenis": "^1.3.25",
     "next": "16.2.6",
     "react": "19.2.6",

@@ -6,14 +6,20 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "dev:game-api": "cd apps/apis/game && uv run fastapi dev app/main.py --port 8000",
     "dev:portfolio": "npm --prefix apps/portfolio run dev -- --port 3002",
     "dev:agent": "npm --prefix apps/agent run dev -- --port 3003",
+    "dev:mvp": "npm --prefix apps/mvp run dev -- --port 3004",
+    "dev:mmvp": "npm --prefix apps/mmvp run dev -- --port 3005",
     "build:portfolio": "npm --prefix apps/portfolio run build",
     "build:agent": "npm --prefix apps/agent run build",
+    "build:mvp": "npm --prefix apps/mvp run build",
+    "build:mmvp": "npm --prefix apps/mmvp run build",
     "test:portfolio": "npm --prefix apps/portfolio test",
     "test:agent": "npm --prefix apps/agent test",
     "lint:portfolio": "npm --prefix apps/portfolio run lint",
-    "lint:agent": "npm --prefix apps/agent run lint"
+    "lint:agent": "npm --prefix apps/agent run lint",
+    "lint:mvp": "npm --prefix apps/mvp run lint"
   },
   "packageManager": "pnpm@9.15.6+sha512.139cab068fdf0b751268179ac5f909b5be72afb4a75c513d1905d151befc8977b593d3cf8671ed83d4d6637c5c94b98ffbce108125de4a5a27a31233601a99de"
 }

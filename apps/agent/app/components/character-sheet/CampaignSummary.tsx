@@ -59,16 +59,34 @@ function TagList({ tags }: { tags: string[] }) {
   );
 }
 
-export function CampaignDetail({ mode }: { mode: "plan" | "quests" }) {
+export function CampaignDetail({
+  embedded = false,
+  mode,
+}: {
+  embedded?: boolean;
+  mode: "plan" | "quests";
+}) {
   return (
-    <section className="mt-3 border-t-2 border-black pt-4 sm:mt-4" aria-label={`Campaign ${mode}`}>
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-[0.58rem] font-semibold uppercase tracking-[0.2em]">Full {mode}</h2>
-        <span className="text-[0.45rem] uppercase tracking-[0.14em] text-[#7f7f7f]">2026-08-31 → 2026-09-30</span>
-      </div>
-      <div className="mt-3 grid gap-2">
+    <section
+      className={embedded ? "mt-4" : "mt-3 border-t-2 border-black pt-4 sm:mt-4"}
+      aria-label={`Campaign ${mode}`}
+    >
+      {!embedded ? (
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-[0.58rem] font-semibold uppercase tracking-[0.2em]">Full {mode}</h2>
+          <span className="text-[0.45rem] uppercase tracking-[0.14em] text-[#7f7f7f]">2026-08-31 → 2026-09-30</span>
+        </div>
+      ) : null}
+      <div className={`grid ${embedded ? "gap-3" : "mt-3 gap-2"}`}>
         {mode === "quests" ? lifeQuests.map((quest) => (
-          <article className="border border-black bg-background p-3" key={quest.id}>
+          <article
+            className={
+              embedded
+                ? "border border-black/15 bg-black/[0.025] p-4"
+                : "border border-black bg-background p-3"
+            }
+            key={quest.id}
+          >
             <div className="flex items-baseline justify-between gap-3">
               <h3 className="text-[0.58rem] font-semibold uppercase tracking-[0.12em]">L{quest.level} · {quest.name}</h3>
               <span className="text-[0.45rem] text-[#7f7f7f]">{quest.milestones.length} milestones</span>
@@ -149,8 +167,10 @@ type CampaignPanel = "vision" | "game-loop" | "plan" | "quests" | "activity";
 
 export function CampaignSummary({
   showWorkspacePlaceholders = false,
+  workspaceLayout = "all",
 }: {
   showWorkspacePlaceholders?: boolean;
+  workspaceLayout?: "all" | "campaign";
 } = {}) {
   const [expandedPanel, setExpandedPanel] = useState<CampaignPanel | null>(null);
 
@@ -159,7 +179,7 @@ export function CampaignSummary({
   }
 
   return (
-    <div className="mt-14 grid w-full grid-cols-[112fr_27fr] gap-x-3 sm:gap-x-4">
+    <div className="mt-14 grid w-full grid-cols-[112fr_27fr] gap-x-3">
       <div className="col-span-2 row-start-1">
         <CampaignCountdown />
       </div>
@@ -171,7 +191,7 @@ export function CampaignSummary({
       </div>
       <div
         aria-label="Campaign leaderboard"
-          className={`col-start-1 row-start-4 mt-3 aspect-[21/9] w-full border-black bg-[#e5e5e5] px-3 py-2 sm:mt-4 sm:px-4 sm:py-3 ${
+          className={`col-start-1 row-start-4 mt-3 aspect-[21/9] w-full border-black bg-[#e5e5e5] px-3 py-2 sm:px-4 sm:py-3 ${
           showWorkspacePlaceholders ? "border-2" : "border-[6px]"
         }`}
       >
@@ -200,7 +220,7 @@ export function CampaignSummary({
       </div>
       <div
         aria-label="Profile comic panel"
-        className={`col-start-2 row-start-4 mt-3 aspect-[9/16] w-full overflow-hidden border-black bg-[#e5e5e5] sm:mt-4 ${
+        className={`col-start-2 row-start-4 mt-3 aspect-[9/16] w-full overflow-hidden border-black bg-[#e5e5e5] ${
           showWorkspacePlaceholders ? "border-2" : "border-[6px]"
         }`}
       >
@@ -222,39 +242,57 @@ export function CampaignSummary({
             />
             {expandedPanel === "vision" ? <ExpandedCampaignPanel panel="vision" /> : null}
           </div>
-          <div className="col-span-2 row-start-6 mt-3 sm:mt-4">
-            <PlaceholderPanel
-              description="The daily loop: choose priorities, execute, log evidence, and review results."
-              onClick={() => togglePanel("game-loop")}
-              title="Game Loop"
-            />
-            {expandedPanel === "game-loop" ? <ExpandedCampaignPanel panel="game-loop" /> : null}
-          </div>
-          <div className="col-span-2 row-start-7 mt-3 grid gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4">
-            <PlaceholderPanel
-              description={`${lifePlanActivities.length} timestamped activities across the campaign. Click to open the full plan.`}
-              onClick={() => togglePanel("plan")}
-              title="Plan"
-            />
-            {expandedPanel === "plan" ? <ExpandedCampaignPanel panel="plan" /> : null}
-            <PlaceholderPanel
-              description={`${lifeQuests.length} parallel quests across Levels 0–7. Click to open the quest list.`}
-              onClick={() => togglePanel("quests")}
-              title="Quests"
-            />
-            {expandedPanel === "quests" ? <ExpandedCampaignPanel panel="quests" /> : null}
-          </div>
-          <div className="col-span-2 row-start-8 mt-3 sm:mt-4">
-            <button
-              aria-label="Expand Activity Log"
-              className="block w-full text-left"
-              onClick={() => togglePanel("activity")}
-              type="button"
-            >
-              <ActivityLogPreview />
-            </button>
-            {expandedPanel === "activity" ? <ExpandedCampaignPanel panel="activity" /> : null}
-          </div>
+          {workspaceLayout === "all" ? (
+            <>
+              <div className="col-span-2 row-start-6 mt-3 sm:mt-4">
+                <PlaceholderPanel
+                  description="The daily loop: choose priorities, execute, log evidence, and review results."
+                  onClick={() => togglePanel("game-loop")}
+                  title="Game Loop"
+                />
+                {expandedPanel === "game-loop" ? <ExpandedCampaignPanel panel="game-loop" /> : null}
+              </div>
+              <div className="col-span-2 row-start-7 mt-3 grid gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4">
+                <PlaceholderPanel
+                  description={`${lifePlanActivities.length} timestamped activities across the campaign. Click to open the full plan.`}
+                  onClick={() => togglePanel("plan")}
+                  title="Plan"
+                />
+                {expandedPanel === "plan" ? <ExpandedCampaignPanel panel="plan" /> : null}
+                <PlaceholderPanel
+                  description={`${lifeQuests.length} parallel quests across Levels 0–7. Click to open the quest list.`}
+                  onClick={() => togglePanel("quests")}
+                  title="Quests"
+                />
+                {expandedPanel === "quests" ? <ExpandedCampaignPanel panel="quests" /> : null}
+              </div>
+              <div className="col-span-2 row-start-8 mt-3 sm:mt-4">
+                <button
+                  aria-expanded={expandedPanel === "activity"}
+                  aria-label={`${expandedPanel === "activity" ? "Collapse" : "Expand"} Activity Log`}
+                  className="block w-full text-left"
+                  onClick={() => togglePanel("activity")}
+                  type="button"
+                >
+                  <ActivityLogPreview />
+                </button>
+                {expandedPanel === "activity" ? <ExpandedCampaignPanel panel="activity" /> : null}
+              </div>
+            </>
+          ) : (
+            <div className="col-span-2 row-start-6 mt-3 sm:mt-4">
+              <button
+                aria-expanded={expandedPanel === "activity"}
+                aria-label={`${expandedPanel === "activity" ? "Collapse" : "Expand"} Activity Log`}
+                className="block w-full text-left"
+                onClick={() => togglePanel("activity")}
+                type="button"
+              >
+                <ActivityLogPreview />
+              </button>
+              {expandedPanel === "activity" ? <ExpandedCampaignPanel panel="activity" /> : null}
+            </div>
+          )}
         </>
       )}
     </div>

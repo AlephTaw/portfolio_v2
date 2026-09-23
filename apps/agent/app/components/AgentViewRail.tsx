@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import { FiFileText, FiSettings } from "react-icons/fi";
+import { SurrogateTelemetryView } from "./SurrogateTelemetryView";
+import { AccountSettings } from "./character-sheet/AccountSettings";
 
 function MinimapTile({ open, onClick }: { open: boolean; onClick: () => void }) {
   return (
@@ -29,66 +30,99 @@ function MinimapTile({ open, onClick }: { open: boolean; onClick: () => void }) 
 }
 
 function RailContents({
-  direction,
+  characterSheetOpen,
   mapOpen,
+  onCharacterSheetClick,
   onMapClick,
-  onPrimaryViewClick,
 }: {
-  direction: "left" | "right";
+  characterSheetOpen: boolean;
   mapOpen: boolean;
+  onCharacterSheetClick: () => void;
   onMapClick: () => void;
-  onPrimaryViewClick: () => void;
 }) {
-  const pointsLeft = direction === "left";
-  const ArrowIcon = pointsLeft ? FiArrowLeft : FiArrowRight;
-  const label = pointsLeft ? "Open character sheet" : "Return to agent workspace";
-
   return (
     <nav
       aria-label="Agent views"
       className="relative z-[9999] flex flex-col items-center gap-3 isolate"
     >
-      <Link
-        aria-label={label}
-        className="grid size-7 place-items-center rounded-sm bg-white text-black shadow-sm transition-colors hover:bg-black hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
-        href={pointsLeft ? "/character-sheet" : "/"}
-        onClick={onPrimaryViewClick}
-        title={pointsLeft ? "Character sheet" : "Agent workspace"}
+      <button
+        aria-expanded={characterSheetOpen}
+        aria-label={characterSheetOpen ? "Close character sheet" : "Open character sheet"}
+        className={`grid size-9 place-items-center focus:outline-none focus-visible:ring-1 focus-visible:ring-black ${
+          characterSheetOpen ? "bg-black" : "bg-background"
+        }`}
+        onClick={onCharacterSheetClick}
+        title="Character sheet"
+        type="button"
       >
-        <ArrowIcon aria-hidden="true" className="size-4" />
-      </Link>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt=""
+          aria-hidden="true"
+          className={`h-5 w-auto ${characterSheetOpen ? "invert" : ""}`}
+          src="/character-sheet.svg"
+        />
+      </button>
       <MinimapTile onClick={onMapClick} open={mapOpen} />
     </nav>
   );
 }
 
-function CampaignMapModal({ onClose }: { onClose: () => void }) {
+function CharacterSheetSurface() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  return (
+    <section
+      aria-label="Character sheet view"
+      className="character-sheet-surface composer-rail-modal pane-scroll fixed z-[10004] -translate-x-1/2 overflow-y-auto overscroll-contain bg-background px-8 py-8 text-[#191714] sm:px-10"
+      data-lenis-prevent
+    >
+      <header className="mb-6 flex justify-end">
+        <button
+          aria-pressed={settingsOpen}
+          aria-label={settingsOpen ? "Return to character sheet" : "Open account and settings"}
+          className="inline-flex items-center gap-2 bg-background text-[0.5rem] font-semibold uppercase tracking-[0.14em] text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-black"
+          onClick={() => setSettingsOpen((open) => !open)}
+          type="button"
+        >
+          {settingsOpen ? (
+            <FiFileText aria-hidden="true" className="size-4" />
+          ) : (
+            <FiSettings aria-hidden="true" className="size-4" />
+          )}
+          {settingsOpen ? "Character Sheet" : "Account and Settings"}
+        </button>
+      </header>
+      {settingsOpen ? <AccountSettings /> : <SurrogateTelemetryView />}
+    </section>
+  );
+}
+
+function CampaignMapModal() {
   return (
     <div
       aria-label="Campaign map"
       aria-modal="true"
-      className="fixed inset-0 z-[10001] grid place-items-center overflow-hidden bg-black/95 p-4"
+      className="pointer-events-none fixed inset-0 z-[10004] grid place-items-center overflow-hidden p-4"
       role="dialog"
     >
-      <button
-        aria-label="Close campaign map"
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        type="button"
-      />
       <Image
         alt="Colorful brain network visualization"
-        className="pointer-events-none absolute right-3 top-3 z-20 h-auto w-[clamp(7rem,22vw,18rem)] object-contain sm:right-4 sm:top-4"
+        className="pointer-events-none absolute right-3 z-20 h-auto w-[clamp(7rem,22vw,18rem)] object-contain sm:right-4"
         height={1338}
         priority
         src="/cognitive-network-map.png"
+        style={{ top: "var(--activity-surface-bottom, 0.75rem)" }}
         unoptimized
         width={1330}
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 bottom-[var(--composer-dock-offset,6.5rem)] z-10 grid place-items-center overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-[var(--composer-dock-offset,6.5rem)] z-10 grid place-items-center overflow-hidden"
+        style={{ top: "0px" }}
+      >
         <Image
           alt="Isometric city map"
-          className="h-auto max-h-full w-[var(--composer-dock-width,100vw)] max-w-[var(--composer-dock-width,100vw)] object-contain"
+          className="minimap-rail-content h-auto max-h-full object-contain"
           height={1500}
           priority
           src="/isometric-city.jpg"
@@ -101,36 +135,45 @@ function CampaignMapModal({ onClose }: { onClose: () => void }) {
 }
 
 export function AgentViewRail({
-  direction,
   fixed = false,
 }: {
-  direction: "left" | "right";
   fixed?: boolean;
 }) {
+  const [characterSheetOpen, setCharacterSheetOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
 
   useEffect(() => {
-    if (!mapOpen) return;
+    if (!mapOpen && !characterSheetOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMapOpen(false);
+      if (event.key !== "Escape") return;
+      if (mapOpen) setMapOpen(false);
+      else setCharacterSheetOpen(false);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mapOpen]);
+  }, [characterSheetOpen, mapOpen]);
 
-  const mapModal = mapOpen ? <CampaignMapModal onClose={() => setMapOpen(false)} /> : null;
+  const mapModal = mapOpen ? <CampaignMapModal /> : null;
+  const characterSheetSurface = characterSheetOpen ? <CharacterSheetSurface /> : null;
 
   if (fixed) {
     return (
       <>
+        {characterSheetSurface}
         {mapModal}
-        <div className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--composer-dock-offset,6.5rem)+1rem)] z-[10003] mx-auto h-0 w-full max-w-5xl isolate">
+        <div className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--composer-dock-offset,6.5rem)+1rem)] z-[10006] mx-auto h-0 w-full max-w-5xl isolate">
           <div className="pointer-events-auto absolute bottom-0 right-2 w-fit sm:right-4">
             <RailContents
-              direction={direction}
+              characterSheetOpen={characterSheetOpen}
               mapOpen={mapOpen}
-              onMapClick={() => setMapOpen((open) => !open)}
-              onPrimaryViewClick={() => setMapOpen(false)}
+              onCharacterSheetClick={() => {
+                setMapOpen(false);
+                setCharacterSheetOpen((open) => !open);
+              }}
+              onMapClick={() => {
+                setCharacterSheetOpen(false);
+                setMapOpen((open) => !open);
+              }}
             />
           </div>
         </div>
@@ -140,13 +183,20 @@ export function AgentViewRail({
 
   return (
     <>
+      {characterSheetSurface}
       {mapModal}
-      <div className="absolute bottom-3 right-2 z-[10003] isolate sm:right-4">
+      <div className="absolute bottom-3 right-2 z-[10006] isolate sm:right-4">
         <RailContents
-          direction={direction}
+          characterSheetOpen={characterSheetOpen}
           mapOpen={mapOpen}
-          onMapClick={() => setMapOpen((open) => !open)}
-          onPrimaryViewClick={() => setMapOpen(false)}
+          onCharacterSheetClick={() => {
+            setMapOpen(false);
+            setCharacterSheetOpen((open) => !open);
+          }}
+          onMapClick={() => {
+            setCharacterSheetOpen(false);
+            setMapOpen((open) => !open);
+          }}
         />
       </div>
     </>

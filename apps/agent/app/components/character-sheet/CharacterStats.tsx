@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FiBox, FiDatabase, FiVideo } from "react-icons/fi";
+import { ArcTimeline } from "@/src/apps/arc/ArcTimeline";
 
 const stats = [
   { label: "Sync Ratio", value: "84%" },
@@ -128,30 +129,6 @@ function AttributeWorkspace({
   );
 }
 
-function ArcTimeline() {
-  return (
-    <section aria-label="After Action Reports" className="mt-8" id="arc-timeline">
-      <div className="space-y-6">
-        <div className="grid grid-cols-[2fr_1fr] items-start gap-2">
-          <div className="aspect-[16/9] border-[6px] border-black bg-[#e5e5e5]" />
-          <div className="aspect-[3/4] border-[6px] border-black bg-[#e5e5e5]" />
-        </div>
-        <div className="grid grid-cols-[1fr_1.45fr] gap-2">
-          <div className="aspect-square border-[6px] border-black bg-[#e5e5e5]" />
-          <div className="grid grid-rows-2 gap-2">
-            <div className="border-[6px] border-black bg-[#e5e5e5]" />
-            <div className="border-[6px] border-black bg-[#e5e5e5]" />
-          </div>
-        </div>
-        <div className="grid grid-cols-[1fr_2fr] items-end gap-2">
-          <div className="aspect-[3/4] border-[6px] border-black bg-[#e5e5e5]" />
-          <div className="aspect-[16/9] border-[6px] border-black bg-[#e5e5e5]" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function WorldlineTimeline() {
   const entries = [
     {
@@ -221,7 +198,7 @@ export function CharacterStats({
 }: {
   showAttributeWorkspace?: boolean;
 } = {}) {
-  const [reportsOpen, setReportsOpen] = useState(showAttributeWorkspace);
+  const [reportsOpen, setReportsOpen] = useState(false);
   const [timelineView, setTimelineView] = useState<"arc" | "worldline">("arc");
   const [activeAttribute, setActiveAttribute] = useState<string | null>(null);
   const [previewAttribute, setPreviewAttribute] = useState<string | null>(null);
@@ -262,37 +239,50 @@ export function CharacterStats({
             {/* A plain image avoids Vinext's unavailable local image optimizer binding. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              alt="Illustrated portrait of Steven Wilcox"
+              alt="Colorful abstract cartoon character map"
               className="h-full w-full object-cover"
-              src="/assets/live-stats-profile.png"
+              src="/assets/character-stats-surrogate.png"
             />
           </div>
           <div aria-hidden="true" className="h-3 shrink-0" />
           <p className="w-[7.75rem] whitespace-nowrap text-center text-[0.55rem] italic uppercase leading-3 tracking-[0.28em] text-[#7f7f7f] sm:w-[9.5rem]">
-            Title: Data Scientist
+            {visibleStat ? "Aura Salience" : "Title: Data Scientist"}
           </p>
           <div aria-hidden="true" className="h-3 shrink-0" />
           {showAttributeWorkspace ? (
-            <button
-              aria-controls="arc-timeline"
-              aria-expanded={reportsOpen}
-              className={`w-[7.75rem] whitespace-nowrap border border-black px-2 py-1 text-[0.45rem] font-semibold uppercase tracking-[0.1em] transition-colors hover:bg-black hover:text-[#f5f5f5] focus:outline-none focus-visible:ring-1 focus-visible:ring-black sm:w-[9.5rem] sm:text-[0.5rem] sm:tracking-[0.12em] ${
-                reportsOpen
-                  ? "bg-black text-[#f5f5f5]"
-                  : "bg-transparent text-black"
-              }`}
-              onClick={() => {
-                setActiveAttribute(null);
-                setPreviewAttribute(null);
-                setReportsOpen((open) => {
-                  if (open) setTimelineView("arc");
-                  return !open;
-                });
-              }}
-              type="button"
+            <div
+              aria-label="Character workspace"
+              className="inline-flex w-[7.75rem] rounded-full border border-black p-0.5 sm:w-[9.5rem]"
+              role="group"
             >
-              DEVLOGS
-            </button>
+              {([
+                ["devlogs", "DEVLOGS"],
+                ["os", "O.S."],
+              ] as const).map(([mode, label]) => {
+                const selected = mode === "devlogs" ? reportsOpen : !reportsOpen;
+                return (
+                  <button
+                    aria-controls={mode === "devlogs" ? "arc-timeline" : undefined}
+                    aria-pressed={selected}
+                    className={`min-w-0 flex-1 rounded-full px-1.5 py-1 text-[0.4rem] font-semibold uppercase tracking-[0.08em] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-black sm:text-[0.45rem] sm:tracking-[0.1em] ${
+                      selected
+                        ? "bg-black text-[#f5f5f5]"
+                        : "text-black hover:bg-black/10"
+                    }`}
+                    key={mode}
+                    onClick={() => {
+                      setActiveAttribute(null);
+                      setPreviewAttribute(null);
+                      setReportsOpen(mode === "devlogs");
+                      if (mode === "os") setTimelineView("arc");
+                    }}
+                    type="button"
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           ) : (
             <div className="w-[7.75rem] border border-black bg-transparent px-2 py-1 text-center text-[0.45rem] font-semibold uppercase tracking-[0.1em] text-black sm:w-[9.5rem] sm:text-[0.5rem] sm:tracking-[0.12em]">
               DEVLOGS

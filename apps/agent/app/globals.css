@@ -41,6 +41,57 @@ a {
   display: none;
 }
 
+.composer-rail-modal {
+  bottom: calc(var(--composer-dock-offset, 6.5rem) + 0.5rem);
+  height: 75dvh;
+  left: calc(50% - 1.0625rem);
+  width: calc(var(--composer-dock-width, 100vw) - 4.375rem);
+}
+
+.activity-modal {
+  top: 0.5rem;
+  bottom: auto;
+  height: auto;
+  max-height: var(--activity-modal-max-height, 75dvh);
+}
+
+.activity-modal-content {
+  zoom: 0.88;
+}
+
+.character-sheet-surface {
+  top: 0.5rem;
+  height: auto;
+  max-height: calc(100dvh - var(--composer-dock-offset, 6.5rem) - 1rem);
+}
+
+.minimap-rail-content {
+  width: var(--composer-dock-width, 100vw);
+  max-width: var(--composer-dock-width, 100vw);
+}
+
+@media (max-width: 39.999rem) {
+  .minimap-rail-content {
+    width: calc(var(--composer-dock-width, 100vw) - 4.375rem);
+    max-width: calc(var(--composer-dock-width, 100vw) - 4.375rem);
+    transform: translateX(-1.0625rem);
+  }
+}
+
+@media (min-width: 40rem) {
+  .composer-rail-modal {
+    width: calc(var(--composer-dock-width, 100vw) - 5.375rem);
+  }
+}
+
+@media (min-width: 40rem) and (max-width: 63.999rem) {
+  .minimap-rail-content {
+    width: calc(var(--composer-dock-width, 100vw) - 5.375rem);
+    max-width: calc(var(--composer-dock-width, 100vw) - 5.375rem);
+    transform: translateX(-1.0625rem);
+  }
+}
+
 @keyframes route-enter {
   from {
     opacity: 0;

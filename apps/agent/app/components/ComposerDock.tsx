@@ -1,24 +1,50 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import {
   FiBox,
+  FiCheck,
   FiChevronRight,
   FiMessageCircle,
+  FiPlay,
   FiPlus,
   FiUsers,
+  FiX,
 } from "react-icons/fi";
+import {
+  POPULATE_COMPOSER_EVENT,
+  type PopulateComposerDetail,
+} from "@/src/apps/collections/composerEvents";
+import { uploadCollectionImage } from "@/src/apps/collections/uploadImage";
+import type { CollectionItemCreate } from "@/src/apps/collections/types";
 import { useTelemetry } from "@/src/apps/telemetry/useTelemetry";
 import {
-  inventoryCategories,
-  taskWorkspaces,
-  type InventoryCategory,
-  type TodoItem,
-} from "@/src/apps/telemetry/types";
-import { Achievements } from "./character-sheet/Achievements";
+  ACTIVITY_FOCUS_EVENT,
+  ACTIVITY_VISIBILITY_TOGGLE_EVENT,
+  requestActivityNavigation,
+  requestActivityTimerToggle,
+} from "@/src/apps/telemetry/navigationEvents";
+import { CollectionManager } from "@/src/apps/collections/CollectionManager";
+import portfolioQuestContent from "@/src/apps/quests/portfolioQuestContent.generated.json";
+import {
+  getAdjacentItem,
+  useHorizontalSwipeNavigation,
+} from "@/src/hooks/useHorizontalSwipeNavigation";
 import { AfterActionReports } from "./character-sheet/AfterActionReports";
+import {
+  CampaignDetail,
+  CampaignSummary,
+} from "./character-sheet/CampaignSummary";
+import { lifeQuests } from "@/src/life-rpg/data";
 
 type TerminalEntry = {
   id: number;
@@ -28,6 +54,65 @@ type TerminalEntry = {
 };
 
 type DockPanel = "inventory" | "plan" | "threads";
+type PortfolioQuestSection = {
+  sectionId: string;
+  sectionTitle: string;
+  items: Array<{ id: string; title: string; content: string }>;
+};
+
+const portfolioQuestSections = portfolioQuestContent.quests as Record<
+  string,
+  PortfolioQuestSection
+>;
+
+const dockDestinations = [
+  "threads",
+  "plan",
+  "inventory",
+] as const;
+const inventoryModes = ["inventory", "achievements", "store"] as const;
+const threadModes = ["threads", "orgs", "connections"] as const;
+const activityModes = ["quests", "timeline", "kanban"] as const;
+type InventoryMode = (typeof inventoryModes)[number];
+type ThreadMode = (typeof threadModes)[number];
+type ActivityMode = (typeof activityModes)[number];
+const surrogateQuestTitles = [
+  "Python",
+  "SQL",
+  "Probability and Statistics",
+  "Algorithms",
+  "ML in Practice",
+  "Containerization",
+  "ML Deployments",
+  "Robotics",
+] as const;
+const emptyQuestCategories = [
+  "Health",
+  "Wealth",
+  "Connection",
+  "Sentience",
+] as const;
+
+function ComposerAttachment({
+  file,
+  onRemove,
+}: {
+  file: File;
+  onRemove: () => void;
+}) {
+  const source = useMemo(() => URL.createObjectURL(file), [file]);
+  useEffect(() => () => URL.revokeObjectURL(source), [source]);
+  return (
+    <div className="flex max-w-44 items-center gap-2 rounded-full border border-white/35 bg-white/10 py-1 pl-1 pr-2 text-white">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt="" className="size-6 rounded-full object-cover" src={source} />
+      <span className="min-w-0 flex-1 truncate text-[0.5rem]">{file.name}</span>
+      <button aria-label={`Remove ${file.name}`} className="shrink-0" onClick={onRemove} type="button">
+        <FiX aria-hidden="true" className="size-3" />
+      </button>
+    </div>
+  );
+}
 
 const gameLoopNodes = [
   ["observe", "Observe", "Read current health, money, time, quests, and recent activity."],
@@ -243,119 +328,338 @@ function GuildDetails() {
   );
 }
 
-function InventorySlot({ item }: { item?: TodoItem }) {
-  if (!item) {
-    return (
-      <div aria-hidden="true" className="flex min-w-0 justify-center">
-        <div className="size-12 rounded-sm border border-[#e5e5e5] bg-background" />
-      </div>
-    );
-  }
-
+function EmptyQuestCategory({
+  headingId,
+  title,
+}: {
+  headingId: string;
+  title: string;
+}) {
   return (
-    <article
-      className="group flex min-w-0 flex-col items-center text-center"
-      title={item.details.condition || item.title}
-    >
-      <div
-        className={`relative flex size-12 items-center justify-center rounded-sm border transition-colors group-hover:border-[#686057] ${
-          item.completed
-            ? "border-[#e5e5e5] bg-[#eeeae3] text-[#92887e]"
-            : "border-[#d8d8d8] bg-background text-[#3f3f3f]"
-        }`}
-      >
-        <FiBox aria-hidden="true" className="size-5" />
-        {item.details.quantity ? (
-          <span className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full bg-[#3f3f3f] px-1 text-[0.42rem] font-semibold leading-none text-white">
-            {item.details.quantity}
-          </span>
-        ) : null}
+    <section aria-labelledby={headingId} className="border-b border-black/10 py-4">
+      <div className="flex items-center justify-between gap-4">
+        <h3
+          className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[#191714]"
+          id={headingId}
+        >
+          {title}
+        </h3>
+        <span className="text-[0.5rem] uppercase tracking-[0.14em] text-[#8a8177]">
+          0 quests
+        </span>
       </div>
-      <p
-        className={`mt-1 max-w-full truncate text-[0.5rem] leading-3 ${
-          item.completed
-            ? "text-[#92887e] line-through"
-            : "text-[#3f3f3f]"
-        }`}
-      >
-        {item.title}
-      </p>
-    </article>
+      <p className="mt-2 text-xs text-[#746b61]">No quests assigned.</p>
+    </section>
   );
 }
 
-function InventorySlotGrid({
-  items,
-  minimumDesktopSlots,
-  minimumMobileSlots,
+function SurrogateQuestList({
+  description = "Active objectives and completed missions",
+  headingId,
+  heading = "Quests",
+  onPlayQuest,
+  playDisabled = false,
+  presetQuests = [],
+  questItems,
 }: {
-  items: TodoItem[];
-  minimumDesktopSlots: number;
-  minimumMobileSlots: number;
+  description?: string;
+  headingId: string;
+  heading?: string;
+  onPlayQuest: (questTitle: string) => void;
+  playDisabled?: boolean;
+  presetQuests?: readonly string[];
+  questItems: ReturnType<typeof useTelemetry>["todos"];
 }) {
-  const desktopSlotCount = Math.max(
-    minimumDesktopSlots,
-    Math.ceil(items.length / 8) * 8,
+  const [expandedQuestId, setExpandedQuestId] = useState<string | null>(null);
+  const dynamicQuestNames = new Set(
+    questItems.map((quest) => quest.title.trim().toLocaleLowerCase()),
   );
-  const mobileSlotCount = Math.max(
-    minimumMobileSlots,
-    Math.ceil(items.length / 4) * 4,
-  );
-  const emptySlotCount = desktopSlotCount - items.length;
-  const mobileHiddenSlotCount = desktopSlotCount - mobileSlotCount;
+  const visibleQuests = [
+    ...presetQuests
+      .filter(
+        (title) => !dynamicQuestNames.has(title.trim().toLocaleLowerCase()),
+      )
+      .map((title, index) => ({
+        completed: false,
+        createdAt: null,
+        details: {} as Record<string, string>,
+        id: `surrogate-preset-quest-${index}`,
+        title,
+        workspace: "quests" as const,
+      })),
+    ...questItems,
+  ];
 
   return (
-    <div className="grid grid-cols-4 gap-x-2 gap-y-3 sm:grid-cols-8">
-      {items.map((item) => (
-        <InventorySlot item={item} key={item.id} />
-      ))}
-      {Array.from({ length: emptySlotCount }, (_, index) => (
-        <div
-          className={index >= emptySlotCount - mobileHiddenSlotCount ? "hidden sm:block" : "block"}
-          key={`empty-inventory-slot-${index}`}
-        >
-          <InventorySlot />
+    <section aria-labelledby={headingId} className="py-4">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h3
+            className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[#191714]"
+            id={headingId}
+          >
+            {heading}
+          </h3>
+          <p className="mt-1 text-[0.5rem] uppercase tracking-[0.14em] text-[#746b61]">
+            {description}
+          </p>
         </div>
+        <span className="text-[0.5rem] uppercase tracking-[0.14em] text-[#8a8177]">
+          {visibleQuests.filter((quest) => !quest.completed).length} active
+        </span>
+      </div>
+      {visibleQuests.length ? (
+        <div className="mt-4 grid gap-3">
+          {visibleQuests.map((quest) => {
+            const expanded = expandedQuestId === quest.id;
+            const detailsId = `${headingId}-${quest.id}-details`;
+            const recordedDetails = Object.entries(quest.details).filter(
+              ([, value]) => value.trim(),
+            );
+            const portfolioDetails = portfolioQuestSections[quest.title];
+
+            return (
+              <article
+                className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border border-black/15 bg-black/[0.025] p-4"
+                key={quest.id}
+              >
+              <span
+                aria-hidden="true"
+                className={`size-2 rounded-full ${quest.completed ? "bg-[#bdb4a8]" : "bg-black"}`}
+              />
+              <div className="min-w-0">
+                <p
+                  className={`truncate text-sm ${quest.completed ? "text-[#8a8177] line-through" : "text-[#191714]"}`}
+                >
+                  {quest.title}
+                </p>
+                {quest.details.objective ? (
+                  <p className="mt-1 truncate text-xs text-[#746b61]">
+                    {quest.details.objective}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  aria-controls={detailsId}
+                  aria-expanded={expanded}
+                  aria-label={`${expanded ? "Collapse" : "Explore"} ${quest.title} quest`}
+                  className={`h-7 rounded-full border border-black px-3 text-[0.5rem] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 ${
+                    expanded
+                      ? "bg-black text-background"
+                      : "text-black hover:bg-black hover:text-background"
+                  }`}
+                  onClick={() =>
+                    setExpandedQuestId((current) =>
+                      current === quest.id ? null : quest.id,
+                    )
+                  }
+                  title={expanded ? "Collapse quest details" : "Explore quest"}
+                  type="button"
+                >
+                  Explore
+                </button>
+                <button
+                  aria-label={`Play ${quest.title} quest`}
+                  className="grid size-7 place-items-center rounded-full border border-black text-black transition-colors hover:bg-black hover:text-background focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border-black/25 disabled:text-black/25 disabled:hover:bg-transparent"
+                  disabled={playDisabled}
+                  onClick={() => onPlayQuest(quest.title)}
+                  title={playDisabled ? "Complete the current activity first" : "Play quest"}
+                  type="button"
+                >
+                  <FiPlay aria-hidden="true" className="size-3 fill-current" />
+                </button>
+              </div>
+              {expanded ? (
+                <section
+                  aria-label={`${quest.title} details`}
+                  className="col-span-3 mt-2 bg-background/70 p-4"
+                  id={detailsId}
+                >
+                  <dl className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <dt className="text-[0.44rem] font-semibold uppercase tracking-[0.14em] text-[#8a8177]">
+                        Status
+                      </dt>
+                      <dd className="mt-1 text-xs text-[#191714]">
+                        {quest.completed ? "Completed" : "Active"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-[0.44rem] font-semibold uppercase tracking-[0.14em] text-[#8a8177]">
+                        Source
+                      </dt>
+                      <dd className="mt-1 text-xs text-[#191714]">
+                        {quest.createdAt === null ? "Surrogate" : "Telemetry"}
+                      </dd>
+                    </div>
+                    {recordedDetails.map(([label, value]) => (
+                      <div className="sm:col-span-2" key={label}>
+                        <dt className="text-[0.44rem] font-semibold uppercase tracking-[0.14em] text-[#8a8177]">
+                          {label.replaceAll("_", " ")}
+                        </dt>
+                        <dd className="mt-1 text-xs leading-5 text-[#191714]">
+                          {value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  {portfolioDetails?.items.length ? (
+                    <div className="mt-5 grid gap-5 border-t border-black/10 pt-5 sm:grid-cols-[minmax(9rem,0.35fr)_minmax(0,1fr)]">
+                      <nav
+                        aria-label={`${portfolioDetails.sectionTitle} table of contents`}
+                      >
+                        <p className="text-[0.44rem] font-semibold uppercase tracking-[0.14em] text-[#8a8177]">
+                          Contents
+                        </p>
+                        <ol className="mt-3 grid gap-2 border-l border-black/15 pl-3">
+                          {portfolioDetails.items.map((item, index) => (
+                            <li key={item.id}>
+                              <a
+                                className="grid grid-cols-[1.5rem_minmax(0,1fr)] gap-1 text-[0.52rem] leading-4 text-[#514a43] transition-colors hover:text-black focus:outline-none focus-visible:underline"
+                                href={`#${detailsId}-${item.id}`}
+                              >
+                                <span className="text-[#9a9085]">
+                                  {String(index + 1).padStart(2, "0")}
+                                </span>
+                                <span>{item.title}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ol>
+                      </nav>
+                      <div className="min-w-0">
+                        <p className="text-[0.44rem] font-semibold uppercase tracking-[0.14em] text-[#8a8177]">
+                          {portfolioDetails.sectionTitle}
+                        </p>
+                        <div className="mt-3 divide-y divide-black/10 border-y border-black/10">
+                          {portfolioDetails.items.map((item) => (
+                            <article
+                              className="scroll-mt-6 py-4"
+                              id={`${detailsId}-${item.id}`}
+                              key={item.id}
+                            >
+                              <h4 className="text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-[#191714]">
+                                {item.title}
+                              </h4>
+                              <p className="mt-2 whitespace-pre-line text-xs leading-5 text-[#61584f]">
+                                {item.content}
+                              </p>
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  {!recordedDetails.length && !portfolioDetails?.items.length ? (
+                    <p className="mt-3 text-xs leading-5 text-[#746b61]">
+                      No matching portfolio section or additional quest details
+                      have been published yet.
+                    </p>
+                  ) : null}
+                </section>
+              ) : null}
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="mt-4 border border-dashed border-[#bdb4a8] px-4 py-10 text-center text-xs text-[#7f7468]">
+          Quests added through Telemetry will appear here.
+        </p>
+      )}
+    </section>
+  );
+}
+
+export function QuestCatalog({
+  onPlayQuest,
+  playDisabled = false,
+  questItems,
+}: {
+  onPlayQuest: (questTitle: string) => void;
+  playDisabled?: boolean;
+  questItems: ReturnType<typeof useTelemetry>["todos"];
+}) {
+  return (
+    <div>
+      {emptyQuestCategories.map((category) => (
+        <EmptyQuestCategory
+          headingId={`activity-${category.toLowerCase()}-quests-heading`}
+          key={category}
+          title={category}
+        />
       ))}
+      <SurrogateQuestList
+        description="Technical curriculum and skill-building quests"
+        heading="Competence"
+        headingId="activity-competence-quests-heading"
+        onPlayQuest={onPlayQuest}
+        playDisabled={playDisabled}
+        presetQuests={surrogateQuestTitles}
+        questItems={questItems}
+      />
+      <section aria-labelledby="activity-experience-quests-heading" className="py-4">
+        <div className="flex items-center justify-between gap-4">
+          <h3
+            className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[#191714]"
+            id="activity-experience-quests-heading"
+          >
+            Experience
+          </h3>
+          <span className="text-[0.5rem] uppercase tracking-[0.14em] text-[#8a8177]">
+            {lifeQuests.length} quests
+          </span>
+        </div>
+        <CampaignDetail embedded mode="quests" />
+      </section>
     </div>
   );
 }
 
 function DockUtilityPanel({
   entries,
-  inventoryItems,
+  inventoryMode,
+  onInventoryModeChange,
+  onThreadModeChange,
   panel,
-  questItems,
+  threadMode,
 }: {
   entries: TerminalEntry[];
-  inventoryItems: ReturnType<typeof useTelemetry>["todos"];
+  inventoryMode: InventoryMode;
+  onInventoryModeChange: (mode: InventoryMode) => void;
+  onThreadModeChange: (mode: ThreadMode) => void;
   panel: DockPanel;
-  questItems: ReturnType<typeof useTelemetry>["todos"];
+  threadMode: ThreadMode;
 }) {
   const isInventory = panel === "inventory";
   const isThreads = panel === "threads";
-  const [inventoryMode, setInventoryMode] = useState<
-    "inventory" | "achievements" | "store"
-  >("inventory");
-  const [threadMode, setThreadMode] = useState<
-    "threads" | "orgs" | "connections"
-  >("threads");
-  const [planMode, setPlanMode] = useState<"plan" | "game-loop" | "quests">("plan");
-  const [inventoryCategory, setInventoryCategory] = useState<
-    "all" | InventoryCategory
-  >("all");
+  const [planViewMode, setPlanViewMode] = useState<"view" | "edit">("edit");
   const [selectedThreadId, setSelectedThreadId] = useState("conversation-current");
-  const inventorySourceItems =
-    inventoryMode === "inventory" ? inventoryItems : [];
-  const visibleInventoryItems =
-    inventoryCategory === "all"
-      ? inventorySourceItems
-      : inventorySourceItems.filter(
-          (item) => item.details.category === inventoryCategory,
-        );
-  const uncategorizedInventoryItems = inventorySourceItems.filter(
-    (item) => !inventoryCategories.includes(item.details.category as InventoryCategory),
+  const navigateModal = useCallback(
+    (direction: -1 | 1) => {
+      if (isInventory) {
+        const next = getAdjacentItem(inventoryModes, inventoryMode, direction);
+        if (next) onInventoryModeChange(next);
+        return;
+      }
+      if (isThreads) {
+        const next = getAdjacentItem(threadModes, threadMode, direction);
+        if (next) onThreadModeChange(next);
+        return;
+      }
+      return;
+    },
+    [
+      inventoryMode,
+      isInventory,
+      isThreads,
+      onInventoryModeChange,
+      onThreadModeChange,
+      threadMode,
+    ],
   );
+  const modalSwipeHandlers = useHorizontalSwipeNavigation(navigateModal);
   const firstPlayerEntry = entries.find((entry) => entry.role === "player");
   const latestEntry = entries.at(-1);
   const conversationItems: ThreadListItem[] = [
@@ -413,6 +717,11 @@ function DockUtilityPanel({
     { name: "ML Study Group", type: "Collective", detail: "Models, evaluation, and MLOps" },
     { name: "Project Collaborators", type: "Network", detail: "Portfolio and deployment feedback" },
   ];
+  const activeTabTitle = isInventory
+    ? inventoryMode
+    : isThreads
+      ? threadMode
+      : "Game Loop";
 
   return (
     <section
@@ -428,78 +737,15 @@ function DockUtilityPanel({
             : "Current plan"
       }
       aria-modal="false"
-      className="fixed bottom-[var(--composer-dock-offset,6.5rem)] left-1/2 z-[10002] flex h-[var(--composer-utility-panel-height,75dvh)] w-[var(--composer-dock-width,100vw)] max-w-5xl -translate-x-1/2 flex-col border-t border-black/15 bg-background px-8 py-5 text-[#191714] sm:px-10"
+      className="composer-rail-modal fixed z-[10004] flex -translate-x-1/2 touch-pan-y flex-col border border-black/15 bg-background px-8 py-5 text-[#191714] sm:px-10"
       role="dialog"
+      {...modalSwipeHandlers}
     >
-      <header className="flex shrink-0 items-end justify-between gap-4">
+      <header className="flex shrink-0 flex-wrap items-end justify-between gap-4">
         <div>
-          {isInventory ? (
-            <div
-              aria-label="Inventory mode"
-              className="flex items-center gap-1"
-              role="group"
-            >
-              {(["inventory", "achievements", "store"] as const).map((mode) => (
-                <button
-                  aria-pressed={inventoryMode === mode}
-                  className={`rounded-full border px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    inventoryMode === mode
-                      ? "border-black bg-black text-background"
-                      : "border-transparent text-[#514a43] hover:bg-black/10"
-                  }`}
-                  key={mode}
-                  onClick={() => setInventoryMode(mode)}
-                  type="button"
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
-          ) : isThreads ? (
-            <div
-              aria-label="Chat mode"
-              className="flex items-center gap-1"
-              role="group"
-            >
-              {(["threads", "orgs", "connections"] as const).map((mode) => (
-                <button
-                  aria-pressed={threadMode === mode}
-                  className={`rounded-full border px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    threadMode === mode
-                      ? "border-black bg-black text-background"
-                      : "border-transparent text-[#514a43] hover:bg-black/10"
-                  }`}
-                  key={mode}
-                  onClick={() => setThreadMode(mode)}
-                  type="button"
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div
-              aria-label="Surrogate mode"
-              className="flex items-center gap-1"
-              role="group"
-            >
-              {(["game-loop", "plan", "quests"] as const).map((mode) => (
-                <button
-                  aria-pressed={planMode === mode}
-                  className={`rounded-full border px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    planMode === mode
-                      ? "border-black bg-black text-background"
-                      : "border-transparent text-[#514a43] hover:bg-black/10"
-                  }`}
-                  key={mode}
-                  onClick={() => setPlanMode(mode)}
-                  type="button"
-                >
-                  {mode === "game-loop" ? "GAME LOOP" : mode.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          )}
+          <h2 className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#191714]">
+            {activeTabTitle}
+          </h2>
           {panel !== "plan" ? (
             <p className="mt-1 text-[0.52rem] uppercase tracking-[0.16em] text-[#746b61]">
               {isInventory
@@ -516,13 +762,9 @@ function DockUtilityPanel({
             </p>
           ) : null}
         </div>
-        {panel !== "plan" ? (
+        {panel !== "plan" && !isInventory ? (
           <p className="text-[0.52rem] uppercase tracking-[0.16em] text-[#746b61]">
-            {isInventory
-              ? inventoryMode === "achievements"
-                ? "4 achievements"
-                : `${inventorySourceItems.length} ${inventorySourceItems.length === 1 ? "item" : "items"}`
-              : threadMode === "threads"
+            {threadMode === "threads"
                 ? `${conversationItems.length} conversations · ${groupItems.length} groups`
                 : threadMode === "orgs"
                   ? `${orgItems.length} organizations`
@@ -535,74 +777,9 @@ function DockUtilityPanel({
         className="pane-scroll mt-5 min-h-0 flex-1 overflow-y-auto overscroll-contain"
         data-lenis-prevent
       >
-        {isInventory ? inventoryMode === "inventory" ? (
-          <div className="bg-background px-3 py-2">
-            <div
-              aria-label="Inventory categories"
-              className="mb-4 flex flex-wrap gap-1.5"
-              role="group"
-            >
-              {(["all", ...inventoryCategories] as const).map((category) => (
-                <button
-                  aria-pressed={inventoryCategory === category}
-                  className={`rounded-full border px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                    inventoryCategory === category
-                      ? "border-black bg-black text-white"
-                      : "border-[#bdb4a8] text-[#514a43] hover:border-black"
-                  }`}
-                  key={category}
-                  onClick={() => setInventoryCategory(category)}
-                  type="button"
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-            {inventoryCategory === "all" ? (
-              <div className="grid gap-6">
-                {inventoryCategories.map((category) => (
-                  <section key={category}>
-                    <h3 className="mb-2 text-[0.52rem] font-semibold uppercase tracking-[0.16em] text-[#6d6257]">
-                      {category}
-                    </h3>
-                    <InventorySlotGrid
-                      items={inventorySourceItems.filter(
-                        (item) => item.details.category === category,
-                      )}
-                      minimumDesktopSlots={8}
-                      minimumMobileSlots={4}
-                    />
-                  </section>
-                ))}
-                {uncategorizedInventoryItems.length ? (
-                  <section>
-                    <h3 className="mb-2 text-[0.52rem] font-semibold uppercase tracking-[0.16em] text-[#6d6257]">
-                      Uncategorized
-                    </h3>
-                    <InventorySlotGrid
-                      items={uncategorizedInventoryItems}
-                      minimumDesktopSlots={8}
-                      minimumMobileSlots={4}
-                    />
-                  </section>
-                ) : null}
-              </div>
-            ) : (
-              <section>
-                <h3 className="mb-2 text-[0.52rem] font-semibold uppercase tracking-[0.16em] text-[#6d6257]">
-                  {inventoryCategory}
-                </h3>
-                <InventorySlotGrid
-                  items={visibleInventoryItems}
-                  minimumDesktopSlots={8}
-                  minimumMobileSlots={4}
-                />
-              </section>
-            )}
-          </div>
-        ) : inventoryMode === "achievements" ? (
-          <Achievements compact />
-        ) : null : isThreads ? (threadMode === "threads" ? (
+        {isInventory ? (
+          <CollectionManager collection={inventoryMode} />
+        ) : isThreads ? (threadMode === "threads" ? (
           <div className="grid gap-6">
             <ThreadListSection
               items={conversationItems}
@@ -624,65 +801,75 @@ function DockUtilityPanel({
           </>
         ) : (
           <ConnectionList items={connectionItems} />
-        )) : planMode === "plan" ? (
-            <div className="flex h-full min-h-0 items-center justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt="Plan map placeholder"
-                className="max-h-full w-full max-w-[61.9375rem] object-contain"
-                src="/map.svg"
-              />
-            </div>
-          ) : planMode === "game-loop" ? (
-            <GameLoopGraph />
-          ) : (
-            <section aria-labelledby="surrogate-quests-heading">
-              <div className="flex items-center justify-between gap-4 border-b border-black/10 pb-3">
-                <div>
-                  <h3
-                    className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[#191714]"
-                    id="surrogate-quests-heading"
+        )) : (
+            <div>
+              <GameLoopGraph />
+              <section
+                aria-labelledby="surrogate-game-loop-plan-heading"
+                className="mt-10"
+              >
+                <header className="mb-5 flex items-center justify-between gap-4">
+                  <h2
+                    className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#191714]"
+                    id="surrogate-game-loop-plan-heading"
                   >
-                    Quests
-                  </h3>
-                  <p className="mt-1 text-[0.5rem] uppercase tracking-[0.14em] text-[#746b61]">
-                    Active objectives and completed missions
-                  </p>
+                    Plan
+                  </h2>
+                  <div
+                    aria-label="Plan display mode"
+                    className="flex shrink-0 items-center gap-1 rounded-full border border-black p-0.5"
+                    role="group"
+                  >
+                    {(["view", "edit"] as const).map((mode) => (
+                      <button
+                        aria-pressed={planViewMode === mode}
+                        className={`rounded-full px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
+                          planViewMode === mode
+                            ? "bg-black text-background"
+                            : "text-[#514a43] hover:bg-black/10"
+                        }`}
+                        key={mode}
+                        onClick={() => setPlanViewMode(mode)}
+                        type="button"
+                      >
+                        {mode}
+                      </button>
+                    ))}
+                  </div>
+                </header>
+                {planViewMode === "view" ? (
+                  <CampaignDetail mode="plan" />
+                ) : (
+                  <div className="flex min-h-[24rem] items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      alt="Plan map placeholder"
+                      className="max-h-full w-full max-w-[61.9375rem] object-contain"
+                      src="/map.svg"
+                    />
+                  </div>
+                )}
+              </section>
+              <section
+                aria-labelledby="surrogate-game-loop-campaign-heading"
+                className="mt-10"
+              >
+                <header className="mb-5">
+                  <h2
+                    className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[#191714]"
+                    id="surrogate-game-loop-campaign-heading"
+                  >
+                    Telemetry
+                  </h2>
+                </header>
+                <div className="[&>:first-child]:!mt-0">
+                  <CampaignSummary
+                    showWorkspacePlaceholders
+                    workspaceLayout="campaign"
+                  />
                 </div>
-                <span className="text-[0.5rem] uppercase tracking-[0.14em] text-[#8a8177]">
-                  {questItems.filter((quest) => !quest.completed).length} active
-                </span>
-              </div>
-              {questItems.length ? (
-                <div className="divide-y divide-black/10">
-                  {questItems.map((quest) => (
-                    <article className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-4" key={quest.id}>
-                      <span
-                        aria-hidden="true"
-                        className={`size-2 rounded-full ${quest.completed ? "bg-[#bdb4a8]" : "bg-black"}`}
-                      />
-                      <div className="min-w-0">
-                        <p className={`truncate text-sm ${quest.completed ? "text-[#8a8177] line-through" : "text-[#191714]"}`}>
-                          {quest.title}
-                        </p>
-                        {quest.details.objective ? (
-                          <p className="mt-1 truncate text-xs text-[#746b61]">
-                            {quest.details.objective}
-                          </p>
-                        ) : null}
-                      </div>
-                      <span className="text-[0.46rem] font-semibold uppercase tracking-[0.12em] text-[#8a8177]">
-                        {quest.completed ? "Complete" : "Active"}
-                      </span>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-4 border border-dashed border-[#bdb4a8] px-4 py-10 text-center text-xs text-[#7f7468]">
-                  Quests added through Telemetry will appear here.
-                </p>
-              )}
-            </section>
+              </section>
+            </div>
           )}
       </div>
     </section>
@@ -692,48 +879,128 @@ function DockUtilityPanel({
 export function ComposerDock() {
   const pathname = usePathname();
   const {
+    activeTimer,
     activeWorkspace,
     isOpen: telemetryOpen,
+    setTelemetryView,
     setWorkspaceFilter,
-    todos,
+    telemetryView,
     toggle: toggleTelemetry,
   } = useTelemetry();
   const dockRef = useRef<HTMLElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const entryIdRef = useRef(0);
   const [activeDockPanel, setActiveDockPanel] = useState<DockPanel | null>(null);
+  const [inventoryMode, setInventoryMode] = useState<InventoryMode>("inventory");
+  const [threadMode, setThreadMode] = useState<ThreadMode>("threads");
   const [message, setMessage] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [pendingCollectionAction, setPendingCollectionAction] = useState<
+    CollectionItemCreate | null
+  >(null);
   const [entries, setEntries] = useState<TerminalEntry[]>([]);
-  const inventoryItems = todos.filter((todo) => todo.workspace === "inventory");
-  const questItems = todos.filter((todo) => todo.workspace === "quests");
+  const compactActivityBanner = useCallback(() => {
+    if (!telemetryOpen) return;
+    if (telemetryView !== null) setTelemetryView(null);
+    if (activeWorkspace !== null) setWorkspaceFilter(null);
+  }, [activeWorkspace, setTelemetryView, setWorkspaceFilter, telemetryOpen, telemetryView]);
+  const navigateDock = useCallback(
+    (direction: -1 | 1) => {
+      const destination = getAdjacentItem(
+        dockDestinations,
+        activeDockPanel ?? undefined,
+        direction,
+      );
+      if (!destination || destination === activeDockPanel) return;
+
+      compactActivityBanner();
+      setActiveDockPanel(destination);
+    },
+    [activeDockPanel, compactActivityBanner],
+  );
+  const dockSwipeHandlers = useHorizontalSwipeNavigation(navigateDock);
+  const kanbanSelected =
+    telemetryView === "all" ||
+    telemetryView === "todo" ||
+    telemetryView === "current" ||
+    telemetryView === "completed";
+  const activeActivityMode: ActivityMode | undefined =
+    activeWorkspace === "quests" && telemetryView === null
+      ? "quests"
+      : telemetryView === "timeline"
+        ? "timeline"
+        : kanbanSelected
+          ? "kanban"
+          : undefined;
+  const selectActivityMode = useCallback(
+    (mode: ActivityMode) => {
+      requestActivityNavigation(mode);
+    },
+    [],
+  );
+  const navigateModalTabs = useCallback(
+    (direction: -1 | 1) => {
+      if (activeDockPanel === "inventory") {
+        const next = getAdjacentItem(inventoryModes, inventoryMode, direction);
+        if (next) setInventoryMode(next);
+        return;
+      }
+      if (activeDockPanel === "threads") {
+        const next = getAdjacentItem(threadModes, threadMode, direction);
+        if (next) setThreadMode(next);
+        return;
+      }
+      if (activeDockPanel === "plan") {
+        return;
+      }
+      if (telemetryOpen) {
+        const next = getAdjacentItem(
+          activityModes,
+          activeActivityMode,
+          direction,
+        );
+        if (next) selectActivityMode(next);
+      }
+    },
+    [
+      activeActivityMode,
+      activeDockPanel,
+      inventoryMode,
+      selectActivityMode,
+      telemetryOpen,
+      threadMode,
+    ],
+  );
+  const modalTabsSwipeHandlers = useHorizontalSwipeNavigation(navigateModalTabs);
 
   useEffect(() => {
     const dock = dockRef.current;
     if (!dock) return;
     let updateFrame = 0;
+    let lastActivityModalMaxHeight = "";
     let lastOffset = "";
-    let lastUtilityPanelHeight = "";
     let lastWidth = "";
 
     const updateDockOffset = () => {
       window.cancelAnimationFrame(updateFrame);
       updateFrame = window.requestAnimationFrame(() => {
         const bounds = dock.getBoundingClientRect();
+        const activityModalMaxHeight = `${Math.round(bounds.top * 0.75 * 100) / 100}px`;
         const offset = `${Math.round((window.innerHeight - bounds.top) * 100) / 100}px`;
-        const utilityPanelHeight = `${Math.round(bounds.top * 0.75 * 100) / 100}px`;
         const width = `${Math.round(bounds.width * 100) / 100}px`;
 
+        if (activityModalMaxHeight !== lastActivityModalMaxHeight) {
+          document.documentElement.style.setProperty(
+            "--activity-modal-max-height",
+            activityModalMaxHeight,
+          );
+          lastActivityModalMaxHeight = activityModalMaxHeight;
+        }
         if (offset !== lastOffset) {
           document.documentElement.style.setProperty("--composer-dock-offset", offset);
           lastOffset = offset;
-        }
-        if (utilityPanelHeight !== lastUtilityPanelHeight) {
-          document.documentElement.style.setProperty(
-            "--composer-utility-panel-height",
-            utilityPanelHeight,
-          );
-          lastUtilityPanelHeight = utilityPanelHeight;
         }
         if (width !== lastWidth) {
           document.documentElement.style.setProperty("--composer-dock-width", width);
@@ -751,12 +1018,44 @@ export function ComposerDock() {
       observer.disconnect();
       window.removeEventListener("resize", updateDockOffset);
       window.cancelAnimationFrame(updateFrame);
+      document.documentElement.style.removeProperty("--activity-modal-max-height");
       document.documentElement.style.removeProperty("--composer-dock-offset");
-      document.documentElement.style.removeProperty(
-        "--composer-utility-panel-height",
-      );
       document.documentElement.style.removeProperty("--composer-dock-width");
     };
+  }, []);
+
+  useEffect(() => {
+    function populateComposer(event: Event) {
+      const { action, files, prompt } = (event as CustomEvent<PopulateComposerDetail>).detail;
+      setActiveDockPanel(null);
+      setMessage(prompt);
+      setAttachments(files);
+      setPendingCollectionAction(action.payload);
+      window.requestAnimationFrame(() => inputRef.current?.focus());
+    }
+    window.addEventListener(POPULATE_COMPOSER_EVENT, populateComposer);
+    return () => window.removeEventListener(POPULATE_COMPOSER_EVENT, populateComposer);
+  }, []);
+
+  useEffect(() => {
+    const toggleActivityVisibility = () => {
+      toggleTelemetry();
+    };
+    window.addEventListener(
+      ACTIVITY_VISIBILITY_TOGGLE_EVENT,
+      toggleActivityVisibility,
+    );
+    return () =>
+      window.removeEventListener(
+        ACTIVITY_VISIBILITY_TOGGLE_EVENT,
+        toggleActivityVisibility,
+      );
+  }, [toggleTelemetry]);
+
+  useEffect(() => {
+    const focusActivity = () => setActiveDockPanel(null);
+    window.addEventListener(ACTIVITY_FOCUS_EVENT, focusActivity);
+    return () => window.removeEventListener(ACTIVITY_FOCUS_EVENT, focusActivity);
   }, []);
 
   useEffect(() => {
@@ -769,7 +1068,11 @@ export function ComposerDock() {
     const prompt = message.trim();
     if (!prompt) return;
 
+    const submittedAttachments = attachments;
+    const submittedCollectionAction = pendingCollectionAction;
     setMessage("");
+    setAttachments([]);
+    setPendingCollectionAction(null);
     window.requestAnimationFrame(() => inputRef.current?.focus());
     entryIdRef.current += 1;
     const playerEntryId = entryIdRef.current;
@@ -782,10 +1085,49 @@ export function ComposerDock() {
     ]);
 
     try {
+      const uploads = submittedAttachments.length
+        ? await Promise.all(submittedAttachments.map(uploadCollectionImage))
+        : [];
+      let createdRecord: { id: string; name: string } | null = null;
+      if (submittedCollectionAction) {
+        const collectionResponse = await fetch("/api/game/items", {
+          body: JSON.stringify({
+            ...submittedCollectionAction,
+            image_url: uploads[1]?.url || uploads[0]?.url || null,
+            thumbnail_url: uploads[0]?.url || null,
+          }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        });
+        const collectionPayload = (await collectionResponse.json().catch(() => null)) as
+          | { detail?: string; id?: string; name?: string }
+          | null;
+        if (!collectionResponse.ok || !collectionPayload?.id) {
+          throw new Error(collectionPayload?.detail || "Unable to create collection item");
+        }
+        createdRecord = {
+          id: collectionPayload.id,
+          name: collectionPayload.name || submittedCollectionAction.name,
+        };
+      }
+      const executionMetadata = {
+        created_record: createdRecord,
+        uploaded_images: uploads.map(({ content_type, original_name, size, url }) => ({
+          content_type,
+          original_name,
+          size,
+          url,
+        })),
+      };
+      const requestPrompt = uploads.length || createdRecord
+        ? `${prompt}\n\nAction result: ${JSON.stringify(
+            executionMetadata,
+          )}`
+        : prompt;
       const result = await fetch("/api/mock-llm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: requestPrompt }),
       });
       const payload = (await result.json()) as { content?: string; error?: string };
       if (!result.ok || !payload.content) {
@@ -817,18 +1159,39 @@ export function ComposerDock() {
   }
 
   function toggleDockPanel(panel: DockPanel) {
-    if (telemetryOpen) {
-      toggleTelemetry();
-      setActiveDockPanel(panel);
-      return;
-    }
+    compactActivityBanner();
     setActiveDockPanel((current) => (current === panel ? null : panel));
   }
 
-  function handleToggleTelemetry() {
-    setActiveDockPanel(null);
-    toggleTelemetry();
-  }
+  const activeModalTabs = activeDockPanel === "inventory"
+      ? inventoryModes.map((mode) => ({
+          id: mode,
+          label: mode,
+          onSelect: () => setInventoryMode(mode),
+          selected: inventoryMode === mode,
+        }))
+      : activeDockPanel === "threads"
+        ? threadModes.map((mode) => ({
+            id: mode,
+            label: mode,
+            onSelect: () => setThreadMode(mode),
+            selected: threadMode === mode,
+          }))
+      : activeDockPanel === "plan"
+        ? []
+        : telemetryOpen
+          ? activityModes.map((mode) => ({
+              id: mode,
+              label:
+                mode === "quests"
+                  ? "Quests"
+                  : mode === "timeline"
+                    ? "Timelines"
+                    : "Kanban",
+              onSelect: () => selectActivityMode(mode),
+              selected: activeActivityMode === mode,
+            }))
+          : [];
 
   return (
     <>
@@ -836,9 +1199,11 @@ export function ComposerDock() {
         ? createPortal(
             <DockUtilityPanel
               entries={entries}
-              inventoryItems={inventoryItems}
+              inventoryMode={inventoryMode}
+              onInventoryModeChange={setInventoryMode}
+              onThreadModeChange={setThreadMode}
               panel={activeDockPanel}
-              questItems={questItems}
+              threadMode={threadMode}
             />,
             document.body,
           )
@@ -848,87 +1213,122 @@ export function ComposerDock() {
         className="fixed inset-x-0 bottom-0 z-[10002] mx-auto flex w-full max-w-5xl flex-col bg-black px-4 pb-3 pt-2 sm:px-5 lg:rounded-t-2xl xl:bottom-2 xl:rounded-2xl"
         ref={dockRef}
       >
+      {attachments.length ? (
+        <div aria-label="Attached images" className="mb-2 flex flex-wrap gap-1.5">
+          {attachments.map((file, index) => (
+            <ComposerAttachment
+              file={file}
+              key={`${file.name}-${file.lastModified}-${index}`}
+              onRemove={() => setAttachments((current) => {
+                const next = current.filter((_, itemIndex) => itemIndex !== index);
+                if (!next.length) setPendingCollectionAction(null);
+                return next;
+              })}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      {activeModalTabs.length ? (
+        <div
+          aria-label="Active modal navigation"
+          className="mb-2 flex min-h-7 min-w-0 touch-pan-y flex-wrap items-center justify-center gap-1.5 text-white"
+          role="group"
+          {...modalTabsSwipeHandlers}
+        >
+          {activeModalTabs.map((tab) => (
+            <button
+              aria-pressed={tab.selected}
+              className={`shrink-0 rounded-full border px-3 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
+                tab.selected
+                  ? "border-white bg-white text-black"
+                  : "border-white/40 text-white hover:border-white hover:bg-white/10"
+              }`}
+              key={tab.id}
+              onClick={tab.onSelect}
+              type="button"
+            >
+              {tab.label}
+            </button>
+          ))}
+          {telemetryOpen && !activeDockPanel ? (
+            <button
+              aria-label={activeTimer ? "Complete current activity" : "Start activity timer"}
+              className="grid size-7 shrink-0 place-items-center rounded-full border border-white text-white transition-colors hover:bg-white hover:text-black focus:outline-none focus-visible:ring-1 focus-visible:ring-white"
+              onClick={requestActivityTimerToggle}
+              title={activeTimer ? "Complete activity" : "Start timer"}
+              type="button"
+            >
+              {activeTimer ? (
+                <FiCheck aria-hidden="true" className="size-3.5" />
+              ) : (
+                <FiPlay aria-hidden="true" className="size-3 fill-current" />
+              )}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      <form
+        className="relative mb-2 flex min-h-12 items-center rounded-2xl border border-[#d8d0c1] bg-white px-10 shadow-[0_4px_4px_rgba(25,23,20,0.08)]"
+        onSubmit={submitMessage}
+      >
+        <button
+          aria-label="Add to composer"
+          className="absolute left-3 grid size-5 place-items-center rounded-full border border-black bg-white text-black"
+          onClick={() => imageInputRef.current?.click()}
+          type="button"
+        >
+          <FiPlus aria-hidden="true" className="size-3.5" />
+        </button>
+        <input
+          accept="image/gif,image/jpeg,image/png,image/webp"
+          className="sr-only"
+          multiple
+          onChange={(event) => {
+            const selectedFiles = Array.from(event.target.files || []);
+            setAttachments((current) => [...current, ...selectedFiles]);
+            setPendingCollectionAction(null);
+            event.target.value = "";
+          }}
+          ref={imageInputRef}
+          type="file"
+        />
+        <input
+          aria-label="Agent message"
+          className="h-8 min-w-0 flex-1 bg-transparent text-sm text-black outline-none placeholder:text-[#8D7A70]"
+          onChange={(event) => setMessage(event.target.value)}
+          placeholder=""
+          ref={inputRef}
+          type="text"
+          value={message}
+        />
+        <button
+          aria-label="Submit message"
+          className="absolute right-3 grid size-6 place-items-center rounded-full border border-black bg-white text-black disabled:cursor-not-allowed disabled:opacity-40"
+          disabled={!message.trim()}
+          type="submit"
+        >
+          <span
+            aria-hidden="true"
+            className="block h-3 w-[18px] bg-current [mask-image:url('/icons/sirl-logo.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-image:url('/icons/sirl-logo.svg')] [-webkit-mask-position:center] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain]"
+          />
+        </button>
+      </form>
+
       <div
         aria-label="Agent dock"
-        className="mb-2 flex min-h-8 min-w-0 items-start overflow-x-hidden text-white"
+        className="flex min-h-8 min-w-0 touch-pan-y items-start justify-center overflow-x-hidden text-white"
         role="toolbar"
+        {...dockSwipeHandlers}
       >
-        {telemetryOpen ? (
-          <div aria-label="Telemetry category filters" className="flex min-w-0 flex-1 flex-wrap justify-start gap-1.5 overflow-x-hidden pr-2">
-              {taskWorkspaces
-                .filter(
-                  (workspace) =>
-                    workspace !== "quests" && workspace !== "training",
-                )
-                .map((workspace) => (
-                <button
-                  aria-pressed={activeWorkspace === workspace}
-                  className={`h-7 shrink-0 rounded-full border px-3 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
-                    activeWorkspace === workspace
-                      ? "border-white bg-white text-black"
-                      : "border-white/40 text-white hover:border-white hover:bg-white/10"
-                  }`}
-                  key={workspace}
-                  onClick={() => setWorkspaceFilter(workspace)}
-                  type="button"
-                >
-                  {workspace === "plan" ? "Game Design" : workspace}
-                </button>
-                ))}
-              <button
-                aria-pressed={activeWorkspace === null}
-                className={`h-7 shrink-0 rounded-full border px-3 text-[0.48rem] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
-                  activeWorkspace === null
-                    ? "border-white bg-white text-black"
-                    : "border-white/40 text-white hover:border-white hover:bg-white/10"
-                }`}
-                onClick={() => setWorkspaceFilter(null)}
-                type="button"
-              >
-                All
-              </button>
-          </div>
-        ) : (
-          <div className="flex-1" />
-        )}
         <div
-          className="ml-auto flex shrink-0 items-center gap-1.5"
+          className="flex shrink-0 items-center justify-center gap-1.5"
         >
-          <button
-            aria-label="Toggle telemetry"
-            aria-pressed={telemetryOpen}
-            className={`grid h-7 w-12 shrink-0 place-items-center rounded-full border px-3 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
-              telemetryOpen
-                ? "border-white bg-white text-black"
-                : "border-transparent text-white hover:border-white/50 hover:bg-white/10"
-            }`}
-            onClick={handleToggleTelemetry}
-            title="Telemetry"
-            type="button"
-          >
-            <span
-              aria-hidden="true"
-              className="block h-3 w-[18px] bg-current [mask-image:url('/icons/sirl-logo.svg')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-image:url('/icons/sirl-logo.svg')] [-webkit-mask-position:center] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain]"
-            />
-          </button>
-          <button
-            aria-label="Inventory"
-            aria-pressed={activeDockPanel === "inventory"}
-            className={`order-3 grid h-7 w-12 place-items-center rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
-              activeDockPanel === "inventory"
-                ? "border-white bg-white text-black"
-                : "border-transparent text-white hover:border-white/50 hover:bg-white/10"
-            }`}
-            onClick={() => toggleDockPanel("inventory")}
-            title="Inventory"
-            type="button"
-          >
-            <FiBox aria-hidden="true" className="size-[1.05rem]" />
-          </button>
           <button
             aria-label="Chat"
             aria-pressed={activeDockPanel === "threads"}
-            className={`order-1 grid h-7 w-12 place-items-center rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
+            className={`grid h-7 w-12 place-items-center rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
               activeDockPanel === "threads"
                 ? "border-white bg-white text-black"
                 : "border-transparent text-white hover:border-white/50 hover:bg-white/10"
@@ -942,7 +1342,7 @@ export function ComposerDock() {
           <button
             aria-label="Plan"
             aria-pressed={activeDockPanel === "plan"}
-            className={`order-2 grid h-7 w-12 place-items-center rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
+            className={`grid h-7 w-12 place-items-center rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
               activeDockPanel === "plan"
                 ? "border-white bg-white text-black"
                 : "border-transparent text-white hover:border-white/50 hover:bg-white/10"
@@ -958,6 +1358,20 @@ export function ComposerDock() {
               className={`h-6 w-[7px] ${activeDockPanel === "plan" ? "invert" : ""}`}
               src="/plan.svg"
             />
+          </button>
+          <button
+            aria-label="Inventory"
+            aria-pressed={activeDockPanel === "inventory"}
+            className={`grid h-7 w-12 place-items-center rounded-full border transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
+              activeDockPanel === "inventory"
+                ? "border-white bg-white text-black"
+                : "border-transparent text-white hover:border-white/50 hover:bg-white/10"
+            }`}
+            onClick={() => toggleDockPanel("inventory")}
+            title="Inventory"
+            type="button"
+          >
+            <FiBox aria-hidden="true" className="size-[1.05rem]" />
           </button>
         </div>
       </div>
@@ -988,35 +1402,6 @@ export function ComposerDock() {
         </div>
       ) : null}
 
-      <form
-        className="relative flex min-h-12 items-center rounded-2xl border border-[#d8d0c1] bg-white px-10 shadow-[0_4px_4px_rgba(25,23,20,0.08)]"
-        onSubmit={submitMessage}
-      >
-        <button
-          aria-label="Add to composer"
-          className="absolute left-3 grid size-5 place-items-center rounded-full border border-black bg-white text-black"
-          type="button"
-        >
-          <FiPlus aria-hidden="true" className="size-3.5" />
-        </button>
-        <input
-          aria-label="Agent message"
-          className="h-8 min-w-0 flex-1 bg-transparent text-sm text-black outline-none placeholder:text-[#8D7A70]"
-          onChange={(event) => setMessage(event.target.value)}
-          placeholder=""
-          ref={inputRef}
-          type="text"
-          value={message}
-        />
-        <button
-          aria-label="Submit message"
-          className="absolute right-3 grid size-5 place-items-center rounded-full border border-black bg-white text-[0.65rem] font-semibold leading-none text-black disabled:cursor-not-allowed disabled:opacity-40"
-          disabled={!message.trim()}
-          type="submit"
-        >
-          A
-        </button>
-      </form>
       </section>
     </>
   );

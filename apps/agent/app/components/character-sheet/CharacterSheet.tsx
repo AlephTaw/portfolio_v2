@@ -93,7 +93,6 @@ export function CharacterSheet({ className = "" }: { className?: string }) {
           <ClickableSection
             bottomCornerOffset="1.75rem"
             cornerColor="border-[#5E8FA8]"
-            href="/live-stats/character-stats"
             label="Character Stats"
             topCornerOffset="0.5rem"
           >

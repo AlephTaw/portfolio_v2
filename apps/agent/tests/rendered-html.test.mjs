@@ -173,8 +173,7 @@ test("renders the character sheet on its dedicated page", async () => {
   assert.match(html, />Deployments</);
   assert.match(html, /Commit History/);
   assert.match(html, />B-Code</);
-  assert.match(html, /aria-label="Return to agent workspace"/);
-  assert.match(html, /href="\/"/);
+  assert.doesNotMatch(html, /aria-label="Return to agent workspace"/);
   assert.match(html, /Campaign minimap/);
   assert.match(html, /chore: removed comment and commented out original paper color/);
   assert.match(html, /feat: character sheet, mlphd quest component integration/);
@@ -193,7 +192,6 @@ test("links character sheet sections to focused detail pages", async () => {
   const homeResponse = await render("/character-sheet");
   const homeHtml = await homeResponse.text();
   const pages = [
-    ["/live-stats/character-stats", /Character v0\.1\.0/],
     ["/live-stats/campaign-summary", /Campaign: The Crucible/],
     ["/live-stats/commit-history", /Commit History/],
     ["/live-stats/achievements", />SQL</],
@@ -207,6 +205,12 @@ test("links character sheet sections to focused detail pages", async () => {
     assert.match(html, /href="\/character-sheet"[^>]*>Back</);
     assert.match(html, content);
   }
+
+  assert.doesNotMatch(homeHtml, /href="\/live-stats\/character-stats"/);
+  const deprecatedCharacterStatsResponse = await render(
+    "/live-stats/character-stats",
+  );
+  assert.equal(deprecatedCharacterStatsResponse.status, 404);
 });
 
 test("keeps unpublished highlight routes inaccessible", async () => {
