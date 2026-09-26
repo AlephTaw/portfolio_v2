@@ -1,20 +1,37 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import {
-  activityWorkspaceStateEvent,
-  toggleActivityWorkspaceEvent,
-} from "./quest-terminal";
+import { createContext, useContext, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import type { ActivityCategory } from "./quest-terminal/use-active-activity";
+import { activityWorkspaceStateEvent, toggleActivityWorkspaceEvent } from "./activity-workspace-events";
+
+type NavigationRequest = { id: number; action: "current" | "categories" | "task-grid" } | { id: number; action: "category"; category: ActivityCategory };
+type ActivityProgress = { category: ActivityCategory; completed: number; total: number };
 
 type ActivityWorkspaceContextValue = {
   activityOpen: boolean;
   setActivityOpen: (open: boolean) => void;
+  detailTaskId: string | null;
+  setDetailTaskId: (taskId: string | null) => void;
+  activityProgress: ActivityProgress | null;
+  setActivityProgress: Dispatch<SetStateAction<ActivityProgress | null>>;
+  navigationRequest: NavigationRequest | null;
+  requestCurrentActivity: () => void;
+  requestActivityCategories: () => void;
+  requestActivityCategory: (category: ActivityCategory) => void;
+  requestTaskGrid: () => void;
 };
 
 const ActivityWorkspaceContext = createContext<ActivityWorkspaceContextValue | null>(null);
 
 export function ActivityWorkspaceProvider({ children }: { children: ReactNode }) {
   const [activityOpen, setActivityOpen] = useState(false);
+  const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
+  const [activityProgress, setActivityProgress] = useState<ActivityProgress | null>(null);
+  const [navigationRequest, setNavigationRequest] = useState<ActivityWorkspaceContextValue["navigationRequest"]>(null);
+  const requestCurrentActivity = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "current" }));
+  const requestActivityCategories = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "categories" }));
+  const requestActivityCategory = (category: ActivityCategory) => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "category", category }));
+  const requestTaskGrid = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "task-grid" }));
 
   useEffect(() => {
     const toggleWorkspace = () => setActivityOpen((open) => !open);
@@ -40,7 +57,7 @@ export function ActivityWorkspaceProvider({ children }: { children: ReactNode })
   }, [activityOpen]);
 
   return (
-    <ActivityWorkspaceContext.Provider value={{ activityOpen, setActivityOpen }}>
+    <ActivityWorkspaceContext.Provider value={{ activityOpen, setActivityOpen, detailTaskId, setDetailTaskId, activityProgress, setActivityProgress, navigationRequest, requestCurrentActivity, requestActivityCategories, requestActivityCategory, requestTaskGrid }}>
       {children}
     </ActivityWorkspaceContext.Provider>
   );

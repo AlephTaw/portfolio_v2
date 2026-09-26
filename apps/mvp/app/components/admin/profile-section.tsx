@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import portrait from "../../../../agent/public/assets/live-stats-profile.png";
 import { adminInputClass, adminLabelClass } from "./admin-styles";
 
 export function ProfileSection() {
@@ -8,8 +9,16 @@ export function ProfileSection() {
 
   return (
     <section className="mx-auto w-full max-w-2xl text-white">
-      <p className={adminLabelClass}>Admin</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em]">Profile</h1>
+      <header className="flex items-stretch gap-4">
+        <div className="relative w-16 shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="Steven Wilcox profile" src={portrait.src} className="absolute left-0 top-0 aspect-square h-full w-auto rounded-full border border-white/25 object-cover" />
+        </div>
+        <div>
+          <p className={adminLabelClass}>Admin</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em]">Profile</h1>
+        </div>
+      </header>
       <p className="mt-3 max-w-xl text-base leading-7 text-white/45">
         Manage the identity used throughout your game workspace.
       </p>

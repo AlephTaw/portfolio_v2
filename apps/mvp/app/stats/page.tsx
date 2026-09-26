@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { PageSwipeNavigation } from "../components/page-swipe-navigation";
 import { PinScrollArea } from "../components/pin-scroll-area";
-import StatsDisplay from "./stats-display";
+import { StatsScreen } from "./components/stats-screen";
 
 export const metadata: Metadata = {
   title: "Stats | Speedrun IRL",
@@ -10,14 +9,9 @@ export const metadata: Metadata = {
 
 export default function StatsPage() {
   return (
-    <main className="h-dvh overflow-hidden bg-background text-foreground">
-      <PageSwipeNavigation
-        direction="left"
-        href="/terminal"
-        transitionDirection={-1}
-      />
+    <main className="h-full overflow-hidden bg-background text-foreground">
       <PinScrollArea className="flex flex-col overscroll-contain touch-pan-y" wrapperClassName="h-full">
-        <StatsDisplay />
+        <StatsScreen />
       </PinScrollArea>
     </main>
   );

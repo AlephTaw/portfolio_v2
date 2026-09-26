@@ -30,27 +30,6 @@ body {
   );
 }
 
-.arr-scrollbar {
-  scrollbar-color: #ffffff transparent;
-  scrollbar-width: thin;
-}
-
-.arr-scrollbar::-webkit-scrollbar {
-  width: 12px;
-}
-
-.arr-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.arr-scrollbar::-webkit-scrollbar-thumb {
-  min-height: 3rem;
-  border: 4px solid transparent;
-  border-radius: 9999px;
-  background: #ffffff;
-  background-clip: padding-box;
-}
-
 .pin-scrollbar {
   scrollbar-width: none;
 }
@@ -59,26 +38,22 @@ body {
   display: none;
 }
 
-.terminal-left-rail-layout {
-  --terminal-rail-shift: calc(
-    (
-      max(0px, (100vw - 72rem) / 2) +
-      clamp(1.5rem, 4.4vw, 3.5rem)
-    ) / 2
-  );
+/* Native scrolling controls cannot host an overlay thumb; keep their track pin-thin. */
+textarea {
+  scrollbar-color: rgb(255 255 255 / 70%) transparent;
+  scrollbar-width: thin;
 }
 
-.terminal-left-rail-layout[data-vertical-split="true"] {
-  --terminal-rail-shift: calc(clamp(1.5rem, 4.4vw, 3.5rem) / 2);
+textarea::-webkit-scrollbar {
+  width: 2px;
 }
 
-.terminal-summary-rail-row {
-  margin-left: calc(-1 * var(--terminal-rail-shift));
-  width: calc(100% + var(--terminal-rail-shift) + var(--terminal-rail-shift));
+textarea::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.terminal-code-rail-row {
-  margin-left: calc(-1 * var(--terminal-rail-shift));
+textarea::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 70%);
 }
 
 .arc-summary-container {
@@ -103,10 +78,24 @@ body {
 
 .character-summary-layout {
   align-items: center;
-  column-gap: clamp(0.75rem, 4cqi, 3rem);
+  column-gap: clamp(0.75rem, 2vw, 2rem);
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto max-content auto;
+  margin-inline: auto;
+  max-width: 100%;
   row-gap: 1rem;
+  width: max-content;
+}
+
+.character-summary-secondary {
+  justify-self: end;
+}
+
+@media (max-width: 30rem) {
+  .character-summary-profile {
+    height: 3.5rem;
+    width: 3.5rem;
+  }
 }
 
 .stats-app-switcher {
@@ -134,40 +123,27 @@ body {
     opacity 120ms ease-out;
 }
 
-@container (max-width: 24rem) {
+@media (max-width: 22rem) {
   .character-summary-layout {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr 1fr;
   }
 
   .character-summary-profile {
-    grid-column: 1 / -1;
-    justify-self: center;
+    grid-row: 1;
+  }
+
+  .character-summary-secondary {
+    grid-column: 2;
   }
 
   .character-summary-details {
-    grid-column: 1;
-  }
-
-  .character-summary-actions {
-    grid-column: 2;
-  }
-}
-
-@container (max-width: 18rem) {
-  .character-summary-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .character-summary-profile,
-  .character-summary-details,
-  .character-summary-actions {
-    grid-column: 1;
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-self: center;
   }
 }
 
-@media (max-width: 30rem) {
-  .stats-app-switcher {
+.stats-app-switcher[data-rail="true"] {
     align-items: flex-end;
     bottom: calc(max(1.5rem, env(safe-area-inset-bottom)) + 15rem);
     flex-direction: column;
@@ -177,9 +153,17 @@ body {
     position: fixed;
     right: 0;
     z-index: 121;
-  }
+}
 
-  .stats-app-switcher-backdrop {
+.stats-app-switcher[data-docked="true"] {
+  bottom: auto;
+  pointer-events: auto;
+  position: relative;
+  right: auto;
+  width: 2.5rem;
+}
+
+.stats-app-switcher[data-rail="true"] .stats-app-switcher-backdrop {
     background: transparent;
     border: 0;
     cursor: default;
@@ -188,11 +172,11 @@ body {
     z-index: 0;
   }
 
-  .stats-app-switcher-highlight {
+.stats-app-switcher[data-rail="true"] .stats-app-switcher-highlight {
     display: none;
   }
 
-  .stats-app-switcher-button {
+.stats-app-switcher[data-rail="true"] .stats-app-switcher-button {
     display: none;
     flex-direction: row-reverse;
     justify-content: flex-start;
@@ -202,16 +186,26 @@ body {
     width: max-content;
   }
 
-  .stats-app-switcher-button[aria-pressed="true"] {
+.stats-app-switcher[data-rail="true"] .stats-app-switcher-button[aria-pressed="true"] {
     display: flex;
   }
 
-  .stats-app-switcher[data-expanded="true"] .stats-app-switcher-button {
+.stats-app-switcher[data-docked="true"][data-expanded="false"]
+  .stats-app-switcher-button[aria-pressed="true"] {
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 0.75rem;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
+}
+
+.stats-app-switcher[data-rail="true"][data-expanded="true"] .stats-app-switcher-button {
     display: flex;
     touch-action: none;
   }
 
-  .stats-app-switcher:not([data-expanded="true"])
+.stats-app-switcher[data-rail="true"]:not([data-expanded="true"])
     .stats-app-switcher-button[aria-pressed="true"]
     .stats-icon-warp {
     background: #000;
@@ -219,26 +213,25 @@ body {
     color: #fff;
   }
 
-  .stats-app-switcher-label {
+.stats-app-switcher[data-rail="true"] .stats-app-switcher-label {
     display: none;
     transform: none;
   }
 
-  .stats-app-switcher[data-expanded="true"] .stats-app-switcher-label {
+.stats-app-switcher[data-rail="true"][data-expanded="true"] .stats-app-switcher-label {
     background: #000;
     display: block;
     outline: 1px solid #fff;
     padding: 0.6rem 1.05rem;
   }
 
-  .stats-app-switcher[data-expanded="true"]
+.stats-app-switcher[data-rail="true"][data-expanded="true"]
     .stats-app-switcher-button[data-highlighted="true"]
     .stats-app-switcher-label {
     background: #fff;
     color: #000;
     outline: 0;
   }
-}
 
 @keyframes terminal-cursor-blink {
   0%,

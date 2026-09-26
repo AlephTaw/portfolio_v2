@@ -1,47 +1,40 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { FiMessageCircle } from "react-icons/fi";
+import { usePathname, useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { FiGrid, FiPlus, FiX } from "react-icons/fi";
+import { ChatConversationPicker, useChatConversation } from "../chat-conversations";
+import { useActivityWorkspace } from "../activity-workspace-context";
+import { editActivityNameEvent } from "../activity-workspace-events";
+import { KnapsackButton } from "../knapsack-button";
+import { PinScrollArea } from "../pin-scroll-area";
+import { findSpeedrunViewAction, speedrunViews } from "../speedrun-view-options";
+import { findSplitScreenAction, SplitModeIcon, splitScreenActions, useApplySplitMode } from "../split-screen-actions";
+import { useSplitView } from "../split-view-context";
+import { useTerminalView } from "../terminal-view-context";
 import { commandOptions, getCommandText, type CommandOption } from "./quest-terminal-data";
 import { useActiveActivity } from "./use-active-activity";
 import { useQuestCommands } from "./use-quest-commands";
 
 type ExecuteCommandControlProps = {
-  commandLineActions?: ReactNode;
+  onDockElementChange?: (element: HTMLElement | null) => void;
+  onSuggestionsOpenChange?: (open: boolean) => void;
   variant?: "button" | "command-line";
 };
 
-export const toggleActivityWorkspaceEvent = "speedrun-irl:toggle-activity-workspace";
-export const activityWorkspaceStateEvent = "speedrun-irl:activity-workspace-state";
-export const editActivityNameEvent = "speedrun-irl:edit-activity-name";
+const suggestedActions = [
+  ...speedrunViews.map((option) => ({ ...option, kind: "view" as const })),
+  ...splitScreenActions.map((option) => ({ ...option, kind: "split" as const })),
+].sort((a, b) => a.actionLabel.localeCompare(b.actionLabel));
 
-export function SpeedrunCommandButton() {
-  const [selected, setSelected] = useState(false);
-
-  useEffect(() => {
-    const updateState = (event: Event) => {
-      setSelected((event as CustomEvent<{ open: boolean }>).detail.open);
-    };
-    window.addEventListener(activityWorkspaceStateEvent, updateState);
-    return () => window.removeEventListener(activityWorkspaceStateEvent, updateState);
-  }, []);
-
-  return (
-    <button
-      aria-label={selected ? "Close activity workspace" : "Open activity workspace"}
-      aria-pressed={selected}
-      className={`pointer-events-auto grid size-10 cursor-pointer place-items-center rounded-[3px] border bg-black text-white transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${selected ? "border-white" : "border-transparent hover:border-white/70"}`}
-      onClick={() => window.dispatchEvent(new Event(toggleActivityWorkspaceEvent))}
-      title={selected ? "Close activity workspace" : "Open activity workspace"}
-      type="button"
-    >
-      <svg aria-hidden="true" className="h-[0.8rem] w-[1.2rem] -translate-x-[1px]" fill="none" viewBox="0 0 28 19">
-        <path d="M7.91406 1H27.918" stroke="#CF1212" strokeWidth="2" />
-        <path d="M0 10L28 10" stroke="#F1CD09" strokeWidth="2" />
-        <path d="M13.1328 17.5234H27.9183" stroke="#6BB511" strokeWidth="2" />
-      </svg>
-    </button>
-  );
+function parseComposerEntry(value: string) {
+  const trimmed = value.trimStart();
+  const prefix = trimmed.charAt(0);
+  return {
+    mode: prefix === "@" ? "chat" as const : prefix === "/" ? "command" as const : null,
+    body: prefix === "@" || prefix === "/" ? trimmed.slice(1).trimStart() : trimmed,
+  };
 }
 
 function filterCommands(query: string) {
@@ -57,11 +50,13 @@ function filterCommands(query: string) {
 function CommandList({
   activeIndex,
   commands,
+  inline = false,
   onSelect,
   selectedKey,
 }: {
   activeIndex: number;
   commands: CommandOption[];
+  inline?: boolean;
   onSelect: (command: CommandOption) => void;
   selectedKey: string | null;
 }) {
@@ -73,8 +68,8 @@ function CommandList({
     );
   }
 
-  return (
-    <ul aria-label="Command suggestions" className="arr-scrollbar max-h-72 overflow-y-auto py-2" role="listbox">
+  const list = (
+    <ul aria-label="Command suggestions" className="py-2" role="listbox">
       {commands.map((command, index) => {
         const key = `${command.type}-${command.item}`;
         const highlighted = selectedKey ? selectedKey === key : index === activeIndex;
@@ -120,20 +115,43 @@ function CommandList({
       })}
     </ul>
   );
+
+  return inline ? list : <PinScrollArea className="max-h-72" wrapperClassName="max-h-72">{list}</PinScrollArea>;
 }
 
-export function ExecuteCommandControl({ commandLineActions, variant = "button" }: ExecuteCommandControlProps) {
+export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenChange, variant = "button" }: ExecuteCommandControlProps) {
   const { addCommand } = useQuestCommands();
   const { activeActivity, startActivity, updateActivityName } = useActiveActivity();
+  const { setActivityOpen } = useActivityWorkspace();
+  const { splitMode, splitViewOpen } = useSplitView();
+  const applySplitMode = useApplySplitMode();
+  const pathname = usePathname();
+  const router = useRouter();
+  const { conversation } = useChatConversation();
+  const { setView, view } = useTerminalView();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [editingActivityName, setEditingActivityName] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const filteredCommands = useMemo(() => filterCommands(query), [query]);
+  const { mode: entryMode, body: entryBody } = parseComposerEntry(query);
+  const filteredCommands = useMemo(() => filterCommands(entryBody), [entryBody]);
   const selectedCommand = commandOptions.find((command) => `${command.type}-${command.item}` === selectedKey) ?? null;
   const inferredCommand = selectedCommand ?? filteredCommands[activeIndex >= 0 ? activeIndex : 0] ?? null;
+
+  useEffect(() => {
+    if (variant !== "command-line") return;
+    onSuggestionsOpenChange?.(open);
+  }, [onSuggestionsOpenChange, open, variant]);
+
+  useEffect(() => {
+    if (variant !== "command-line") return;
+    return () => onSuggestionsOpenChange?.(false);
+  }, [onSuggestionsOpenChange, variant]);
 
   useLayoutEffect(() => {
     if (variant !== "command-line") return;
@@ -180,7 +198,7 @@ export function ExecuteCommandControl({ commandLineActions, variant = "button" }
     setQuery(value);
     setSelectedKey(null);
     setActiveIndex(-1);
-    if (variant === "command-line") setOpen(!editingActivityName && Boolean(value));
+    if (variant === "command-line") setOpen(!editingActivityName && Boolean(parseComposerEntry(value).mode));
   };
 
   const saveActivityName = () => {
@@ -195,9 +213,27 @@ export function ExecuteCommandControl({ commandLineActions, variant = "button" }
   const chooseCommand = (command: CommandOption) => {
     if (command.locked) return;
     setSelectedKey(`${command.type}-${command.item}`);
-    setQuery(getCommandText(command));
+    setQuery(variant === "command-line" ? `/${getCommandText(command)}` : getCommandText(command));
     setOpen(variant === "button");
     if (variant === "command-line") requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const executeSuggestedViewAction = (nextView: (typeof speedrunViews)[number]["view"]) => {
+    setActivityOpen(false);
+    setView(nextView);
+    setQuery("");
+    setSelectedKey(null);
+    setActiveIndex(-1);
+    setOpen(false);
+    if (!splitViewOpen && pathname !== "/terminal") router.push("/terminal");
+  };
+
+  const executeSuggestedSplitAction = (mode: (typeof splitScreenActions)[number]["mode"]) => {
+    applySplitMode(mode);
+    setQuery("");
+    setSelectedKey(null);
+    setActiveIndex(-1);
+    setOpen(false);
   };
 
   const execute = (command: CommandOption | null) => {
@@ -206,60 +242,100 @@ export function ExecuteCommandControl({ commandLineActions, variant = "button" }
     setQuery("");
     setSelectedKey(null);
     setOpen(false);
-    requestAnimationFrame(() => inputRef.current?.focus());
-  };
-
-  const sendChat = () => {
-    const message = query.trim();
-    if (!message || editingActivityName) return;
-    addCommand({ type: "chat-message", item: message });
-    setQuery("");
-    setSelectedKey(null);
-    setActiveIndex(-1);
-    setOpen(false);
+    setAttachments([]);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   const executeTypedCommand = () => {
-    const command = query.trim();
-    if (!command) return;
+    const command = entryBody.trim();
+    if (!entryMode || !command) return;
+    if (entryMode === "chat") {
+      addCommand({ type: "chat-message", item: command, conversationId: conversation });
+      setQuery("");
+      setSelectedKey(null);
+      setActiveIndex(-1);
+      setOpen(false);
+      setAttachments([]);
+      requestAnimationFrame(() => inputRef.current?.focus());
+      return;
+    }
+    const viewAction = findSpeedrunViewAction(command);
+    if (viewAction) {
+      executeSuggestedViewAction(viewAction.view);
+      return;
+    }
+    const splitAction = findSplitScreenAction(command);
+    if (splitAction) {
+      executeSuggestedSplitAction(splitAction.mode);
+      return;
+    }
     addCommand({ type: "terminal-command", item: command });
     setQuery("");
     setSelectedKey(null);
     setActiveIndex(-1);
     setOpen(false);
+    setAttachments([]);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   if (variant === "command-line") {
     return (
-      <div className="group/composer relative flex min-h-9 w-full items-center">
+      <div className="group/composer relative flex w-full min-w-0 flex-col">
+        <div aria-label="Composer dock" className="mb-1 flex min-h-7 w-full shrink-0 flex-col justify-center px-2">
+          <div className="flex min-w-0 w-full items-center gap-0">
+            <div id="composer-activity-summary-slot" className="min-w-0 flex-[0_1_auto] empty:hidden" ref={onDockElementChange} />
+            <KnapsackButton />
+          </div>
+          {inputFocused && !editingActivityName && <span className="font-sans text-[0.65rem] text-white/55" id="composer-prefix-hint">Start with <span className="text-white">@</span> for chat or <span className="text-white">/</span> for a command</span>}
+        </div>
         <form
-          className="flex min-w-0 flex-1 items-end rounded-[3px] border border-white/25 px-3 transition-colors focus-within:border-white/50"
+          className="flex min-w-0 min-h-12 flex-1 items-end rounded-2xl border border-white/20 bg-white/[0.06] px-2 shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-colors focus-within:border-white/45"
           onSubmit={(event) => {
             event.preventDefault();
             if (editingActivityName) saveActivityName();
-            else if (selectedCommand) execute(selectedCommand);
+            else if (entryMode === "command" && selectedCommand) execute(selectedCommand);
             else executeTypedCommand();
           }}
         >
-          <label className="flex min-w-0 flex-1 items-start gap-3" htmlFor="terminal-command-input">
-            <span aria-hidden="true" className="py-2">$</span>
-            <span className="sr-only">Search commands</span>
-            <span className="min-w-0 flex-1">
+          <button
+              aria-label="Attach files"
+              className="mb-1 grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-white/55 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+              onClick={(event) => { event.preventDefault(); fileInputRef.current?.click(); }}
+              title="Attach files"
+              type="button"
+            >
+              <FiPlus aria-hidden="true" className="size-4" />
+          </button>
+          <input
+              aria-label="Choose files to attach"
+              className="sr-only"
+              multiple
+              onChange={(event) => { setAttachments(Array.from(event.target.files ?? [])); event.target.value = ""; }}
+              ref={fileInputRef}
+              tabIndex={-1}
+              type="file"
+          />
+          <div className="min-w-0 flex-1">
+              {attachments.length > 0 && <div className="flex flex-wrap gap-1 pt-1">
+                {attachments.map((file, index) => <button aria-label={`Remove ${file.name}`} className="inline-flex max-w-40 items-center gap-1 truncate border border-white/30 px-1.5 py-0.5 font-mono text-[0.55rem] text-white/65" key={`${file.name}-${index}`} onClick={(event) => { event.preventDefault(); setAttachments((files) => files.filter((_, fileIndex) => fileIndex !== index)); }} type="button">{file.name}<FiX aria-hidden="true" className="size-3 shrink-0" /></button>)}
+              </div>}
+              <label className="block" htmlFor="terminal-command-input"><span className="sr-only">{entryMode === "chat" ? "Write a chat message" : "Search commands"}</span>
               <textarea
-              aria-activedescendant={open && activeIndex >= 0 ? `command-option-${activeIndex}` : undefined}
-              aria-autocomplete={editingActivityName ? "none" : "list"}
+              aria-activedescendant={entryMode === "command" && open && activeIndex >= 0 ? `command-option-${activeIndex}` : undefined}
+              aria-autocomplete={editingActivityName || entryMode !== "command" ? "none" : "list"}
               aria-controls={editingActivityName ? undefined : "terminal-command-suggestions"}
+              aria-describedby={inputFocused && !editingActivityName ? "composer-prefix-hint" : undefined}
               aria-expanded={!editingActivityName && open}
-              aria-label={editingActivityName ? "Edit activity name" : "Command input"}
+              aria-label={editingActivityName ? "Edit activity name" : "Chat or command input"}
               autoComplete="off"
-              className="block max-h-[50dvh] w-full min-w-0 resize-none caret-white bg-transparent py-2 font-mono text-sm leading-5 text-white outline-none placeholder:text-white/25 [caret-shape:block]"
+              className="block max-h-[50dvh] w-full min-w-0 resize-none caret-white bg-transparent px-1 py-3 font-sans text-sm leading-6 text-white outline-none placeholder:text-white/40"
               enterKeyHint="send"
               id="terminal-command-input"
               onChange={(event) => setSearch(event.target.value)}
+              onBlur={() => setInputFocused(false)}
               onFocus={() => {
-                if (query && !editingActivityName) setOpen(true);
+                setInputFocused(true);
+                if (entryMode && !editingActivityName) setOpen(true);
               }}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -272,6 +348,8 @@ export function ExecuteCommandControl({ commandLineActions, variant = "button" }
                   setQuery("");
                   setOpen(false);
                 } else if (editingActivityName) {
+                  return;
+                } else if (entryMode === "chat") {
                   return;
                 } else if (event.key === "ArrowDown") {
                   event.preventDefault();
@@ -291,36 +369,44 @@ export function ExecuteCommandControl({ commandLineActions, variant = "button" }
               rows={1}
               value={query}
               />
-            </span>
-          </label>
-          <button
-            aria-label="Send as chat"
-            className="grid size-8 shrink-0 place-items-center text-white/55 transition-colors hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:text-white/25 disabled:hover:text-white/25"
-            disabled={!query.trim() || editingActivityName}
-            onClick={sendChat}
-            title="Send as chat"
-            type="button"
-          >
-            <FiMessageCircle aria-hidden="true" className="size-4" />
-          </button>
+              </label>
+          </div>
           <button className="sr-only" tabIndex={-1} type="submit">
-            Submit command
+            Submit entry
           </button>
         </form>
-        <span className="invisible pointer-events-none absolute bottom-[calc(100%+0.5rem)] inset-x-0 z-[60] flex h-10 items-center justify-center bg-black opacity-0 transition-opacity group-focus-within/composer:visible group-focus-within/composer:opacity-100 [&>*]:pointer-events-auto">
-          {commandLineActions}
-        </span>
-        {open && (
-          <div
-            className="absolute bottom-[calc(100%+3.25rem)] inset-x-0 z-50 border border-white/35 bg-black"
-            id="terminal-command-suggestions"
-          >
-            <div className="flex items-center justify-between gap-4 border-b border-white/15 px-4 py-3">
-              <span className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">System Call</span>
-              <span className="text-right text-[0.55rem] uppercase tracking-[0.12em] text-white/30">Tab to complete · Enter to execute</span>
-            </div>
-            <CommandList activeIndex={activeIndex} commands={filteredCommands} onSelect={chooseCommand} selectedKey={selectedKey} />
-          </div>
+        {open && typeof document !== "undefined" && document.getElementById("command-suggestions-pane") && createPortal(
+          <div className="relative h-full min-h-0 bg-black" id="terminal-command-suggestions">
+            <button aria-label="Close recommendations" className="absolute right-4 top-3 z-10 grid size-7 cursor-pointer place-items-center bg-black text-white/55 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white" onClick={() => setOpen(false)} type="button"><FiX aria-hidden="true" className="size-4" /></button>
+            {entryMode === "chat" ? <PinScrollArea aria-label="Chat conversations" wrapperClassName="h-full"><h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">Choose a conversation</h2><ChatConversationPicker /></PinScrollArea> : <PinScrollArea aria-label="Suggested actions and system calls" wrapperClassName="h-full">
+              <section aria-labelledby="suggested-actions-heading" className="border-b border-white/15">
+                <h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45" id="suggested-actions-heading">Suggested Actions</h2>
+                <ul aria-label="Suggested actions" className="pb-2">
+                  {suggestedActions.map((action) => (
+                    <li key={action.actionLabel}>
+                      <button
+                        aria-current={(action.kind === "view" ? view === action.view : splitMode === action.mode) ? "true" : undefined}
+                        className="flex min-h-9 w-full cursor-pointer items-center gap-3 px-4 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/10 focus-visible:text-white focus-visible:outline-none"
+                        onClick={() => action.kind === "view" ? executeSuggestedViewAction(action.view) : executeSuggestedSplitAction(action.mode)}
+                        type="button"
+                      >
+                        <span className="grid w-6 shrink-0 place-items-center">
+                          {action.kind === "view" ? <action.icon aria-hidden="true" className="size-4" /> : <SplitModeIcon mode={action.mode} />}
+                        </span>
+                        <span>{action.actionLabel}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <div className="flex items-center justify-between gap-4 border-b border-white/15 px-4 py-3">
+                <span className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">System Calls</span>
+                <span className="flex items-center gap-2 text-right text-[0.55rem] uppercase tracking-[0.12em] text-white/30"><FiGrid aria-hidden="true" className="size-4 shrink-0" /><span className="hidden sm:inline">Tab to complete · Enter to execute</span></span>
+              </div>
+              <CommandList activeIndex={activeIndex} commands={filteredCommands} inline onSelect={chooseCommand} selectedKey={selectedKey} />
+            </PinScrollArea>}
+          </div>,
+          document.getElementById("command-suggestions-pane")!,
         )}
       </div>
     );

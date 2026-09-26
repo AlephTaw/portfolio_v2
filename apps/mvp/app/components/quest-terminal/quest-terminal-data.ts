@@ -15,6 +15,7 @@ export type QuestCommand = {
   type: CommandType;
   item: string;
   executedAt?: string;
+  conversationId?: "recent" | "activity" | "guild" | "world";
 };
 
 export type CommandOption = Omit<QuestCommand, "type"> & {

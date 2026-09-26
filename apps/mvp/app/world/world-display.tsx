@@ -1,13 +1,14 @@
 "use client";
 
 import { LayoutGroup, motion } from "framer-motion";
-import { FiBarChart2 } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { FiArrowLeft, FiBarChart2, FiCornerDownRight } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
 import cognitiveNetworkMap from "../../../agent/public/cognitive-network-map.png";
+import { TerminalActivityWorkspace } from "../components/activity-workspace";
 import { StoreContent } from "../components/bounty-board";
-import { openWorkshopEvent, WORLD_ORIGIN_KEY, WORLD_VIEW_STATE_KEY } from "../components/page-transition-events";
-import { PageSwipeNavigation } from "../components/page-swipe-navigation";
-import { StatsLevelsContent } from "../stats/stats-display";
+import { PinScrollArea } from "../components/pin-scroll-area";
+import { openWorkshopEvent, WORLD_VIEW_STATE_KEY } from "../components/page-transition-events";
+import { CampaignActivitySummary, StatsLevelsContent } from "../stats/stats-display";
 
 const worldLocations = ["Guild", "Inventory", "Store", "Workshop", "Dungeon"] as const;
 type WorldLocation = (typeof worldLocations)[number];
@@ -64,11 +65,13 @@ function WorldGrid({
   interactive = true,
   onSelect,
   selectedLocation,
+  showLabels = true,
 }: {
   compact?: boolean;
   interactive?: boolean;
   onSelect?: (location: WorldLocation) => void;
   selectedLocation: WorldLocation | null;
+  showLabels?: boolean;
 }) {
   return (
     <div
@@ -89,7 +92,7 @@ function WorldGrid({
         if (!interactive) {
           return (
             <div className={className} key={location}>
-              {location}
+              {compact ? <span aria-hidden="true" className={`transition-opacity duration-75 ${showLabels ? "opacity-100" : "opacity-0"}`}>{location}</span> : location}
             </div>
           );
         }
@@ -107,10 +110,20 @@ function WorldGrid({
             onClick={() => onSelect?.(location)}
             type="button"
           >
-            {location}
+            {compact ? <span aria-hidden="true" className={`transition-opacity duration-75 ${showLabels ? "opacity-100" : "opacity-0"}`}>{location}</span> : location}
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function SquareGrid() {
+  return (
+    <div aria-label="Square grid view" className="grid w-full grid-cols-3 gap-3" role="grid">
+      {Array.from({ length: 18 }, (_, index) => (
+        <div aria-hidden="true" className="aspect-square min-w-0 rounded-2xl border border-white/15 bg-white/[0.04]" key={index} role="gridcell" />
+      ))}
     </div>
   );
 }
@@ -126,6 +139,19 @@ function NetworkImage() {
         src={cognitiveNetworkMap.src}
       />
     </>
+  );
+}
+
+function WorldTreeHoverPreview({ x, y }: { x: number; y: number }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed z-[140] w-44 -translate-y-full overflow-hidden border border-white/35 bg-black p-1 shadow-2xl"
+      style={{ left: x + 16, top: y - 16 }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt="" className="block aspect-[5/4] w-full object-cover" src="/world-tree-preview-grid.png" />
+    </div>
   );
 }
 
@@ -258,21 +284,52 @@ function WorkshopEditor({ application }: { application: WorkshopApplication }) {
 }
 
 export function WorldDisplay({
+  embedded = false,
   explicitDestination = false,
   initialLocation = null,
+  initialWorldTreeFocused = false,
+  initialDomainGrid = false,
   workshopApplication = null,
 }: {
+  embedded?: boolean;
   explicitDestination?: boolean;
   initialLocation?: WorldLocation | null;
+  initialWorldTreeFocused?: boolean;
+  initialDomainGrid?: boolean;
   workshopApplication?: WorkshopApplication | null;
 }) {
-  const [worldTreeFocused, setWorldTreeFocused] = useState(false);
+  const [worldTreeFocused, setWorldTreeFocused] = useState(initialWorldTreeFocused);
   const [worldTreeStatsOpen, setWorldTreeStatsOpen] = useState(false);
+  const [domainGridFocused] = useState(initialDomainGrid);
+  const [worldTreeHover, setWorldTreeHover] = useState<{ x: number; y: number } | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<WorldLocation | null>(initialLocation);
   const [returnLocation, setReturnLocation] = useState<WorldLocation | null>(initialLocation);
   const [activeWorkshopApplication, setActiveWorkshopApplication] =
     useState<WorkshopApplication | null>(workshopApplication);
   const [worldViewReady, setWorldViewReady] = useState(explicitDestination);
+  const [navigationExpanded, setNavigationExpanded] = useState(false);
+  const [navigationReady, setNavigationReady] = useState(false);
+  const navigationRef = useRef<HTMLDivElement>(null);
+  const overviewOpen = selectedLocation === null;
+  const navigationOpen = overviewOpen || navigationExpanded;
+  const navigationInteractive = navigationOpen && navigationReady;
+
+  function openNavigation() {
+    if (navigationExpanded) return;
+    setNavigationReady(false);
+    setNavigationExpanded(true);
+  }
+
+  function closeNavigation() {
+    setNavigationReady(false);
+    setNavigationExpanded(false);
+  }
+
+  useEffect(() => {
+    if (!navigationOpen) return;
+    const timer = window.setTimeout(() => setNavigationReady(true), 220);
+    return () => window.clearTimeout(timer);
+  }, [navigationOpen]);
 
   useEffect(() => {
     if (explicitDestination) return;
@@ -343,67 +400,38 @@ export function WorldDisplay({
     setWorldTreeStatsOpen(false);
   }
 
-  return (
-    <main className={`relative flex min-h-dvh touch-pan-y flex-col overflow-hidden overscroll-x-none bg-background text-foreground ${worldViewReady ? "opacity-100" : "opacity-0"}`}>
-      <header className="relative z-20 flex min-h-16 shrink-0 flex-wrap items-center gap-x-5 gap-y-2 py-3 pl-[clamp(1.5rem,4.4vw,3.5rem)] pr-[clamp(8.5rem,24vw,19rem)]">
-        <span className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-white/70">
-          Version 0.1.0
-        </span>
-        <nav
-          aria-label="Breadcrumb"
-          className="flex min-w-0 items-center gap-2 font-mono text-[0.625rem] uppercase tracking-[0.16em]"
-        >
-          <button
-            className="cursor-pointer text-white/55 transition-colors hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white"
-            onClick={showDomainRoot}
-            type="button"
-          >
-            World
-          </button>
-          <span aria-hidden="true" className="text-white/30">
-            /
-          </span>
-          {worldTreeFocused ? (
-            <span aria-current="page" className="truncate text-white">
-              World Tree
-            </span>
-          ) : (
-            <>
-              {selectedLocation ? (
-                <button
-                  className="cursor-pointer text-white/55 transition-colors hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white"
-                  onClick={showDomainRoot}
-                  type="button"
-                >
-                  Domain
-                </button>
-              ) : (
-                <span aria-current="page" className="truncate text-white">
-                  Domain
-                </span>
-              )}
-              {selectedLocation ? (
-                <>
-                  <span aria-hidden="true" className="text-white/30">
-                    /
-                  </span>
-                  <span aria-current="page" className="truncate text-white">
-                    {selectedLocation}
-                  </span>
-                </>
-              ) : null}
-            </>
-          )}
-        </nav>
-      </header>
+  const workshopTerminalOpen = selectedLocation === "Workshop" && !activeWorkshopApplication && !worldTreeFocused;
 
+  return (
+    <main className={`relative mx-auto flex h-full min-h-0 w-full max-w-[var(--composer-max-width,72rem)] touch-pan-y flex-col overflow-hidden overscroll-x-none bg-background text-foreground ${worldViewReady ? "opacity-100" : "opacity-0"}`}>
       <LayoutGroup id="world-layout">
-        <div className="absolute right-3 top-3 z-30 aspect-square w-[clamp(7rem,22vw,18rem)] sm:right-4">
+        {!embedded && (
+        <div
+          aria-label="World navigation"
+          className={`absolute top-3 z-30 aspect-square transition-[width,right] duration-200 ease-out motion-reduce:transition-none ${navigationOpen ? "right-4 w-[clamp(7rem,11vw,9rem)]" : `${embedded ? "right-0" : "right-3"} w-10`}`}
+          onKeyDown={(event) => {
+            if (event.key !== "Escape" || overviewOpen) return;
+            closeNavigation();
+            navigationRef.current?.querySelector<HTMLButtonElement>("[aria-controls='world-navigation-options']")?.focus();
+          }}
+          ref={navigationRef}
+        >
+          <div aria-hidden={!navigationInteractive} className="relative size-full" id="world-navigation-options" inert={!navigationInteractive}>
           {selectedLocation ? (
             <div
               aria-label={`${selectedLocation} location minimap`}
               className="relative size-full"
             >
+              <div className="pointer-events-auto absolute -left-8 top-0 z-20 flex h-7 w-8 items-center">
+                <button
+                  aria-label="Return to Domain"
+                  className={`grid size-7 cursor-pointer place-items-center rounded-full bg-black text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${navigationOpen ? "opacity-100" : "opacity-0"}`}
+                  onClick={showDomainRoot}
+                  type="button"
+                >
+                  <FiArrowLeft aria-hidden="true" className="size-4" />
+                </button>
+              </div>
               <motion.div
                 className="absolute left-0 top-0 w-[66%]"
                 layoutId="world-grid"
@@ -411,13 +439,21 @@ export function WorldDisplay({
               >
                 <WorldGrid
                   compact
+                  interactive={navigationInteractive}
                   onSelect={selectLocation}
                   selectedLocation={selectedLocation}
+                  showLabels={navigationInteractive}
                 />
               </motion.div>
-              <div className="absolute right-0 top-0 z-10 w-[52%] origin-center rotate-[14deg]">
-                <WorldImage interactive onClick={showWorldTree} />
+              <div className="pointer-events-none absolute right-0 top-0 z-10 w-[52%] origin-center rotate-[14deg]">
+                <WorldImage />
               </div>
+              {navigationInteractive && <button
+                aria-label="Show World"
+                className="pointer-events-auto absolute left-[66%] top-[-6%] z-20 h-[64%] w-[40%] cursor-pointer rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+                onClick={showWorldTree}
+                type="button"
+              />}
             </div>
           ) : worldTreeFocused && worldTreeStatsOpen ? (
             <div aria-label="World Tree overview" className="relative size-full">
@@ -439,7 +475,7 @@ export function WorldDisplay({
                 transition={layoutTransition}
                 type="button"
               >
-                <WorldGrid compact interactive={false} selectedLocation={null} />
+                <WorldGrid compact interactive={false} selectedLocation={null} showLabels={navigationInteractive} />
               </motion.button>
             </div>
           ) : worldTreeFocused ? (
@@ -451,17 +487,64 @@ export function WorldDisplay({
               transition={layoutTransition}
               type="button"
             >
-              <WorldGrid compact interactive={false} selectedLocation={null} />
+              <WorldGrid compact interactive={false} selectedLocation={null} showLabels={navigationInteractive} />
             </motion.button>
           ) : (
             <WorldImage interactive onClick={showWorldTree} />
           )}
+          </div>
+          {navigationInteractive && !overviewOpen && (
+            <button
+              aria-label="Dock world navigation in the right rail"
+              className="absolute bottom-0 right-0 z-30 grid size-7 cursor-pointer place-items-center rounded-md border border-white/50 bg-black text-white/75 transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+              onClick={() => {
+                closeNavigation();
+                window.requestAnimationFrame(() => navigationRef.current?.querySelector<HTMLButtonElement>("[aria-controls='world-navigation-options']")?.focus());
+              }}
+              title="Dock world navigation"
+              type="button"
+            >
+              <FiCornerDownRight aria-hidden="true" className="size-4" />
+            </button>
+          )}
+          {!overviewOpen && <button
+            aria-controls="world-navigation-options"
+            aria-expanded={navigationOpen}
+            aria-label="Expand world navigation"
+            className={`absolute inset-0 z-30 size-full cursor-pointer rounded-md focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${navigationInteractive ? "pointer-events-none opacity-0" : "pointer-events-auto opacity-100"}`}
+            onClick={openNavigation}
+            tabIndex={navigationInteractive ? -1 : 0}
+            type="button"
+          />}
         </div>
+        )}
 
-        <div className={`absolute inset-x-0 bottom-20 top-0 z-10 grid px-[clamp(1.5rem,5vw,4rem)] ${(selectedLocation === "Dungeon" || selectedLocation === "Store") && !worldTreeFocused ? `pointer-events-auto items-start overflow-y-auto pb-12 ${selectedLocation === "Store" ? "pt-[clamp(8rem,23vw,19rem)]" : "pt-20"}` : "pointer-events-none place-items-center"}`}>
+        {workshopTerminalOpen ? (
+          <section aria-label="Workshop terminal" className={`pointer-events-auto absolute left-0 bottom-20 top-0 z-10 ${embedded ? "right-0" : "right-[var(--composer-gutter,1.5rem)]"}`}>
+            <div className="flex h-full w-full flex-col">
+              <TerminalActivityWorkspace workshop showSummary={!embedded} />
+            </div>
+          </section>
+        ) : (
+        <PinScrollArea wrapperClassName="absolute inset-x-0 bottom-20 top-0 z-10" className={`grid px-[clamp(1.5rem,5vw,4rem)] ${domainGridFocused ? "pointer-events-auto justify-items-center content-start pb-12 pt-2" : (selectedLocation === "Dungeon" || selectedLocation === "Store") && !worldTreeFocused ? "pointer-events-auto items-start pb-12 pt-2" : "pointer-events-none place-items-center"}`}>
           {worldTreeFocused ? (
             <div className="w-[min(78vw,38rem)]">
-              {worldTreeStatsOpen ? <WorldTreeHealthPanel /> : <WorldImage />}
+              {worldTreeStatsOpen ? <WorldTreeHealthPanel /> : (
+                <div
+                  className="pointer-events-auto relative"
+                  onMouseEnter={(event) => setWorldTreeHover({ x: event.clientX, y: event.clientY })}
+                  onMouseLeave={() => setWorldTreeHover(null)}
+                  onMouseMove={(event) => setWorldTreeHover({ x: event.clientX, y: event.clientY })}
+                >
+                  <div className="mt-12 mb-3"><CampaignActivitySummary summary="quest" /></div>
+                  <WorldImage />
+                  {worldTreeHover && <WorldTreeHoverPreview x={worldTreeHover.x} y={worldTreeHover.y} />}
+                </div>
+              )}
+            </div>
+          ) : domainGridFocused ? (
+            <div className="w-[min(78vw,36rem)]">
+              <SquareGrid />
             </div>
           ) : selectedLocation === "Workshop" && activeWorkshopApplication ? (
             <WorkshopEditor application={activeWorkshopApplication} />
@@ -519,7 +602,8 @@ export function WorldDisplay({
               />
             </motion.div>
           )}
-        </div>
+        </PinScrollArea>
+        )}
       </LayoutGroup>
       {worldTreeFocused && (
         <button
@@ -540,14 +624,6 @@ export function WorldDisplay({
           </span>
         </button>
       )}
-      <PageSwipeNavigation
-        allowInteractiveTargets
-        captureHorizontalGesture
-        direction="left"
-        href="/stats"
-        hrefStorageKey={WORLD_ORIGIN_KEY}
-        transitionDirection={1}
-      />
     </main>
   );
 }

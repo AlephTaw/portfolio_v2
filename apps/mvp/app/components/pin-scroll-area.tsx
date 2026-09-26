@@ -36,19 +36,29 @@ export function usePinScrollThumb(enabled = true) {
     if (!container) return;
     const onScroll = () => updateThumb(true);
     const resizeObserver = new ResizeObserver(() => updateThumb());
-    let content = container.firstElementChild;
-    const mutationObserver = new MutationObserver(() => {
-      const nextContent = container.firstElementChild;
-      if (nextContent !== content) {
-        if (content) resizeObserver.unobserve(content);
-        content = nextContent;
-        if (content) resizeObserver.observe(content);
+    const observedChildren = new Set<Element>();
+    const observeChildren = () => {
+      const currentChildren = new Set(container.children);
+      for (const child of observedChildren) {
+        if (!currentChildren.has(child)) {
+          resizeObserver.unobserve(child);
+          observedChildren.delete(child);
+        }
       }
+      for (const child of currentChildren) {
+        if (!observedChildren.has(child)) {
+          resizeObserver.observe(child);
+          observedChildren.add(child);
+        }
+      }
+    };
+    const mutationObserver = new MutationObserver(() => {
+      observeChildren();
       updateThumb();
     });
     container.addEventListener("scroll", onScroll, { passive: true });
     resizeObserver.observe(container);
-    if (content) resizeObserver.observe(content);
+    observeChildren();
     mutationObserver.observe(container, { childList: true });
     return () => {
       container.removeEventListener("scroll", onScroll);

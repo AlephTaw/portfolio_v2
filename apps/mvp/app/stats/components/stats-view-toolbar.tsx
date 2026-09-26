@@ -2,7 +2,8 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
-import { FiBarChart2, FiBox, FiCpu, FiFilm } from "react-icons/fi";
+import { FiBarChart2, FiBox, FiCpu, FiFilm, FiLayers, FiSettings } from "react-icons/fi";
+import { PiPersonSimple, PiSpeedometer } from "../../components/local-icons";
 import { useRightRailVisibility } from "../../components/right-rail-visibility-context";
 
 export type StatsAppView =
@@ -12,36 +13,20 @@ export type StatsAppView =
   | "hud"
   | "inventory"
   | "arc"
+  | "admin"
   | "guild"
   | "connections";
 
 export const statsAppLabelTypography = "text-[0.55rem] font-semibold uppercase tracking-[0.12em]";
 
-function VisorIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
-      <path d="M4 7.5c2.3-1 5-1.5 8-1.5s5.7.5 8 1.5l-1.2 7.2c-2 .9-4.3 1.3-6.8 1.3s-4.8-.4-6.8-1.3L4 7.5Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.7" />
-      <path d="M6.2 9.3c3.8-1 7.8-1 11.6 0" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function AisleIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg aria-hidden="true" className={className} fill="none" viewBox="0 0 24 24">
-      <path d="M5 4h5v16H5M14 4h5v16h-5M10 7H5M19 7h-5M10 12H5M19 12h-5M10 17H5M19 17h-5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
-      <path d="m10 20 2-4 2 4M10 4l2 4 2-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-const statsApps = [
+export const statsApps = [
   { id: "arc" as const, label: "ARC", Icon: FiFilm },
-  { id: "storyboard" as const, label: "Storyboard", Icon: AisleIcon },
+  { id: "storyboard" as const, label: "Character", Icon: FiCpu },
   { id: "stats" as const, label: "Stats", Icon: FiBarChart2 },
-  { id: "os" as const, label: "OS", Icon: FiCpu },
-  { id: "hud" as const, label: "HUD", Icon: VisorIcon },
+  { id: "os" as const, label: "Systems", Icon: FiLayers },
+  { id: "hud" as const, label: "Telemetry", Icon: PiSpeedometer },
   { id: "inventory" as const, label: "Inventory", Icon: FiBox },
+  { id: "admin" as const, label: "Admin", Icon: FiSettings },
 ];
 
 const verticalRailMediaQuery = "(max-width: 30rem)";
@@ -86,16 +71,18 @@ function useDocumentScrollLock(locked: boolean) {
 type StatsViewToolbarProps = {
   activeView: StatsAppView;
   displayedView: StatsAppView;
+  forceRail?: boolean;
+  hideOnNarrowRail?: boolean;
   onPreview: (view: StatsAppView | null) => void;
   onSelect: (view: StatsAppView) => void;
 };
 
 export function StatsViewToolbar(props: StatsViewToolbarProps) {
-  const isNarrowRail = useMediaQuery(verticalRailMediaQuery);
+  const isNarrowRail = useMediaQuery(verticalRailMediaQuery) || Boolean(props.forceRail);
   const { hidden } = useRightRailVisibility();
   return (
     <AnimatePresence initial={false}>
-      {(!isNarrowRail || !hidden) && <StatsViewToolbarContent {...props} isNarrowRail={isNarrowRail} key="stats-toolbar" />}
+      {(!props.hideOnNarrowRail || !isNarrowRail) && (!isNarrowRail || !hidden || props.forceRail) && <StatsViewToolbarContent {...props} isNarrowRail={isNarrowRail} key="stats-toolbar" />}
     </AnimatePresence>
   );
 }
@@ -106,6 +93,7 @@ function StatsViewToolbarContent({
   onPreview,
   onSelect,
   isNarrowRail,
+  forceRail = false,
 }: StatsViewToolbarProps & { isNarrowRail: boolean }) {
   const isPresent = useIsPresent();
   const [isOpen, setIsOpen] = useState(false);
@@ -117,7 +105,19 @@ function StatsViewToolbarContent({
   const ignoreNextClickView = useRef<StatsAppView | null>(null);
   const draggedView = useRef<StatsAppView | null>(null);
   const dragStartedOpen = useRef(false);
+  const pointerOrigin = useRef<{ x: number; y: number } | null>(null);
   const hoverOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const selectView = onSelect;
+  const previewView = onPreview;
+
+  const pointerMoved = (event: { clientX: number; clientY: number }) => {
+    const origin = pointerOrigin.current;
+    if (!origin) return true;
+    if (Math.hypot(event.clientX - origin.x, event.clientY - origin.y) < 8) return false;
+    pointerOrigin.current = null;
+    return true;
+  };
 
   const clearHoverOpenTimer = () => {
     if (hoverOpenTimer.current === null) return;
@@ -127,8 +127,9 @@ function StatsViewToolbarContent({
 
   const closeRail = () => {
     clearHoverOpenTimer();
+    pointerOrigin.current = null;
     setIsOpen(false);
-    onPreview(null);
+    previewView(null);
   };
 
   useDocumentScrollLock(isNarrowRail && isOpen && isPresent);
@@ -191,7 +192,9 @@ function StatsViewToolbarContent({
       aria-label="Character apps"
       animate={{ opacity: 1 }}
       className="stats-app-switcher flex flex-wrap items-start justify-center gap-x-3 gap-y-4"
+      data-docked={forceRail}
       data-expanded={isOpen}
+      data-rail={isNarrowRail}
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       ref={toolbarRef}
@@ -208,15 +211,22 @@ function StatsViewToolbarContent({
       onMouseLeave={() => {
         if (!isNarrowRail) onPreview(null);
       }}
+      onPointerMove={(event) => {
+        if (!isNarrowRail || !isOpen || draggedView.current !== null || !pointerOrigin.current) return;
+        if (!pointerMoved(event)) return;
+        const hoveredView = document.elementFromPoint(event.clientX, event.clientY)
+          ?.closest<HTMLButtonElement>("[data-stats-view]")?.dataset.statsView as StatsAppView | undefined;
+        previewView(hoveredView && statsApps.some(({ id }) => id === hoveredView) ? hoveredView : null);
+      }}
     >
       {isNarrowRail && isOpen && (
         <button
           aria-label="Close character apps"
           className="stats-app-switcher-backdrop touch-none overscroll-none"
           onClick={closeRail}
-          onFocus={() => onPreview(null)}
+          onFocus={() => previewView(null)}
           onMouseEnter={() => {
-            if (draggedView.current === null) onPreview(null);
+            if (draggedView.current === null) previewView(null);
           }}
           onWheel={(event) => event.preventDefault()}
           tabIndex={-1}
@@ -253,20 +263,21 @@ function StatsViewToolbarContent({
               return;
             }
 
-            onSelect(id);
+            selectView(id);
             if (isNarrowRail) closeRail();
             event.currentTarget.blur();
           }}
           onFocus={() => {
-            if (isNarrowRail && isOpen) onPreview(id);
+            if (isNarrowRail && isOpen) previewView(id);
           }}
           onMouseEnter={() => {
-            if (isNarrowRail && isOpen) onPreview(id);
+            if (isNarrowRail && isOpen && !pointerOrigin.current) previewView(id);
           }}
           onPointerCancel={() => {
             ignoreNextClickView.current = null;
             draggedView.current = null;
-            onPreview(null);
+            pointerOrigin.current = null;
+            previewView(null);
           }}
           onPointerDown={(event) => {
             if (!isNarrowRail || event.button !== 0) return;
@@ -275,18 +286,20 @@ function StatsViewToolbarContent({
               clearHoverOpenTimer();
               dragStartedOpen.current = isOpen;
               draggedView.current = id;
+              pointerOrigin.current = { x: event.clientX, y: event.clientY };
               ignoreNextClickView.current = id;
               event.currentTarget.setPointerCapture(event.pointerId);
               setIsOpen(true);
-              onPreview(id);
+              previewView(null);
               event.preventDefault();
               return;
             }
 
-            if ((event.pointerType === "touch" || event.pointerType === "pen") && isOpen) onPreview(id);
+            if ((event.pointerType === "touch" || event.pointerType === "pen") && isOpen) previewView(id);
           }}
           onPointerMove={(event) => {
             if (!isNarrowRail || draggedView.current === null) return;
+            if (!pointerMoved(event)) return;
 
             const hoveredButton = document
               .elementFromPoint(event.clientX, event.clientY)
@@ -297,7 +310,7 @@ function StatsViewToolbarContent({
             if (draggedView.current === hoveredView) return;
 
             draggedView.current = hoveredView;
-            onPreview(hoveredView);
+            previewView(hoveredView);
           }}
           onPointerUp={(event) => {
             if (draggedView.current !== null) {
@@ -311,13 +324,13 @@ function StatsViewToolbarContent({
               }
 
               if (selectedView !== activeView) {
-                onSelect(selectedView);
+                selectView(selectedView);
                 closeRail();
               } else if (startedOpen) {
                 closeRail();
               } else {
                 setIsOpen(true);
-                onPreview(null);
+                previewView(null);
               }
               return;
             }
@@ -325,7 +338,7 @@ function StatsViewToolbarContent({
             if ((event.pointerType !== "touch" && event.pointerType !== "pen") || !isOpen) return;
 
             ignoreNextClickView.current = id;
-            if (activeView !== id) onSelect(id);
+            if (activeView !== id) selectView(id);
             closeRail();
           }}
           ref={(button) => {
@@ -334,7 +347,7 @@ function StatsViewToolbarContent({
           title={label}
           type="button"
         >
-          <span className={`stats-icon-warp relative z-0 grid size-9 origin-center place-items-center rounded-full border transition-[color,background-color,border-color] duration-200 ease-out motion-reduce:transition-none ${
+          <span className={`stats-icon-warp relative z-0 grid shrink-0 origin-center place-items-center border transition-[color,background-color,border-color] duration-200 ease-out motion-reduce:transition-none ${forceRail ? "size-10 rounded-xl" : "size-9 rounded-full"} ${
             isHighlighted
               ? isNarrowRail
                 ? "border-white bg-white text-black"
@@ -349,6 +362,25 @@ function StatsViewToolbarContent({
           </button>
         );
       })}
+      {forceRail && (
+        <button
+          aria-expanded={isOpen}
+          aria-current="page"
+          aria-label="Character views"
+          className="pointer-events-auto mt-2 grid size-10 shrink-0 cursor-pointer place-items-center rounded-xl border border-transparent bg-black text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+          onClick={() => {
+            if (isOpen) closeRail();
+            else setIsOpen(true);
+          }}
+          onPointerDown={(event) => {
+            pointerOrigin.current = { x: event.clientX, y: event.clientY };
+          }}
+          title="Character views"
+          type="button"
+        >
+          <PiPersonSimple aria-hidden="true" className="size-5" />
+        </button>
+      )}
     </motion.nav>
   );
 }

@@ -1,6 +1,5 @@
 import { FiActivity, FiCalendar, FiChevronDown } from "react-icons/fi";
-import { PiMicrosoftOutlookLogoFill } from "react-icons/pi";
-import { SiApple, SiGooglecalendar } from "react-icons/si";
+import { PiMicrosoftOutlookLogoFill, SiApple, SiGooglecalendar } from "../local-icons";
 import { adminLabelClass } from "./admin-styles";
 
 const integrationGroups = [

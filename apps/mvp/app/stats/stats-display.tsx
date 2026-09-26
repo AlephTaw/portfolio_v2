@@ -1,18 +1,22 @@
 "use client";
 
-import Link from "next/link";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { FiBox, FiCheck, FiChevronDown, FiEdit2, FiLayers, FiShoppingBag, FiVideo, FiX } from "react-icons/fi";
+import { AnimatePresence, motion } from "framer-motion";
+import { FiCheck, FiChevronDown, FiVideo } from "react-icons/fi";
 import portrait from "../../../agent/public/assets/live-stats-profile.png";
 import { ActivityCategoryIcon } from "../components/activity-category-icon";
-import { StoreContent } from "../components/bounty-board";
+import { getArcDay, getArcTimeRemaining } from "../components/arc-time";
+import { AdminContent } from "../components/admin";
+import { InventoryContent } from "../components/inventory-content";
 import { HudCategoryApp, type HudCategory } from "../components/hud";
 import { PinScrollArea } from "../components/pin-scroll-area";
-import { editActivityNameEvent, ExecuteCommandControl, QuestCommandHistory } from "../components/quest-terminal";
+import { ExecuteCommandControl, QuestCommandHistory } from "../components/quest-terminal";
 import { type ActiveActivity, useActiveActivity } from "../components/quest-terminal/use-active-activity";
-import { StoryboardBuilder } from "../components/storyboard";
-import { StatsViewToolbar, statsAppLabelTypography, type StatsAppView } from "./components/stats-view-toolbar";
+import { StoryboardBuilder, StoryboardContent } from "../components/storyboard";
+import { statsAppLabelTypography } from "./components/stats-view-toolbar";
+import { StatsFigureNavigation } from "./components/stats-figure-navigation";
+import { SystemsView } from "./components/systems-view";
+import { useStatsView } from "./components/stats-view-context";
 
 type AppSummary = {
   id: HudCategory;
@@ -52,45 +56,10 @@ const sentienceStats: Stat[] = [
   { label: "Volition", status: "hours/24", points: "0 MP", chartLabel: "Volition", chartValue: 0, chartDisplay: "0 / 24" },
 ];
 
-const inventoryRooms = ["Kitchen", "Bathroom", "Bedroom", "Closet", "Pantry", "Office"] as const;
-const inventorySections = ["inventory", "systems", "store"] as const;
-type InventorySection = (typeof inventorySections)[number];
 const connectionCategories = ["Family", "Friends", "Professional", "Roster", "Guild", "Acquaintance", "Proselyte"] as const;
 type ConnectionCategory = (typeof connectionCategories)[number];
 type Connection = { id: string; name: string; categories: readonly ConnectionCategory[] };
 const connections: readonly Connection[] = [];
-type InventoryRoom = (typeof inventoryRooms)[number];
-type MockInventoryItem = {
-  description: string;
-  name: string;
-};
-
-const mockInventoryItems: Record<InventoryRoom, readonly MockInventoryItem[]> = {
-  Kitchen: [
-    { name: "Water Bottle", description: "A reusable bottle reserved for daily route hydration." },
-    { name: "Meal Kit", description: "A compact prepared meal for an active shift." },
-  ],
-  Bathroom: [
-    { name: "First Aid Kit", description: "Basic supplies for minor injuries and roadside treatment." },
-    { name: "Hygiene Kit", description: "Travel-size personal care essentials packed for quick access." },
-  ],
-  Bedroom: [
-    { name: "Field Blanket", description: "A lightweight insulated blanket for rest between routes." },
-    { name: "Sleep Mask", description: "A blackout mask used to protect recovery time." },
-  ],
-  Closet: [
-    { name: "Rain Jacket", description: "A weatherproof outer layer for wet driving conditions." },
-    { name: "Work Boots", description: "Durable boots with reinforced grip and toe protection." },
-  ],
-  Pantry: [
-    { name: "Protein Bars", description: "Shelf-stable fuel for long sessions away from base." },
-    { name: "Electrolytes", description: "Single-serve hydration mix for sustained activity." },
-  ],
-  Office: [
-    { name: "Route Atlas", description: "A marked reference of primary and alternate travel routes." },
-    { name: "Field Notes", description: "Operational notes, observations, and route adjustments." },
-  ],
-};
 
 const appSummaries: AppSummary[] = [
   { id: "health", label: "Health", value: "0 HP", detail: "0 / 24 hours" },
@@ -282,82 +251,16 @@ const levelObjectives = [
 ];
 
 const incompleteObjectiveColor = "#595959";
-const arcTarget = new Date("2026-12-05T00:00:00-05:00").getTime();
-const arcTotalDays = 117;
-
-function getArcTimeRemaining(now: number) {
-  const totalSeconds = Math.floor(Math.max(arcTarget - now, 0) / 1_000);
-
-  return {
-    days: Math.floor(totalSeconds / 86_400),
-    hours: Math.floor((totalSeconds % 86_400) / 3_600),
-    minutes: Math.floor((totalSeconds % 3_600) / 60),
-    seconds: totalSeconds % 60,
-  };
-}
-
-function getArcDay(daysRemaining: number) {
-  return {
-    current: Math.min(arcTotalDays, Math.max(0, arcTotalDays - daysRemaining)),
-    total: arcTotalDays,
-  };
-}
-
-function formatActivityElapsed(milliseconds: number) {
-  const totalSeconds = Math.floor(Math.max(milliseconds, 0) / 1_000);
-  const hours = Math.floor(totalSeconds / 3_600);
-  const minutes = Math.floor((totalSeconds % 3_600) / 60);
-  const seconds = totalSeconds % 60;
-  return [hours, minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
-}
-
-function CompassDirectionIcon({ inverted = false }: { inverted?: boolean }) {
-  const fill = inverted ? "white" : "black";
-  return (
-    <svg aria-hidden="true" className="h-full w-full" fill="none" viewBox="0 0 48 48">
-      <polygon
-        fill={fill}
-        points="24,2 29,19 46,24 29,29 24,46 19,29 2,24 19,19"
-        stroke="currentColor"
-        strokeLinejoin="round"
-        strokeWidth="1.75"
-      />
-      <polygon
-        fill={fill}
-        points="24,9 28,20 39,24 28,28 24,39 20,28 9,24 20,20"
-        stroke="currentColor"
-        strokeLinejoin="round"
-        strokeWidth="1.75"
-        transform="rotate(45 24 24)"
-      />
-      <circle cx="24" cy="24" fill={fill} r="3.5" stroke="currentColor" strokeWidth="1.75" />
-    </svg>
-  );
-}
-
 const activeQuestProgress = 70;
-
-export function ActiveQuestSummary({ inverted = false }: { inverted?: boolean }) {
-  return (
-    <div className={`arc-summary-activity flex gap-2 ${statsAppLabelTypography} ${inverted ? "text-black/60" : "text-white/60"}`}>
-      <p className="break-words">Competence: Mastery Path</p>
-      <div className="flex items-center gap-2">
-        <div aria-hidden="true" className={`arc-progress-bar h-3 w-16 border sm:w-20 ${inverted ? "border-black/50" : "border-white/50"}`}>
-          <div className={`h-full ${inverted ? "bg-black" : "bg-white"}`} style={{ width: `${activeQuestProgress}%` }} />
-        </div>
-        <span className={`w-8 text-right font-mono tracking-normal tabular-nums ${inverted ? "text-black/45" : "text-white/45"}`}>
-          {activeQuestProgress}%
-        </span>
-      </div>
-    </div>
-  );
-}
+// Match the composer's border grey without changing the colors of its contents.
+const selectedSummarySurface = "border-transparent bg-white/[0.20] shadow-none";
+const revealedSummarySurface = "border-transparent bg-transparent shadow-none hover:border-transparent hover:bg-white/[0.20] hover:shadow-none";
 
 function CurrentActivitySummary({
   activeActivity,
   activityView,
   categoryPickerOpen = false,
-  inverted = false,
+  expanded = false,
   onActivityViewChange,
   onCurrentActivityClick,
   onCategoryClick,
@@ -365,7 +268,7 @@ function CurrentActivitySummary({
   activeActivity: ActiveActivity | null;
   activityView: "current" | "tasks";
   categoryPickerOpen?: boolean;
-  inverted?: boolean;
+  expanded?: boolean;
   onActivityViewChange?: (view: "current" | "tasks") => void;
   onCurrentActivityClick?: () => void;
   onCategoryClick?: () => void;
@@ -375,34 +278,34 @@ function CurrentActivitySummary({
     ? activeActivity.name
     : "Current activity";
   const isDefaultTitle = title === "Current activity";
-  const titleHighlighted = inverted && activityView === "current" && titleSelected;
+  const titleHighlighted = expanded && activityView === "current" && titleSelected;
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2 text-xs font-semibold tracking-[0.1em]">
+    <div className="flex min-w-0 flex-[0_1_auto] items-center gap-2 font-sans text-xs font-medium">
       {activeActivity?.category && !categoryPickerOpen ? (
         <motion.button
           layoutId={`activity-category-${activeActivity.category}`}
           transition={{ layout: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }}
           aria-label={`View ${activeActivity.category} activity grid`}
           title={`View ${activeActivity.category} activity grid`}
-          className="grid size-7 cursor-pointer place-items-center rounded-full hover:opacity-60 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3"
+          className="grid size-7 shrink-0 cursor-pointer place-items-center rounded-full hover:opacity-60 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 max-[430px]:size-5"
           onClick={(event) => { event.stopPropagation(); onCategoryClick?.(); }}
           onKeyDown={(event) => event.stopPropagation()}
           type="button"
         >
-          <motion.span layoutId={`activity-category-icon-${activeActivity.category}`} className="grid size-7 place-items-center rounded-full">
-            <ActivityCategoryIcon category={activeActivity.category} className="size-5" />
+          <motion.span layoutId={`activity-category-icon-${activeActivity.category}`} className="grid size-7 place-items-center rounded-full max-[430px]:size-5">
+            <ActivityCategoryIcon category={activeActivity.category} className="size-5 max-[430px]:size-4" />
           </motion.span>
         </motion.button>
       ) : null}
-      <div className={`flex min-w-0 flex-1 items-center transition-colors ${titleHighlighted ? "bg-black text-white" : ""}`}>
+      <div className={`flex w-[clamp(9rem,40vw,16rem)] min-w-0 flex-[0_1_auto] items-center rounded-lg transition-colors ${titleHighlighted ? "bg-[#e8e8e8] text-black" : "bg-black/30 text-white"}`}>
           <button
             id="activity-current-tab"
             aria-controls="activity-current-panel"
             aria-selected={activityView === "current"}
             role="tab"
             type="button"
-            className={`min-w-0 flex-1 cursor-pointer truncate px-2 py-1.5 text-left font-mono text-[0.55rem] font-semibold tracking-[0.1em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 ${titleHighlighted ? "text-white" : isDefaultTitle ? inverted ? "italic text-black/45 hover:text-black" : "italic text-white/45 hover:text-white" : inverted ? "text-black/75 hover:text-black" : "text-white/75 hover:text-white"}`}
+            className={`min-w-0 flex-1 cursor-pointer truncate px-2 py-1.5 text-left font-sans text-xs font-medium transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 max-[430px]:px-1 ${titleHighlighted ? "text-black" : isDefaultTitle ? "italic text-white/45 hover:text-white" : "text-white/75 hover:text-white"}`}
             onClick={(event) => {
               event.stopPropagation();
               setTitleSelected(true);
@@ -411,20 +314,6 @@ function CurrentActivitySummary({
             }}
             onKeyDown={(event) => event.stopPropagation()}
           >{title}</button>
-          <button
-            aria-label="Edit activity name"
-            title="Edit activity name"
-            type="button"
-            className={`ml-auto grid size-7 shrink-0 cursor-pointer place-items-center focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 ${titleHighlighted ? "text-white/70 hover:text-white" : inverted ? "text-black/40 hover:text-black" : "text-white/40 hover:text-white"}`}
-            onClick={(event) => {
-              event.stopPropagation();
-              setTitleSelected(true);
-              if (onCurrentActivityClick) onCurrentActivityClick();
-              else onActivityViewChange?.("current");
-              window.dispatchEvent(new CustomEvent(editActivityNameEvent, { detail: { name: title } }));
-            }}
-            onKeyDown={(event) => event.stopPropagation()}
-          ><FiEdit2 aria-hidden="true" className="size-3" /></button>
       </div>
     </div>
   );
@@ -471,7 +360,7 @@ export function ActiveQuestPanel({
         <ExecuteCommandControl />
       </div>
       <PinScrollArea className="pr-2" wrapperClassName="mt-4 flex-1">
-        <QuestCommandHistory showPrompt />
+        <QuestCommandHistory />
       </PinScrollArea>
     </section>
   );
@@ -481,26 +370,20 @@ export function CampaignActivitySummary({
   activityView = "current",
   categoryPickerOpen = false,
   expanded = false,
-  interactive = true,
   onActivityViewChange,
   onCurrentActivityClick,
-  onArcClick,
   onCampaignToggle,
   onCategoryClick,
-  onToggle,
   selectedCampaign = "current",
   summary = "quest",
 }: {
   activityView?: "current" | "tasks";
   categoryPickerOpen?: boolean;
   expanded?: boolean;
-  interactive?: boolean;
   onActivityViewChange?: (view: "current" | "tasks") => void;
   onCurrentActivityClick?: () => void;
-  onArcClick?: () => void;
   onCampaignToggle?: () => void;
   onCategoryClick?: () => void;
-  onToggle?: () => void;
   selectedCampaign?: "all" | "current";
   summary?: "activity" | "quest";
 }) {
@@ -508,7 +391,7 @@ export function CampaignActivitySummary({
   const { activeActivity } = useActiveActivity();
   const remaining = getArcTimeRemaining(now);
   const arcDay = getArcDay(remaining.days);
-  const summaryPadding = summary === "activity" ? "px-2 py-3" : "p-3";
+  const summarySurface = expanded ? selectedSummarySurface : revealedSummarySurface;
 
   useEffect(() => {
     const interval = window.setInterval(() => setNow(Date.now()), 1_000);
@@ -517,60 +400,30 @@ export function CampaignActivitySummary({
 
   return (
     <section
-      aria-controls={onToggle ? "terminal-activity-workspace" : undefined}
-      aria-expanded={onToggle ? expanded : undefined}
       aria-label={summary === "quest" ? "Campaign summary" : "Activity summary"}
-      className={`arc-summary-container relative mb-12 grid min-w-0 w-full items-stretch ${
-        interactive ? "grid-cols-[1.625rem_minmax(0,1fr)] gap-3" : "grid-cols-1"
-      } ${onToggle || onCampaignToggle ? `${summaryPadding} transition-colors ${onToggle ? "cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white" : ""} ${expanded ? "bg-white text-black" : "hover:bg-white/[0.04]"}` : ""}`}
-      onClick={onToggle}
-      onKeyDown={onToggle ? (event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        onToggle();
-      } : undefined}
-      role={onToggle ? "button" : undefined}
-      tabIndex={onToggle ? 0 : undefined}
+      className={`relative ${summary === "activity" ? "mb-12" : "mb-3"} grid min-w-0 grid-cols-1 items-stretch ${summary === "activity" ? "w-fit max-w-full rounded-2xl bg-transparent py-1.5" : `arc-summary-container w-full border ${onCampaignToggle ? `${expanded ? "px-3" : "px-0 hover:px-3"} py-0 transition-[background-color,border-color,box-shadow,padding] ${summarySurface}` : "border-transparent bg-transparent"}`}`}
     >
-      {interactive && (
-        <button
-          aria-controls="stats-campaign-view"
-          aria-expanded={expanded}
-          aria-label={expanded ? "Close campaign view" : "Open campaign view"}
-          className={`flex h-full w-[1.625rem] min-h-12 cursor-pointer items-center justify-start transition-opacity hover:opacity-60 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 ${expanded ? "text-black focus-visible:outline-black" : "text-white focus-visible:outline-white"}`}
-          onClick={onCampaignToggle}
-          type="button"
-        >
-          <CompassDirectionIcon inverted={expanded} />
-        </button>
-      )}
       {summary === "activity" ? (
-        <div className="grid min-w-0 gap-3 py-0.5">
-          <div className={`flex min-w-0 items-center justify-between gap-2 text-xs font-semibold uppercase tracking-[0.1em] ${expanded ? "text-black/60" : "text-white/60"}`}>
-            <div className="flex min-w-0 items-center gap-2">
-              <button type="button" aria-label="Arc: Crucible" disabled={!onArcClick} onClick={(event) => { event.stopPropagation(); onArcClick?.(); }} onKeyDown={(event) => event.stopPropagation()} className={`w-fit shrink-0 whitespace-nowrap px-1.5 focus-visible:outline focus-visible:outline-offset-2 ${onArcClick ? "cursor-pointer" : "cursor-default"} ${expanded ? "bg-black text-white" : "bg-white text-black"}`}>
-                Crucible
-              </button>
-              <span className="whitespace-nowrap font-mono tabular-nums text-[0.6rem]" suppressHydrationWarning>DAY {arcDay.current} / {arcDay.total}</span>
-            </div>
-            <time className="shrink-0 whitespace-nowrap font-mono text-[0.6rem] tabular-nums" suppressHydrationWarning>
-              {activeActivity ? formatActivityElapsed(now - activeActivity.startedAt) : "00:00:00"}
-            </time>
-          </div>
-          <div className="flex min-w-0 items-center justify-between gap-2">
-            <CurrentActivitySummary activeActivity={activeActivity} activityView={activityView} categoryPickerOpen={categoryPickerOpen} inverted={expanded} onActivityViewChange={onActivityViewChange} onCurrentActivityClick={onCurrentActivityClick} onCategoryClick={onCategoryClick} />
+        <div className="flex min-w-0 items-center gap-2 py-0.5 font-sans text-xs font-medium text-white/60 max-[430px]:gap-1" id="terminal-campaign-activity-summary-content">
+          <div className="flex min-w-0 items-center gap-2">
+            <CurrentActivitySummary activeActivity={activeActivity} activityView={activityView} categoryPickerOpen={categoryPickerOpen} expanded={expanded} onActivityViewChange={onActivityViewChange} onCurrentActivityClick={onCurrentActivityClick} onCategoryClick={onCategoryClick} />
             {onActivityViewChange && (
               <div aria-label="Activity views" role="tablist" className="flex shrink-0 gap-1">
                 <button
                   id="activity-tasks-tab"
+                  aria-label="Activities"
+                  title="Activities"
                   aria-controls="activity-tasks-panel"
-                  aria-selected={activityView === "tasks"}
+                  aria-selected={expanded && activityView === "tasks"}
                   role="tab"
                   type="button"
                   onClick={(event) => { event.stopPropagation(); onActivityViewChange("tasks"); }}
                   onKeyDown={(event) => event.stopPropagation()}
-                  className={`cursor-pointer px-2 py-1.5 text-[0.55rem] font-semibold uppercase tracking-[0.1em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 ${activityView === "tasks" ? expanded ? "bg-black text-white" : "bg-white text-black" : expanded ? "text-black/55 hover:bg-black/10" : "text-white/55 hover:bg-white/10"}`}
-                >Tasks</button>
+                  className="grid size-10 cursor-pointer place-items-center rounded-[4px] bg-background text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img alt="" aria-hidden="true" className={`size-7 ${expanded && activityView === "tasks" ? "brightness-0 invert" : ""}`} height={28} src="/cleaned-treasure-map.svg" width={28} />
+                </button>
               </div>
             )}
           </div>
@@ -580,20 +433,29 @@ export function CampaignActivitySummary({
           aria-controls="stats-campaign-view"
           aria-expanded={expanded}
           aria-label={expanded ? "Close campaign view" : "Open campaign view"}
-          className={`grid min-w-0 cursor-pointer content-between gap-3 py-0.5 text-left transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 ${expanded ? "hover:bg-black/[0.04] focus-visible:outline-black" : "hover:bg-white/[0.04] focus-visible:outline-white"}`}
+          className="grid min-w-0 cursor-pointer content-between gap-3 py-0 text-left focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
           onClick={onCampaignToggle}
           type="button"
         >
-          <div className={`arc-summary-heading flex gap-2 ${statsAppLabelTypography} ${expanded ? "text-black/60" : "text-white/60"}`}>
-            <p className={`whitespace-nowrap px-1.5 ${expanded ? "bg-black text-white" : "bg-white text-black"}`}>
+          <div className={`arc-summary-heading flex gap-2 text-white/60 ${statsAppLabelTypography}`}>
+            <p className="whitespace-nowrap bg-white px-1.5 text-black">
               {selectedCampaign === "all" ? "All campaigns" : "Current campaign"}
             </p>
-            <span className={`whitespace-nowrap font-mono tracking-normal tabular-nums ${expanded ? "text-black/65" : "text-white/60"}`} suppressHydrationWarning>
+            <span className="whitespace-nowrap font-mono tracking-normal tabular-nums text-white/60" suppressHydrationWarning>
               DAY {arcDay.current} / {arcDay.total}
             </span>
           </div>
-          <p className={`${statsAppLabelTypography} ${expanded ? "text-black/45" : "text-white/45"}`}>Arc: Crucible · Act I</p>
-          <ActiveQuestSummary inverted={expanded} />
+          <div className={`arc-summary-activity flex gap-2 text-white/60 ${statsAppLabelTypography}`}>
+            <p className="break-words text-white/45">Arc: Crucible · Act I</p>
+            <div className="flex items-center gap-2">
+              <div aria-hidden="true" className="arc-progress-bar h-3 w-16 border border-white/50 sm:w-20">
+                <div className="h-full bg-white" style={{ width: `${activeQuestProgress}%` }} />
+              </div>
+              <span className="w-8 text-right font-mono tracking-normal tabular-nums text-white/45">
+                {activeQuestProgress}%
+              </span>
+            </div>
+          </div>
         </button>
       )}
     </section>
@@ -630,7 +492,7 @@ function CampaignSelectorChip({ selectedCampaign, onSelect }: { selectedCampaign
         aria-expanded={selectorOpen}
         aria-label={`Campaigns: ${selectedLabel}`}
         aria-haspopup="true"
-        className="flex max-w-[12rem] cursor-pointer items-center gap-2 rounded-full border border-white/45 px-3 py-1.5 text-[0.55rem] font-semibold uppercase tracking-[0.12em] text-white/75 hover:border-white hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+        className="flex max-w-[12rem] cursor-pointer items-center gap-2 rounded-full border border-white/40 bg-transparent px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-white/65 transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
         onClick={() => setSelectorOpen((open) => !open)}
         ref={triggerRef}
         title={selectedLabel}
@@ -665,12 +527,12 @@ function CampaignSelectorChip({ selectedCampaign, onSelect }: { selectedCampaign
   );
 }
 
-function CampaignLeaderboardPlaceholder({ selectedCampaign }: { selectedCampaign: "all" | "current" }) {
+function CampaignLeaderboardPlaceholder({ selectedCampaign, onSelect }: { selectedCampaign: "all" | "current"; onSelect: (campaign: "all" | "current") => void }) {
   return (
-    <section aria-labelledby="campaign-leaderboard-heading" className="mx-auto mt-6 w-full max-w-3xl border-t border-white/20 pt-5 text-white" id="stats-campaign-view">
+    <section aria-labelledby="campaign-leaderboard-heading" className="mt-6 w-full text-white" id="stats-campaign-view">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70" id="campaign-leaderboard-heading">Leaderboard</h2>
-        <span className="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-white/40">{selectedCampaign === "all" ? "All campaigns" : "Current campaign"}</span>
+        <CampaignSelectorChip onSelect={onSelect} selectedCampaign={selectedCampaign} />
       </div>
       <div className="mt-5 grid min-h-48 place-items-center border border-dashed border-white/25 p-6 text-center text-[0.65rem] uppercase tracking-[0.16em] text-white/40">Leaderboard coming soon</div>
     </section>
@@ -699,41 +561,67 @@ function StatChart({ stat }: { stat: Stat }) {
   );
 }
 
-function ArcVideoPanel({ className, label }: { className?: string; label: string }) {
+const arcPreviewImages = [
+  { src: "/arc-preview/robot-arms.png", alt: "Robotic arms in a workshop" },
+  { src: "/arc-preview/rainbow.png", alt: "Rainbow over forested mountains" },
+  { src: "/arc-preview/canyon.png", alt: "Sunlit canyon beneath a blue sky" },
+];
+
+function ArcVideoPanel({ className, panel }: { className?: string; panel: number }) {
+  const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
   return (
     <div
-      aria-label={`${label} video panel`}
-      className={`grid min-h-24 place-items-center border-4 border-white bg-white/[0.025] text-white/35 ${className ?? ""}`}
-      role="img"
+      aria-label={`Panel ${panel}`}
+      className={`relative min-h-24 overflow-hidden border border-white/55 bg-white/[0.025] ${className ?? ""}`}
     >
-      <div className="grid place-items-center gap-2">
-        <FiVideo aria-hidden="true" className="size-5" />
-        <span className="text-[0.55rem] font-semibold uppercase tracking-[0.16em]">{label}</span>
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt={image.alt} src={image.src} className="absolute inset-0 h-full w-full object-cover" />
     </div>
   );
 }
 
 function ArcPanelLayouts() {
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-10" aria-label="ARC comic panels">
+    <div className="w-full space-y-10" aria-label="ARC comic panels">
       <article aria-label="ARC layout 1" className="grid grid-cols-[2fr_1fr] items-start gap-2">
-        <ArcVideoPanel className="aspect-[16/9]" label="Panel 01" />
-        <ArcVideoPanel className="aspect-[3/4]" label="Panel 02" />
+        <ArcVideoPanel className="aspect-[16/9]" panel={1} />
+        <ArcVideoPanel className="aspect-[3/4]" panel={2} />
       </article>
       <article aria-label="ARC layout 2" className="grid grid-cols-[1fr_1.45fr] gap-2">
-        <ArcVideoPanel className="aspect-square" label="Panel 03" />
+        <ArcVideoPanel className="aspect-square" panel={3} />
         <div className="grid grid-rows-2 gap-2">
-          <ArcVideoPanel className="h-full" label="Panel 04" />
-          <ArcVideoPanel className="h-full" label="Panel 05" />
+          <ArcVideoPanel className="h-full" panel={4} />
+          <ArcVideoPanel className="h-full" panel={5} />
         </div>
       </article>
       <article aria-label="ARC layout 3" className="grid grid-cols-3 gap-2">
-        <ArcVideoPanel className="aspect-[3/4]" label="Panel 06" />
-        <ArcVideoPanel className="aspect-[3/4]" label="Panel 07" />
-        <ArcVideoPanel className="aspect-[3/4]" label="Panel 08" />
+        <ArcVideoPanel className="aspect-[3/4]" panel={6} />
+        <ArcVideoPanel className="aspect-[3/4]" panel={7} />
+        <ArcVideoPanel className="aspect-[3/4]" panel={8} />
       </article>
     </div>
+  );
+}
+
+function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: "worldline" | "logs" | "storyboard"; onSelect: (view: "worldline" | "logs" | "storyboard") => void; onOpenArr: () => void }) {
+  return (
+    <section aria-label="Campaign stories" className="mt-3">
+      <div className="flex w-full justify-end" aria-label="Campaign stories views" role="tablist">
+        <div className="flex items-center rounded-full border border-white/35 p-0.5">
+          {(["worldline", "storyboard", "logs"] as const).map((option) => (
+            <button key={option} type="button" role="tab" aria-selected={view === option} aria-controls="arc-view-content" id={`arc-${option}-tab`} onClick={() => onSelect(option)} className={`relative cursor-pointer rounded-full px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${view === option ? "text-black" : "text-white/55 hover:text-white"}`}>
+              {view === option && <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white" layoutId="arc-view-fill" transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} />}
+              <span className="relative z-10">{option}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-3 [&>*]:mt-0" id="arc-view-content" role="tabpanel" aria-labelledby={`arc-${view}-tab`}>
+        {view === "logs" ? <DayLogContent onOpenArr={onOpenArr} /> : view === "storyboard" ? (
+          <div className="w-full border border-white/20 p-[clamp(1.25rem,3vw,2.5rem)]"><StoryboardContent /></div>
+        ) : <ArcPanelLayouts />}
+      </div>
+    </section>
   );
 }
 
@@ -973,7 +861,7 @@ function ConnectionsView() {
   };
 
   return (
-    <section aria-labelledby="connections-view-title" className="mt-8 w-full border border-white/25 bg-white/[0.02] p-5 sm:p-7">
+    <section aria-labelledby="connections-view-title" className="w-full border border-white/25 bg-white/[0.02] p-5 sm:p-7">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/20 pb-4">
         <div className="flex items-center gap-4">
           <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-white" id="connections-view-title">Connections</h2>
@@ -1018,37 +906,16 @@ function ConnectionsView() {
   );
 }
 
-export default function StatsDisplay() {
+export default function StatsDisplay({ embedded = false }: { embedded?: boolean }) {
   const [activeStat, setActiveStat] = useState<Stat | null>(null);
-  const [appView, setAppView] = useState<StatsAppView>("arc");
-  const [lastIconAppView, setLastIconAppView] = useState<StatsAppView>("arc");
-  const [previewAppView, setPreviewAppView] = useState<StatsAppView | null>(null);
-  const [arcLogsOpen, setArcLogsOpen] = useState(false);
-  const [campaignSelected, setCampaignSelected] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<"all" | "current">("current");
+  const {
+    arcView, campaignSelected, displayedAppView, navigationHome, selectedCampaign,
+    selectAppView, setArcView, setCampaignSelected, setNavigationHome, setSelectedCampaign,
+  } = useStatsView();
+  const viewOpen = !navigationHome;
   const [arrOpen, setArrOpen] = useState(false);
   const [selectedHudCategory, setSelectedHudCategory] = useState<HudCategory | null>(null);
   const [sentienceExpanded, setSentienceExpanded] = useState(false);
-  const [selectedInventoryItem, setSelectedInventoryItem] = useState<{
-    item: MockInventoryItem;
-    room: InventoryRoom;
-    slot: number;
-  } | null>(null);
-  const [inventorySection, setInventorySection] = useState<InventorySection>("inventory");
-
-  const selectAppView = (view: StatsAppView) => {
-    setAppView(view);
-    if (view !== "guild" && view !== "connections") setLastIconAppView(view);
-    setPreviewAppView(null);
-  };
-
-  const toggleSummaryView = (view: "guild" | "connections") => {
-    selectAppView(appView === view ? lastIconAppView : view);
-  };
-
-  const displayedAppView = previewAppView ?? appView;
-  const toolbarActiveView = appView === "guild" || appView === "connections" ? lastIconAppView : appView;
-  const toolbarDisplayedView = previewAppView ?? toolbarActiveView;
 
   useEffect(() => {
     if (!arrOpen) return;
@@ -1062,115 +929,9 @@ export default function StatsDisplay() {
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [arrOpen]);
 
-  useEffect(() => {
-    if (!selectedInventoryItem) return;
 
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedInventoryItem(null);
-    };
-
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [selectedInventoryItem]);
-
-  return (
-    <section className="mx-auto flex w-full max-w-[72rem] flex-1 flex-col px-[clamp(1.5rem,4.4vw,3.5rem)] pb-24 pt-4 lg:pt-8">
-      <div className="mx-auto grid w-full max-w-3xl gap-y-6">
-          <div className="w-full [container-type:inline-size]">
-            <div className="character-summary-layout text-[0.5rem] font-semibold uppercase tracking-normal">
-              <Link aria-label="Open profile and admin" className="character-summary-profile block size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-white/5 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white" href="/admin">
-                {activeStat ? (
-                  <StatChart stat={activeStat} />
-                ) : (
-                  // A plain image avoids relying on a runtime image optimizer.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    alt="Illustrated portrait of Steven Wilcox"
-                    className="h-full w-full object-cover"
-                    src={portrait.src}
-                  />
-                )}
-              </Link>
-
-              <div className="character-summary-details grid min-h-[4.75rem] min-w-0 content-center gap-y-1 text-left font-mono text-white/60">
-                <p className="min-w-0 whitespace-nowrap">Character v0.1.0</p>
-                <p className="min-w-0 whitespace-nowrap">Job: Getaway Driver</p>
-                <p className="min-w-0 whitespace-nowrap">Build: NPC</p>
-                <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
-                  <span>Streak {streakStatus}</span>
-                  <span>Sync Ratio {syncRatioStatus}</span>
-                </p>
-              </div>
-
-              <div className="character-summary-actions flex shrink-0 flex-col items-stretch gap-2">
-                <button
-                  aria-pressed={appView === "guild"}
-                  className={`cursor-pointer rounded-full border px-2 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                    appView === "guild"
-                      ? "border-white bg-white text-black"
-                      : "border-white/45 bg-transparent text-white/70 hover:border-white hover:text-white"
-                  }`}
-                  onClick={() => toggleSummaryView("guild")}
-                  type="button"
-                >
-                  Guild
-                </button>
-                <button
-                  aria-pressed={appView === "connections"}
-                  className={`cursor-pointer rounded-full border px-2 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                    appView === "connections"
-                      ? "border-white bg-white text-black"
-                      : "border-white/45 bg-transparent text-white/70 hover:border-white hover:text-white"
-                  }`}
-                  onClick={() => toggleSummaryView("connections")}
-                  type="button"
-                >
-                  Connections
-                </button>
-              </div>
-            </div>
-          </div>
-
-      </div>
-
-      <div className="mt-8 max-[30rem]:mt-0">
-        <StatsViewToolbar
-          activeView={toolbarActiveView}
-          displayedView={toolbarDisplayedView}
-          onPreview={setPreviewAppView}
-          onSelect={selectAppView}
-        />
-      </div>
-
-      {(displayedAppView === "stats" || displayedAppView === "hud") && (
-        <div className="mt-8 grid w-full gap-y-6">
-          <div className="w-full lg:col-span-2">
-            {displayedAppView === "hud" ? (
-              <div>
-                <div className="sm:hidden">
-                  <HudSummaryRows
-                    columns={1}
-                    onSelect={(category) => setSelectedHudCategory((current) => current === category ? null : category)}
-                    selectedCategory={selectedHudCategory}
-                  />
-                </div>
-                <div className="hidden sm:block lg:hidden">
-                  <HudSummaryRows
-                    columns={2}
-                    onSelect={(category) => setSelectedHudCategory((current) => current === category ? null : category)}
-                    selectedCategory={selectedHudCategory}
-                  />
-                </div>
-                <div className="hidden lg:block">
-                  <HudSummaryRows
-                    columns={3}
-                    onSelect={(category) => setSelectedHudCategory((current) => current === category ? null : category)}
-                    selectedCategory={selectedHudCategory}
-                  />
-                </div>
-              </div>
-            ) : (
-              <>
+  const statsSummary = (
+    <>
                 <div className="grid grid-cols-[minmax(9rem,1fr)_minmax(7rem,0.65fr)_minmax(4rem,auto)] gap-x-5 border-b border-white/15 pb-4 text-xs font-semibold uppercase tracking-[0.28em] text-white/55">
                   <span>Attributes</span>
                   <span className="text-right">Status</span>
@@ -1219,6 +980,76 @@ export default function StatsDisplay() {
                     </Fragment>
                   ))}
                 </dl>
+    </>
+  );
+  return (
+    <section className={`relative mx-auto flex w-full max-w-[72rem] flex-1 flex-col ${embedded ? "pb-8" : "px-[clamp(1.5rem,4.4vw,3.5rem)] pb-24"} ${navigationHome || displayedAppView === "arc" ? "pt-4" : displayedAppView === "admin" ? "pt-12" : displayedAppView === "storyboard" ? "pt-8" : "pt-16"}`}>
+      {viewOpen && displayedAppView === "admin" && (
+        <header className={`absolute top-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-white/70 ${embedded ? "left-0" : "left-[clamp(1.5rem,4.4vw,3.5rem)]"}`}>
+          APP VERSION 0.1.0
+        </header>
+      )}
+      <StatsFigureNavigation activeView={displayedAppView} inlineDiagram={viewOpen && displayedAppView === "admin"} navigationHome={navigationHome} onReturn={() => setNavigationHome(true)} onSelect={(view) => { selectAppView(view); setNavigationHome(false); }} />
+
+      <AnimatePresence initial={false}>
+      {viewOpen && <motion.div animate={{ opacity: 1 }} className="w-full" exit={{ opacity: 0 }} initial={{ opacity: 0 }} key="stats-view-content" transition={{ duration: 0.2 }}>
+
+      {(displayedAppView === "stats" || displayedAppView === "hud" || displayedAppView === "storyboard") && (
+        <div className="grid w-full gap-y-6">
+          <div className="w-full lg:col-span-2">
+            {displayedAppView === "hud" ? (
+              <div>
+                <div className="sm:hidden">
+                  <HudSummaryRows
+                    columns={1}
+                    onSelect={(category) => setSelectedHudCategory((current) => current === category ? null : category)}
+                    selectedCategory={selectedHudCategory}
+                  />
+                </div>
+                <div className="hidden sm:block lg:hidden">
+                  <HudSummaryRows
+                    columns={2}
+                    onSelect={(category) => setSelectedHudCategory((current) => current === category ? null : category)}
+                    selectedCategory={selectedHudCategory}
+                  />
+                </div>
+                <div className="hidden lg:block">
+                  <HudSummaryRows
+                    columns={3}
+                    onSelect={(category) => setSelectedHudCategory((current) => current === category ? null : category)}
+                    selectedCategory={selectedHudCategory}
+                  />
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className={`mx-auto w-full ${displayedAppView === "storyboard" ? "mb-5" : "mb-10"}`}>
+                  <div className="character-summary-layout text-[0.5rem] font-semibold uppercase tracking-normal">
+                    <div className="character-summary-profile block size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-white/5">
+                      {activeStat ? (
+                        <StatChart stat={activeStat} />
+                      ) : (
+                        // A plain image avoids relying on a runtime image optimizer.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img alt="Illustrated portrait of Steven Wilcox" className="h-full w-full object-cover" src={portrait.src} />
+                      )}
+                    </div>
+                    <div className="character-summary-details grid min-h-[4.75rem] min-w-0 content-center gap-y-1 text-left font-mono text-white/60">
+                      <p className="min-w-0 whitespace-nowrap">Character v0.1.0</p>
+                      <p className="min-w-0 whitespace-nowrap">Job: Getaway Driver</p>
+                      <p className="min-w-0 whitespace-nowrap">Build: NPC</p>
+                      <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
+                        <span>Streak {streakStatus}</span>
+                        <span>Sync Ratio {syncRatioStatus}</span>
+                      </p>
+                    </div>
+                    <div className="character-summary-profile character-summary-secondary relative size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-black">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img alt="Character bust portrait" src="/chat-reader-figure.png" className="absolute left-[-12.5%] top-[-7.5%] h-auto w-[125%] max-w-none invert" />
+                    </div>
+                  </div>
+                </div>
+                {displayedAppView !== "storyboard" && statsSummary}
               </>
             )}
           </div>
@@ -1226,7 +1057,7 @@ export default function StatsDisplay() {
       )}
 
       {displayedAppView === "guild" && (
-        <section aria-labelledby="guild-view-title" className="mt-8 w-full border border-white/25 bg-white/[0.02] p-5 sm:p-7">
+        <section aria-labelledby="guild-view-title" className="w-full border border-white/25 bg-white/[0.02] p-5 sm:p-7">
           <header className="flex items-center justify-between gap-6 border-b border-white/20 pb-4">
             <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-white" id="guild-view-title">
               Guild
@@ -1245,6 +1076,12 @@ export default function StatsDisplay() {
 
       {displayedAppView === "connections" && (
         <ConnectionsView />
+      )}
+
+      {displayedAppView === "admin" && (
+        <div className="w-full">
+          <AdminContent showPortrait={false} />
+        </div>
       )}
 
       {false && (
@@ -1373,261 +1210,32 @@ export default function StatsDisplay() {
       </section>
       )}
 
-      {(displayedAppView === "os" || displayedAppView === "inventory") && (
-        <section
-          aria-label="O.S."
-          className="mt-8 w-full"
-        >
-          {displayedAppView === "os" && (
-            <div className="w-full">
-              <h2 className="w-full text-center text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/55">
-                MVSOS v0.1.0
-              </h2>
-              <div className="mt-5 grid w-full place-items-center border border-dashed border-white/30 bg-white/[0.02] p-5">
-                {/* A plain image avoids relying on a runtime image optimizer. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt="MVSOS"
-                  className="h-auto max-h-[32rem] w-full max-w-[32rem] object-contain"
-                  src="/mvsos.svg"
-                />
-              </div>
-            </div>
-          )}
-
-          {displayedAppView === "inventory" && (
-            <div className="w-full">
-              <div className="flex w-full items-center justify-end gap-3">
-                <h2 className="sr-only">{inventorySection}</h2>
-                <span className="grid size-5 shrink-0 place-items-center text-white/55">
-                  {inventorySection === "inventory" ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img alt="" aria-hidden="true" className="h-5 w-auto shrink-0" src="/shelf.svg" />
-                  ) : inventorySection === "systems" ? (
-                    <FiLayers aria-hidden="true" className="size-5 shrink-0" />
-                  ) : (
-                    <FiShoppingBag aria-hidden="true" className="size-5 shrink-0" />
-                  )}
-                </span>
-                <div aria-label="Inventory views" className="flex shrink-0 items-center rounded-full border border-white/35 p-0.5" role="group">
-                  {inventorySections.map((section) => (
-                    <button
-                      aria-pressed={inventorySection === section}
-                      className={`relative cursor-pointer rounded-full px-2.5 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.1em] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${inventorySection === section ? "text-black" : "text-white/55 hover:text-white"}`}
-                      key={section}
-                      onClick={() => setInventorySection(section)}
-                      type="button"
-                    >
-                      {inventorySection === section && <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white" layoutId="inventory-section-fill" transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} />}
-                      <span className="relative z-10">{section === "inventory" ? "Items" : section}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {inventorySection === "inventory" ? (
-              <div aria-label="Inventory items" role="region">
-              <div className="mt-4 grid min-h-64 w-full grid-cols-6 grid-rows-4 border border-white/30 bg-white/[0.02] text-center text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/55">
-                <div className="col-span-4 row-span-2 grid place-items-center border-b border-r border-white/25">
-                  Kitchen
-                </div>
-                <div className="col-span-2 grid place-items-center border-b border-white/25">
-                  Pantry
-                </div>
-                <div className="col-span-2 grid place-items-center border-b border-white/25">
-                  Bathroom
-                </div>
-                <div className="col-span-3 row-span-2 grid place-items-center border-r border-white/25">
-                  Bedroom
-                </div>
-                <div className="row-span-2 grid place-items-center border-r border-white/25">
-                  Closet
-                </div>
-                <div className="col-span-2 row-span-2 grid place-items-center">
-                  Office
-                </div>
-              </div>
-
-              <div className="mt-8 divide-y divide-white/20 border-x border-white/20">
-                {inventoryRooms.map(
-                  (room) => (
-                    <section
-                      aria-labelledby={`inventory-${room.toLowerCase()}`}
-                      className="px-4 py-6 sm:px-6"
-                      key={room}
-                    >
-                      <h3
-                        className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/55"
-                        id={`inventory-${room.toLowerCase()}`}
-                      >
-                        {room}
-                      </h3>
-                      <div className="mt-3 grid w-full grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-                        {Array.from({ length: 6 }, (_, index) => {
-                          const item = mockInventoryItems[room][index];
-
-                          if (!item) {
-                            return (
-                              <div
-                                aria-label={`Empty ${room.toLowerCase()} inventory slot ${index + 1}`}
-                                className="aspect-square w-3/4 justify-self-center border border-white/25 bg-white/[0.02]"
-                                key={index}
-                                role="img"
-                              />
-                            );
-                          }
-
-                          return (
-                            <button
-                              aria-label={`Open ${item.name} details`}
-                              className="grid aspect-square w-3/4 min-w-0 cursor-pointer justify-self-center place-items-center border border-white/55 bg-white/[0.08] p-2 text-center transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white"
-                              key={index}
-                              onClick={() => setSelectedInventoryItem({ item, room, slot: index + 1 })}
-                              type="button"
-                            >
-                              <span>
-                                <FiBox aria-hidden="true" className="mx-auto size-4 opacity-65" />
-                                <span className="mt-2 block break-words text-[0.5rem] font-semibold uppercase leading-4 tracking-[0.1em] opacity-75">
-                                  {item.name}
-                                </span>
-                                <span className="mt-1 block text-[0.4rem] uppercase tracking-[0.12em] opacity-35">
-                                  Mock
-                                </span>
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </section>
-                  ),
-                )}
-              </div>
-              </div>
-              ) : inventorySection === "store" ? (
-                <div className="mt-6"><StoreContent /></div>
-              ) : (
-                <section aria-label="Systems" className="mt-4 grid min-h-64 place-items-center border border-dashed border-white/30 bg-white/[0.02] p-6 text-center">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/45">No systems installed yet</p>
-                </section>
-              )}
-            </div>
-          )}
-        </section>
+      {displayedAppView === "os" && (
+        <SystemsView />
       )}
+      {displayedAppView === "inventory" && <InventoryContent />}
 
       {displayedAppView === "storyboard" && (
-        <section aria-label="Storyboard planning" className="mt-8 w-full">
-          <StoryboardBuilder />
+        <section aria-label="Character" className="mt-4 w-full">
+          <StoryboardBuilder statsContent={statsSummary} />
         </section>
       )}
 
       {displayedAppView === "arc" && (
-        <section aria-label="ARC" className="mt-8 w-full">
-          <div className="mx-auto w-full max-w-3xl [&>section]:mb-0"><CampaignActivitySummary expanded={campaignSelected} onCampaignToggle={() => { setCampaignSelected((selected) => !selected); setArcLogsOpen(false); }} selectedCampaign={selectedCampaign} /></div>
-          <div className="mx-auto mt-8 flex w-full max-w-3xl items-center justify-between gap-2">
-            {campaignSelected ? (
-              <CampaignSelectorChip onSelect={setSelectedCampaign} selectedCampaign={selectedCampaign} />
-            ) : <span aria-hidden="true" />}
-            <button
-              aria-pressed={campaignSelected ? undefined : arcLogsOpen}
-              className={`cursor-pointer rounded-full border px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.14em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                arcLogsOpen || campaignSelected
-                  ? "border-white bg-white text-black"
-                  : "border-white/40 bg-transparent text-white/65 hover:border-white hover:text-white"
-              }`}
-              onClick={() => {
-                if (campaignSelected || arcLogsOpen) {
-                  setCampaignSelected(false);
-                  setArcLogsOpen(false);
-                } else {
-                  setArcLogsOpen(true);
-                }
-              }}
-              type="button"
-            >
-              {campaignSelected ? "Back to Campaign Stories" : "Logs"}
-            </button>
+        <section aria-label="ARC" className="w-full">
+          <div className="w-full [&>section]:mb-0">
+            <CampaignActivitySummary expanded={campaignSelected} onCampaignToggle={() => { setCampaignSelected((selected) => !selected); }} selectedCampaign={selectedCampaign} />
           </div>
           {campaignSelected ? (
-            <CampaignLeaderboardPlaceholder selectedCampaign={selectedCampaign} />
-          ) : arcLogsOpen ? (
-            <DayLogContent onOpenArr={() => setArrOpen(true)} />
+            <section aria-label="Campaign details" className="mt-3 [&>*]:mt-0">
+              <CampaignLeaderboardPlaceholder onSelect={setSelectedCampaign} selectedCampaign={selectedCampaign} />
+            </section>
           ) : (
-            <div className="mt-6">
-              <ArcPanelLayouts />
-            </div>
+            <ArcStoriesContent view={arcView} onSelect={setArcView} onOpenArr={() => setArrOpen(true)} />
           )}
         </section>
       )}
 
-      {selectedInventoryItem && (
-        <div
-          aria-labelledby="inventory-item-details-title"
-          aria-modal="true"
-          className="fixed inset-0 z-[140] grid place-items-center bg-black/85 p-5"
-          onClick={() => setSelectedInventoryItem(null)}
-          role="dialog"
-        >
-          <article
-            className="w-full max-w-md border border-white/45 bg-black p-6 text-white sm:p-8"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <header className="flex items-start justify-between gap-6 border-b border-white/20 pb-5">
-              <div>
-                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-white/40">
-                  Inventory Item
-                </p>
-                <h2
-                  className="mt-2 text-lg font-semibold uppercase tracking-[0.14em]"
-                  id="inventory-item-details-title"
-                >
-                  {selectedInventoryItem.item.name}
-                </h2>
-              </div>
-              <button
-                aria-label="Close item details"
-                autoFocus
-                className="grid size-8 shrink-0 cursor-pointer place-items-center text-white/50 transition-colors hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
-                onClick={() => setSelectedInventoryItem(null)}
-                type="button"
-              >
-                <FiX aria-hidden="true" className="size-5" />
-              </button>
-            </header>
-
-            <div className="mt-6 grid grid-cols-2 gap-4 border-b border-white/20 pb-6 font-mono text-[0.6rem] uppercase tracking-[0.14em]">
-              <div>
-                <p className="text-white/35">Category</p>
-                <p className="mt-2 text-white/80">{selectedInventoryItem.room}</p>
-              </div>
-              <div>
-                <p className="text-white/35">Slot</p>
-                <p className="mt-2 text-white/80">{String(selectedInventoryItem.slot).padStart(2, "0")}</p>
-              </div>
-              <div>
-                <p className="text-white/35">Status</p>
-                <p className="mt-2 text-white/80">Stored</p>
-              </div>
-              <div>
-                <p className="text-white/35">Record</p>
-                <p className="mt-2 text-white/80">Mock Data</p>
-              </div>
-            </div>
-
-            <section className="mt-6" aria-labelledby="inventory-item-description-title">
-              <h3
-                className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-white/40"
-                id="inventory-item-description-title"
-              >
-                Description
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-white/70">
-                {selectedInventoryItem.item.description}
-              </p>
-            </section>
-          </article>
-        </div>
-      )}
 
       {arrOpen && (
         <div
@@ -1638,9 +1246,10 @@ export default function StatsDisplay() {
           role="dialog"
         >
           <article
-            className="arr-scrollbar max-h-[88dvh] w-full max-w-3xl overflow-y-auto border border-white/40 bg-black p-6 text-white sm:p-10"
+            className="max-h-[88dvh] w-full max-w-3xl overflow-hidden border border-white/40 bg-black text-white"
             onClick={(event) => event.stopPropagation()}
           >
+            <PinScrollArea className="max-h-[88dvh] p-6 sm:p-10" wrapperClassName="max-h-[88dvh]">
             <header className="flex items-start justify-between gap-8 border-b border-white/30 pb-6">
               <div>
                 <p className="text-[0.65rem] uppercase tracking-[0.24em] text-white/45">
@@ -1729,9 +1338,12 @@ export default function StatsDisplay() {
                 Rehearse the second checkpoint three times, move route notes into the pre-run brief, and target a 41-minute clean run.
               </p>
             </section>
+            </PinScrollArea>
           </article>
         </div>
       )}
+      </motion.div>}
+      </AnimatePresence>
     </section>
   );
 }

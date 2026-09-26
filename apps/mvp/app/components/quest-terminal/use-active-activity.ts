@@ -15,7 +15,7 @@ export type ActivityCategory = (typeof activityCategories)[number];
 const storageKey = "speedrun-irl:active-activity";
 const updateEvent = "speedrun-irl:active-activity-updated";
 
-function readActivity(): ActiveActivity | null {
+export function readActiveActivity(): ActiveActivity | null {
   if (typeof window === "undefined") return null;
 
   try {
@@ -40,7 +40,7 @@ export function useActiveActivity() {
   const [activeActivity, setActiveActivity] = useState<ActiveActivity | null>(null);
 
   useEffect(() => {
-    const sync = () => setActiveActivity(readActivity());
+    const sync = () => setActiveActivity(readActiveActivity());
     sync();
     window.addEventListener("storage", sync);
     window.addEventListener(updateEvent, sync);
@@ -57,14 +57,14 @@ export function useActiveActivity() {
   }, []);
 
   const startTaskActivity = useCallback((name: string, category: ActivityCategory, taskId: string) => {
-    const current = readActivity();
+    const current = readActiveActivity();
     const activity = { name, category, taskId, startedAt: current?.taskId === taskId ? current.startedAt : Date.now() };
     setActiveActivity(activity);
     persistActivity(activity);
   }, []);
 
   const updateActivityName = useCallback((name: string) => {
-    const current = readActivity();
+    const current = readActiveActivity();
     if (!current) return;
     const activity = { ...current, name };
     setActiveActivity(activity);

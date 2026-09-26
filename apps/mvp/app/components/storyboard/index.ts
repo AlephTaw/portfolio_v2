@@ -1,1 +1,1 @@
-export { StoryboardBuilder } from "./storyboard-builder";
+export { StoryboardBuilder, StoryboardContent } from "./storyboard-builder";

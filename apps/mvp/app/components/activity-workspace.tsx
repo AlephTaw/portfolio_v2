@@ -1,24 +1,28 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useContext, useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import { LayoutGroup, motion } from "framer-motion";
-import { FiCheck, FiChevronDown, FiCode, FiPlus } from "react-icons/fi";
-import { PiSpeedometer } from "react-icons/pi";
+import { FiChevronDown, FiEdit2, FiPlus } from "react-icons/fi";
 import { CampaignActivitySummary, StatsLevelsContent } from "../stats/stats-display";
+import { ComposerDockContext } from "./composer-dock-context";
 import { ActivityCategoryIcon } from "./activity-category-icon";
 import { HudCategoryApp, type HudCategory } from "./hud";
 import { QuestCommandHistory } from "./quest-terminal";
-import { activityCategories, type ActivityCategory, useActiveActivity } from "./quest-terminal/use-active-activity";
+import { activityCategories, readActiveActivity, type ActivityCategory, useActiveActivity } from "./quest-terminal/use-active-activity";
 import { useQuestCommands } from "./quest-terminal/use-quest-commands";
 import { useActivityWorkspace } from "./activity-workspace-context";
 import { openWorkshopEvent, WORLD_VIEW_STATE_KEY } from "./page-transition-events";
 import { PinScrollArea } from "./pin-scroll-area";
 import { subjectMasteryQuest, type SubjectMasteryCategory } from "./quest-context";
 import { useSplitView } from "./split-view-context";
+import { CampaignQuestContent, TerminalSelectedView } from "./terminal-selected-view";
+import { useTerminalView } from "./terminal-view-context";
+import { speedrunViews } from "./speedrun-view-options";
 
 type ActivityView = "current" | "tasks";
-type TaskView = "plan" | "levels" | "kanban";
+type TaskView = "plan" | "campaign" | "levels" | "kanban" | "running";
 const competenceCategories = subjectMasteryQuest.workingSystemModel.taskOntology.categories;
 type CompetenceCategory = SubjectMasteryCategory;
 type CompetenceView = "recent" | "created" | "categories";
@@ -167,14 +171,13 @@ function ActivityTaskGrid({ createLabel, emptyMessage, onCreate, onSelect, tasks
 }) {
   return (
     <div aria-label={`${createLabel} tasks`} className="grid grid-cols-3 gap-3 py-4 sm:grid-cols-4 md:grid-cols-6">
-      {tasks.length === 0 && emptyMessage && <p className="col-span-full py-6 text-xs uppercase tracking-[0.12em] text-white/45">{emptyMessage}</p>}
+      {tasks.length === 0 && emptyMessage && <p className="col-span-full py-6 text-sm text-white/45">{emptyMessage}</p>}
       {tasks.map((task) => (
-        <button key={task.id} type="button" onClick={() => onSelect(task)} className="flex aspect-square min-w-0 cursor-pointer flex-col items-start justify-between border border-white/50 bg-white/[0.05] p-2 text-left text-white transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white">
-          <span className="grid size-6 place-items-center rounded-full border border-current"><FiCheck aria-hidden="true" className={`size-3 ${task.completed ? "opacity-100" : "opacity-35"}`} /></span>
-          <span className="w-full break-words text-[0.55rem] font-semibold uppercase leading-4 tracking-[0.08em]">{task.name}</span>
+        <button key={task.id} type="button" onClick={() => onSelect(task)} className="flex aspect-square min-w-0 cursor-pointer flex-col items-start justify-end rounded-2xl border border-white/15 bg-white/[0.04] p-2 text-left text-white/85 transition-colors hover:border-white/45 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white">
+          <span className="w-full break-words text-[0.6875rem] font-medium leading-4 sm:text-xs">{task.name}</span>
         </button>
       ))}
-      <button aria-label={`Create ${createLabel.toLowerCase()} task`} title="Create task" type="button" onClick={onCreate} className="grid aspect-square cursor-pointer place-items-center border border-dashed border-white/45 text-white/65 hover:border-white hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white"><FiPlus aria-hidden="true" className="size-6" /></button>
+      <button aria-label={`Create ${createLabel.toLowerCase()} task`} title="Create task" type="button" onClick={onCreate} className="grid aspect-square cursor-pointer place-items-center rounded-2xl border border-dashed border-white/25 text-white/55 transition-colors hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white"><FiPlus aria-hidden="true" className="size-6" /></button>
     </div>
   );
 }
@@ -198,14 +201,17 @@ function ActivityWorkspaceContent({
   setSelectedTaskId: (taskId: string | null) => void;
   onActivityViewChange: (view: ActivityView) => void;
 }) {
-  const { activeActivity, startActivity, startTaskActivity } = useActiveActivity();
+  const { activeActivity, startActivity, startTaskActivity, updateActivityName } = useActiveActivity();
+  const { setActivityProgress } = useActivityWorkspace();
   const router = useRouter();
   const { setLeftPane, splitViewOpen } = useSplitView();
   const { addCommand } = useQuestCommands();
   const [tasks, setTasks] = useState<ActivityTask[]>(() => typeof window === "undefined" ? starterTasks : readTasks());
   const [creatingTask, setCreatingTask] = useState(false);
   const [taskName, setTaskName] = useState("");
-  const [taskView, setTaskView] = useState<TaskView>("plan");
+  const [editingTaskName, setEditingTaskName] = useState(false);
+  const [draftTaskName, setDraftTaskName] = useState("");
+  const [taskView, setTaskView] = useState<TaskView>("campaign");
   const [competenceView, setCompetenceView] = useState<CompetenceView>("created");
   const [hudVisible, setHudVisible] = useState(false);
   const [draftSkillCategory, setDraftSkillCategory] = useState<CompetenceCategory>("Engineering");
@@ -219,13 +225,23 @@ function ActivityWorkspaceContent({
   const createdCompetenceTasks = [...competenceTasks].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
 
   useEffect(() => {
+    const categoryTasks = category ? tasks.filter((task) => task.category === category) : [];
+    const next = category ? { category, completed: categoryTasks.filter((task) => task.completed).length, total: categoryTasks.length } : null;
+    setActivityProgress((current) => current?.category === next?.category && current?.completed === next?.completed && current?.total === next?.total ? current : next);
+  }, [category, setActivityProgress, tasks]);
+
+  useEffect(() => {
     if (!selectedTaskId && !creatingTask) return;
     const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { setSelectedTaskId(null); setCreatingTask(false); }
+      if (event.key === "Escape") {
+        if (editingTaskName) { setEditingTaskName(false); return; }
+        setSelectedTaskId(null);
+        setCreatingTask(false);
+      }
     };
     window.addEventListener("keydown", onEscape);
     return () => window.removeEventListener("keydown", onEscape);
-  }, [selectedTaskId, creatingTask, setSelectedTaskId]);
+  }, [selectedTaskId, creatingTask, editingTaskName, setSelectedTaskId]);
 
   const saveTasks = (next: ActivityTask[]) => {
     setTasks(next);
@@ -237,6 +253,7 @@ function ActivityWorkspaceContent({
     window.localStorage.setItem(recentCompetenceKey, JSON.stringify(next));
   };
   const chooseCategory = (nextCategory: ActivityCategory) => {
+    setEditingTaskName(false);
     setSelectedTaskId(null);
     setCreatingTask(false);
     setShowingTaskGrid(true);
@@ -270,6 +287,7 @@ function ActivityWorkspaceContent({
     if (openInWorkshop) openWorkshop();
   };
   const selectTask = (task: ActivityTask) => {
+    setEditingTaskName(false);
     if (task.category === "Competence") recordRecentCompetenceTask(task.id);
     startTaskActivity(task.name, task.category, task.id);
     setSelectedTaskId(task.id);
@@ -287,30 +305,39 @@ function ActivityWorkspaceContent({
     setCreatingTask(false);
     setShowingTaskGrid(true);
   };
+  const saveTaskName = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedTask) return;
+    const name = draftTaskName.trim();
+    if (!name) return;
+    saveTasks(tasks.map((task) => task.id === selectedTask.id ? { ...task, name } : task));
+    if (activeActivity?.taskId === selectedTask.id) updateActivityName(name);
+    setEditingTaskName(false);
+  };
 
   return (
-    <div id={`activity-${activityView}-panel`} role="tabpanel" aria-labelledby={`activity-${activityView}-tab`} className="pt-6">
+    <div id={`activity-${activityView}-panel`} role="tabpanel" aria-labelledby={`activity-${activityView}-tab`} className="pt-6 font-sans">
       {activityView === "current" ? (
         <>
         {taskGridVisible && (
           <div className="mb-3 flex w-full items-center justify-between gap-3">
-            <button type="button" title="Focus composer" onClick={() => document.getElementById("terminal-command-input")?.focus()} className="min-w-0 cursor-pointer rounded-full border border-white/40 px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white/70 transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">Quest: {category === "Competence" || category === "Quests" ? subjectMasteryQuest.name : "Unassigned"}</button>
+            <button type="button" title="Focus composer" onClick={() => document.getElementById("terminal-command-input")?.focus()} className="min-w-0 cursor-pointer rounded-full border border-white/25 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">Quest: {category === "Competence" || category === "Quests" ? subjectMasteryQuest.name : "Unassigned"}</button>
             <div className="flex shrink-0 items-center gap-2">
             {category === "Competence" && <label className="relative inline-flex items-center">
               <span className="sr-only">Competence view</span>
-              <select value={competenceView} onChange={(event) => changeCompetenceView(event.target.value as CompetenceView)} className="cursor-pointer appearance-none rounded-full border border-white/40 bg-black py-1.5 pl-4 pr-9 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white outline-none hover:border-white focus-visible:border-white">
+              <select value={competenceView} onChange={(event) => changeCompetenceView(event.target.value as CompetenceView)} className="cursor-pointer appearance-none rounded-full border border-white/25 bg-black py-1.5 pl-4 pr-9 text-xs font-medium text-white/80 outline-none hover:border-white/60 focus-visible:border-white">
                 <option value="recent">Recent</option>
                 <option value="created">Created</option>
                 <option value="categories">Categories</option>
               </select>
               <FiChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 size-3 text-white/65" />
             </label>}
-            <button type="button" aria-pressed={hudVisible} onClick={() => setHudVisible((visible) => !visible)} className="cursor-pointer rounded-full border border-white/40 px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white/70 transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">{hudVisible ? "Hide HUD" : "Show HUD"}</button>
+            <button type="button" aria-pressed={hudVisible} onClick={() => setHudVisible((visible) => !visible)} className={`cursor-pointer rounded-full border px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.14em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${hudVisible ? "border-white bg-white text-black" : "border-white/40 bg-transparent text-white/65 hover:border-white hover:text-white"}`}>HUD</button>
             </div>
           </div>
         )}
         {taskGridVisible && hudVisible && (
-          hudCategory ? <HudCategoryApp category={hudCategory} className="mt-0" /> : <section aria-label="Quests HUD" className="border-t border-white/20 py-6 text-xs uppercase tracking-[0.12em] text-white/45">No HUD configured for Quests yet.</section>
+          hudCategory ? <HudCategoryApp category={hudCategory} className="mt-0" /> : <section aria-label="Quests HUD" className="border-t border-white/15 py-6 text-sm text-white/45">No HUD configured for Quests yet.</section>
         )}
         {!category || choosingCategory ? (
           <div aria-label="Activity categories" className="grid w-full gap-y-3 py-4">
@@ -320,9 +347,9 @@ function ActivityWorkspaceContent({
                   const position = row.length === 3 ? [0, 50, 100][index] : row.length === 2 ? [25, 75][index] : 50;
                   return (
                     <div key={item} className="relative col-start-1 row-start-1 aspect-square" style={{ width: "min(6rem, calc((100% - 1.5rem) / 3))", left: `${position}%`, transform: `translateX(-${position}%)` }}>
-                      <motion.button layoutId={`activity-category-${item}`} transition={{ layout: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }} type="button" onClick={() => chooseCategory(item)} className="group flex size-full cursor-pointer flex-col items-center justify-center gap-1 bg-white/[0.05] p-1 text-center text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white">
+                      <motion.button layoutId={`activity-category-${item}`} transition={{ layout: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }} type="button" onClick={() => chooseCategory(item)} aria-pressed={category === item} className={`group flex size-full cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border bg-white/[0.04] p-1 text-center text-white/85 transition-colors hover:border-white/45 hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white ${category === item ? "border-white/60" : "border-transparent"}`}>
                         <motion.span layoutId={`activity-category-icon-${item}`} className="grid size-12 shrink-0 place-items-center rounded-full"><ActivityCategoryIcon category={item} className="size-9" /></motion.span>
-                        <span className="w-full break-words text-[0.55rem] font-semibold uppercase leading-4 tracking-[0.08em]">{item}</span>
+                        <span className="w-full break-words text-[0.65rem] font-medium leading-4">{item}</span>
                       </motion.button>
                     </div>
                   );
@@ -332,25 +359,35 @@ function ActivityWorkspaceContent({
           </div>
         ) : creatingTask && !showingTaskGrid ? (
           <form onSubmit={createTask} className="grid max-w-md gap-4 py-4 text-white">
-            <label className="grid gap-2 text-xs uppercase tracking-[0.12em] text-white/60">Task name<input autoFocus value={taskName} onChange={(event) => setTaskName(event.target.value)} className="border border-white/40 bg-black p-3 text-sm text-white outline-none focus:border-white" /></label>
-            {category === "Competence" && <label className="grid gap-2 text-xs uppercase tracking-[0.12em] text-white/60">Skill category<select value={draftSkillCategory} onChange={(event) => setDraftSkillCategory(event.target.value as CompetenceCategory)} className="border border-white/40 bg-black p-3 text-sm text-white outline-none focus:border-white">{competenceCategories.map((skillCategory) => <option key={skillCategory} value={skillCategory}>{skillCategory}</option>)}</select></label>}
-            <div className="flex flex-wrap gap-3"><button disabled={!taskName.trim()} type="submit" value="task" className="cursor-pointer bg-white px-4 py-3 text-xs font-semibold uppercase text-black disabled:cursor-not-allowed disabled:opacity-40">Create task</button><button disabled={!taskName.trim()} type="submit" value="workshop" className="cursor-pointer rounded-full border border-white/45 px-4 py-3 text-xs font-semibold uppercase text-white/70 hover:border-white hover:text-white disabled:cursor-not-allowed disabled:opacity-40">Create &amp; open in Workshop</button><button type="button" onClick={() => { setCreatingTask(false); setShowingTaskGrid(true); }} className="cursor-pointer px-4 py-3 text-xs uppercase text-white/60 hover:text-white">Cancel</button></div>
+            <label className="grid gap-2 text-xs font-medium text-white/60">Task name<input autoFocus value={taskName} onChange={(event) => setTaskName(event.target.value)} className="rounded-2xl border border-white/20 bg-white/[0.04] p-3 font-sans text-sm text-white outline-none focus:border-white/60" /></label>
+            {category === "Competence" && <label className="grid gap-2 text-xs font-medium text-white/60">Skill category<select value={draftSkillCategory} onChange={(event) => setDraftSkillCategory(event.target.value as CompetenceCategory)} className="rounded-2xl border border-white/20 bg-black p-3 font-sans text-sm text-white outline-none focus:border-white/60">{competenceCategories.map((skillCategory) => <option key={skillCategory} value={skillCategory}>{skillCategory}</option>)}</select></label>}
+            <div className="flex flex-wrap gap-3"><button disabled={!taskName.trim()} type="submit" value="task" className="cursor-pointer rounded-full bg-white px-4 py-2.5 text-xs font-medium text-black disabled:cursor-not-allowed disabled:opacity-40">Create task</button><button disabled={!taskName.trim()} type="submit" value="workshop" className="cursor-pointer rounded-full border border-white/25 px-4 py-2.5 text-xs font-medium text-white/70 hover:border-white/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-40">Create &amp; open in Workshop</button><button type="button" onClick={() => { setCreatingTask(false); setShowingTaskGrid(true); }} className="cursor-pointer px-4 py-2.5 text-xs text-white/60 hover:text-white">Cancel</button></div>
           </form>
         ) : selectedTask && !showingTaskGrid ? (
           <section aria-label={`${selectedTask.name} activity`} className="min-h-72 py-4 text-white">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.14em]">{selectedTask.name}</h2>
-              <button type="button" onClick={openWorkshop} className="cursor-pointer rounded-full border border-white/45 px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-white/70 transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">Open in Workshop</button>
+            <div className="flex flex-wrap items-center gap-3">
+              {editingTaskName ? (
+                <form className="flex min-w-0 items-center gap-2" onSubmit={saveTaskName}>
+                  <input aria-label="Task name" autoFocus className="min-w-0 rounded-lg border border-white/40 bg-white/[0.06] px-2 py-1 text-base text-white outline-none focus:border-white" onChange={(event) => setDraftTaskName(event.target.value)} value={draftTaskName} />
+                  <button className="cursor-pointer rounded-lg px-2 py-1 text-xs text-white hover:bg-white/10" type="submit">Save</button>
+                  <button className="cursor-pointer rounded-lg px-2 py-1 text-xs text-white/60 hover:bg-white/10 hover:text-white" onClick={() => setEditingTaskName(false)} type="button">Cancel</button>
+                </form>
+              ) : (
+                <div className="flex min-w-0 items-center gap-2">
+                  <h2 className="min-w-0 text-base font-medium">{selectedTask.name}</h2>
+                  <button aria-label={`Edit ${selectedTask.name}`} className="grid size-7 shrink-0 cursor-pointer place-items-center rounded-lg text-white/50 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white" onClick={() => { setDraftTaskName(selectedTask.name); setEditingTaskName(true); }} type="button"><FiEdit2 aria-hidden="true" className="size-3.5" /></button>
+                </div>
+              )}
             </div>
-            <p className="mt-4 text-xs uppercase tracking-[0.14em] text-white/50">{selectedTask.category === "Competence" ? competenceCategoryFor(selectedTask) : selectedTask.category} · {selectedTask.completed ? "Completed" : "Ready"}</p>
-            <button type="button" onClick={() => saveTasks(tasks.map((task) => task.id === selectedTask.id ? { ...task, completed: !task.completed } : task))} className="mt-6 cursor-pointer bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-black">{selectedTask.completed ? "Mark incomplete" : "Complete task"}</button>
+            <p className="mt-3 text-xs text-white/50">{selectedTask.category === "Competence" ? competenceCategoryFor(selectedTask) : selectedTask.category} · {selectedTask.completed ? "Completed" : "Ready"}</p>
+            <button type="button" onClick={() => saveTasks(tasks.map((task) => task.id === selectedTask.id ? { ...task, completed: !task.completed } : task))} className="mt-6 cursor-pointer rounded-full bg-white px-4 py-2.5 text-xs font-medium text-black">{selectedTask.completed ? "Mark incomplete" : "Complete task"}</button>
           </section>
         ) : category === "Competence" ? (
           competenceView === "categories" ? (
             <div aria-label="Competence categories" className="mt-8 divide-y divide-white/20">
               {competenceCategories.map((skillCategory) => (
                 <section key={skillCategory} aria-labelledby={`competence-${skillCategory.toLowerCase().replaceAll(" ", "-")}`} className="px-4 py-6 sm:px-6">
-                  <h3 id={`competence-${skillCategory.toLowerCase().replaceAll(" ", "-")}`} className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/55">{skillCategory}</h3>
+                  <h3 id={`competence-${skillCategory.toLowerCase().replaceAll(" ", "-")}`} className="text-sm font-medium text-white/70">{skillCategory}</h3>
                   <ActivityTaskGrid createLabel={skillCategory} emptyMessage="No skills in this category yet" tasks={competenceTasks.filter((task) => competenceCategoryFor(task) === skillCategory)} onSelect={selectTask} onCreate={() => beginCreateTask(skillCategory)} />
                 </section>
               ))}
@@ -365,18 +402,28 @@ function ActivityWorkspaceContent({
       ) : (
         <div>
           <div aria-label="Task views" className="flex flex-wrap gap-2">
-            {(["plan", "levels", "kanban"] as const).map((view) => (
-              <button key={view} type="button" aria-pressed={taskView === view} onClick={() => setTaskView(view)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.14em] transition-colors ${taskView === view ? "border-white bg-white text-black" : "border-white/40 text-white/60 hover:border-white hover:text-white"}`}>{view}</button>
+            {(["campaign", "plan", "levels", "kanban", "running"] as const).map((view) => (
+              <button key={view} type="button" aria-pressed={taskView === view} onClick={() => setTaskView(view)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-medium capitalize transition-colors ${taskView === view ? "border-white/75 text-white" : "border-white/20 text-white/55 hover:border-white/50 hover:text-white"}`}>{view === "running" ? "Running tasks" : view}</button>
             ))}
           </div>
-          {taskView === "levels" ? <div className="mt-6"><StatsLevelsContent className="border-y-0" /></div> : taskView === "plan" ? (
-            <div className="mt-6 grid min-h-72 place-items-center text-sm uppercase tracking-[0.18em] text-white/35">Planning view</div>
+          {taskView === "levels" ? <div className="mt-6"><StatsLevelsContent className="border-y-0 font-sans text-sm font-normal normal-case tracking-normal [&_header]:text-sm [&_header]:font-medium [&_header]:tracking-normal [&_h3]:text-sm [&_h3]:font-medium [&_h3]:normal-case [&_h3]:tracking-normal [&_dt]:text-xs [&_dt]:normal-case [&_dt]:tracking-normal [&_label]:text-xs [&_label]:normal-case [&_label]:tracking-normal [&_dd]:text-sm [&_p]:text-sm [&_input]:rounded-2xl [&_textarea]:rounded-2xl [&_input]:bg-white/[0.04] [&_textarea]:bg-white/[0.04] [&_dl>div]:rounded-2xl [&_section>div>div]:rounded-2xl [&_button]:rounded-full [&_button]:text-xs [&_button]:normal-case [&_button]:tracking-normal" /></div> : taskView === "plan" ? (
+            <div className="mt-6 grid min-h-72 place-items-center text-sm text-white/40">Planning view</div>
+          ) : taskView === "campaign" ? (
+            <div className="mt-6"><CampaignQuestContent /></div>
+          ) : taskView === "running" ? (
+            <section aria-label="Running tasks" className="mt-6">
+              {activeActivity ? (
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-sm text-white/85">
+                  {activeActivity.name}<span className="ml-2 text-xs text-white/40">· {activeActivity.category}</span>
+                </div>
+              ) : <p className="text-sm text-white/40">No running tasks</p>}
+            </section>
           ) : (
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               {([false, true] as const).map((completed) => (
-                <section key={String(completed)} className="min-h-52 border border-white/25 p-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">{completed ? "Done" : "To do"}</h3>
-                  <div className="mt-4 grid gap-2">{tasks.filter((task) => task.completed === completed).map((task) => <button key={task.id} type="button" onClick={() => selectTask(task)} className="cursor-pointer border border-white/25 p-3 text-left text-xs uppercase tracking-[0.08em] hover:border-white">{task.name}<span className="ml-2 text-white/40">· {task.category}</span></button>)}</div>
+                <section key={String(completed)} className="min-h-52 rounded-2xl border border-white/15 bg-white/[0.02] p-4">
+                  <h3 className="text-sm font-medium text-white/65">{completed ? "Done" : "To do"}</h3>
+                  <div className="mt-4 grid gap-2">{tasks.filter((task) => task.completed === completed).map((task) => <button key={task.id} type="button" onClick={() => selectTask(task)} className="cursor-pointer rounded-xl border border-white/10 bg-white/[0.03] p-3 text-left text-sm text-white/85 transition-colors hover:border-white/40 hover:bg-white/[0.06]">{task.name}<span className="ml-2 text-xs text-white/40">· {task.category}</span></button>)}</div>
                 </section>
               ))}
             </div>
@@ -388,49 +435,30 @@ function ActivityWorkspaceContent({
   );
 }
 
-function TerminalSectionToggle({
-  controls,
-  kind,
-  onToggle,
-  visible,
-}: {
-  controls: string;
-  kind: "summary" | "code";
-  onToggle: () => void;
-  visible: boolean;
-}) {
-  const label = kind === "summary" ? "campaign and activity summary" : "terminal content";
-  const Icon = kind === "summary" ? PiSpeedometer : FiCode;
-
-  return (
-    <button
-      aria-controls={controls}
-      aria-expanded={visible}
-      aria-label={`${visible ? "Hide" : "Show"} ${label}`}
-      className="relative flex size-8 shrink-0 cursor-pointer items-center justify-start text-white/55 transition-colors hover:opacity-70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
-      onClick={onToggle}
-      title={`${visible ? "Hide" : "Show"} ${label}`}
-      type="button"
-    >
-      <span className="relative size-4">
-        <Icon aria-hidden="true" className="size-4" />
-        {!visible && <svg aria-hidden="true" className="absolute inset-0 size-4" fill="none" viewBox="0 0 16 16"><path d="M2 14 14 2" stroke="currentColor" strokeWidth="1.5" /></svg>}
-      </span>
-    </button>
-  );
-}
-
-export function TerminalActivityWorkspace() {
-  const { activityOpen, setActivityOpen } = useActivityWorkspace();
-  const { splitMode, splitViewOpen } = useSplitView();
-  const { activeActivity } = useActiveActivity();
-  const [summaryVisible, setSummaryVisible] = useState(true);
-  const [terminalContentVisible, setTerminalContentVisible] = useState(true);
+export function TerminalActivityWorkspace({ workshop = false, showSummary = true }: { workshop?: boolean; showSummary?: boolean }) {
+  const { activityOpen, navigationRequest, setActivityOpen, setDetailTaskId } = useActivityWorkspace();
+  const { view } = useTerminalView();
+  const { startActivity } = useActiveActivity();
+  const { addCommand } = useQuestCommands();
+  // The Workshop lives inside the minimap view, so its terminal modes are local.
+  const [workshopView, setWorkshopView] = useState<(typeof speedrunViews)[number]["view"]>("notes");
+  const displayedView = workshop ? workshopView : view;
+  const fullWidthTerminal = !activityOpen && (workshop || ["code", "notes", "notes-hidden", "code-preview", "minimap", "world-tree"].includes(displayedView));
+  const composerDock = useContext(ComposerDockContext);
   const [activityView, setActivityView] = useState<ActivityView>("current");
   const [choosingCategory, setChoosingCategory] = useState(false);
   const [showingTaskGrid, setShowingTaskGrid] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const openCurrentActivity = () => {
+  const [categorySelectionId, setCategorySelectionId] = useState(0);
+  const handledNavigationRequest = useRef(0);
+  useEffect(() => {
+    if (!workshop) setDetailTaskId(activityOpen && activityView === "current" && !choosingCategory && !showingTaskGrid ? selectedTaskId : null);
+  }, [activityOpen, activityView, choosingCategory, selectedTaskId, setDetailTaskId, showingTaskGrid, workshop]);
+  useEffect(() => () => {
+    if (!workshop) setDetailTaskId(null);
+  }, [setDetailTaskId, workshop]);
+  const openCurrentActivity = useCallback(() => {
+    const activeActivity = readActiveActivity();
     const tasks = readTasks();
     const selectedTask = tasks.find((task) => task.id === activeActivity?.taskId)
       ?? tasks.find((task) => task.category === activeActivity?.category && task.name === activeActivity?.name);
@@ -439,30 +467,74 @@ export function TerminalActivityWorkspace() {
     setChoosingCategory(false);
     setActivityView("current");
     setActivityOpen(true);
-  };
+  }, [setActivityOpen]);
+
+  useEffect(() => {
+    if (workshop || !navigationRequest || handledNavigationRequest.current === navigationRequest.id) return;
+    handledNavigationRequest.current = navigationRequest.id;
+    const frame = window.requestAnimationFrame(() => {
+      if (navigationRequest.action === "current") {
+        openCurrentActivity();
+      } else if (navigationRequest.action === "task-grid") {
+        setActivityView("current");
+        setChoosingCategory(false);
+        setShowingTaskGrid(true);
+        setSelectedTaskId(null);
+        setActivityOpen(true);
+      } else if (navigationRequest.action === "categories") {
+        setActivityView("current");
+        setChoosingCategory(true);
+        setShowingTaskGrid(false);
+        setSelectedTaskId(null);
+      } else if (navigationRequest.action === "category") {
+        const category = navigationRequest.category;
+        if (readActiveActivity()?.category !== category) addCommand({ type: "custom-activity", item: category });
+        startActivity("Current activity", category);
+        setCategorySelectionId(navigationRequest.id);
+        setActivityView("current");
+        setChoosingCategory(false);
+        setShowingTaskGrid(true);
+        setSelectedTaskId(null);
+        setActivityOpen(true);
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [navigationRequest, openCurrentActivity, workshop, addCommand, startActivity, setActivityOpen]);
   return (
-    <LayoutGroup id="activity-category-grid"><div className="terminal-left-rail-layout flex min-h-0 flex-1 flex-col" data-vertical-split={splitViewOpen && splitMode === "vertical"}>
-      <div className="terminal-summary-rail-row sticky top-0 z-20 grid min-h-10 shrink-0 grid-cols-[1.5rem_minmax(0,1fr)] gap-1 bg-black">
-        <div className="mt-1">
-          <TerminalSectionToggle controls="terminal-campaign-activity-summary" kind="summary" onToggle={() => setSummaryVisible((visible) => !visible)} visible={summaryVisible} />
-        </div>
-        <div id="terminal-campaign-activity-summary" className="[&>section]:mb-0">
-          {summaryVisible && <CampaignActivitySummary expanded={activityOpen} interactive={false} onToggle={() => { if (activityOpen) setChoosingCategory(false); setActivityOpen(!activityOpen); }} summary="activity" activityView={activityView} categoryPickerOpen={activityOpen && choosingCategory} onArcClick={() => { setActivityView("current"); setActivityOpen(true); setChoosingCategory(true); }} onCategoryClick={() => { setActivityView("current"); setActivityOpen(true); setChoosingCategory(false); setShowingTaskGrid(true); }} onCurrentActivityClick={openCurrentActivity} onActivityViewChange={(view) => { setChoosingCategory(false); setShowingTaskGrid(false); setActivityView(view); setActivityOpen(true); }} />}
+    <LayoutGroup id={workshop ? "workshop-activity-category-grid" : "activity-category-grid"}><div className={`mx-auto flex min-h-0 w-full max-w-[var(--composer-max-width,72rem)] flex-1 flex-col ${workshop ? "relative h-full" : ""} ${fullWidthTerminal ? (workshop ? "" : "pl-1 pr-[var(--composer-gutter,1.5rem)]") : "pl-[var(--composer-gutter,1.5rem)] pr-[calc(var(--composer-gutter,1.5rem)+2rem)]"}`}>
+      {showSummary && composerDock && createPortal(<div className="w-fit max-w-full [&>section]:mb-0" id={workshop ? "workshop-campaign-activity-summary" : "terminal-campaign-activity-summary"}>
+        <CampaignActivitySummary expanded={activityOpen} summary="activity" activityView={activityView} categoryPickerOpen={activityOpen && choosingCategory} onCategoryClick={() => { setActivityView("current"); setActivityOpen(true); setChoosingCategory(false); setShowingTaskGrid(true); }} onCurrentActivityClick={openCurrentActivity} onActivityViewChange={(view) => { setChoosingCategory(false); setShowingTaskGrid(false); setActivityView(view); setActivityOpen(true); }} />
+      </div>, composerDock)}
+      {workshop && !activityOpen && (
+        <nav aria-label="Workshop terminal mode" className="relative z-20 flex shrink-0 justify-start gap-1 py-3">
+          {speedrunViews.map(({ icon: Icon, label, view: mode }) => (
+            <button
+              aria-pressed={workshopView === mode}
+              className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 font-sans text-xs transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${workshopView === mode ? "border-white/55 text-white" : "border-transparent text-white/50 hover:text-white"}`}
+              key={mode}
+              onClick={() => setWorkshopView(mode)}
+              type="button"
+            >
+              <Icon aria-hidden="true" className="size-3.5" />
+              {label}
+            </button>
+          ))}
+        </nav>
+      )}
+      <div className="relative flex min-h-0 flex-1 flex-col" id={workshop ? "workshop-terminal-main-content" : "terminal-main-content"}>
+        {activityOpen && (
+          <PinScrollArea className="pb-[calc(var(--composer-height)+1rem)]" wrapperClassName="flex-1">
+            <ActivityWorkspaceContent key={categorySelectionId} activityView={activityView} choosingCategory={choosingCategory} setChoosingCategory={setChoosingCategory} showingTaskGrid={showingTaskGrid} setShowingTaskGrid={setShowingTaskGrid} selectedTaskId={selectedTaskId} setSelectedTaskId={setSelectedTaskId} onActivityViewChange={setActivityView} />
+          </PinScrollArea>
+        )}
+        <div aria-hidden={activityOpen} className={`relative min-h-0 flex-1 flex-col ${activityOpen ? "hidden" : "flex"}`} inert={activityOpen}>
+          {displayedView === "code" || displayedView === "notes" ? (
+            <div aria-label="Command history" className="relative flex min-h-0 flex-1 flex-col"><QuestCommandHistory scrollable /></div>
+          ) : displayedView === "notes-hidden" ? (
+            <div aria-label="Terminal with dialogue history hidden" className="min-h-0 flex-1" />
+          ) : <TerminalSelectedView key={displayedView} view={displayedView} />}
         </div>
       </div>
-      {activityOpen ? (
-        <PinScrollArea className="pb-24" id="terminal-activity-workspace" wrapperClassName="flex-1">
-          <ActivityWorkspaceContent activityView={activityView} choosingCategory={choosingCategory} setChoosingCategory={setChoosingCategory} showingTaskGrid={showingTaskGrid} setShowingTaskGrid={setShowingTaskGrid} selectedTaskId={selectedTaskId} setSelectedTaskId={setSelectedTaskId} onActivityViewChange={setActivityView} />
-        </PinScrollArea>
-      ) : <div id="terminal-activity-workspace" />}
-      {!activityOpen && <section aria-label="Terminal" className="flex min-h-0 flex-1 flex-col">
-        <div className="terminal-code-rail-row sticky top-0 z-10 shrink-0 bg-black py-1">
-          <TerminalSectionToggle controls="terminal-code-content" kind="code" onToggle={() => setTerminalContentVisible((visible) => !visible)} visible={terminalContentVisible} />
-        </div>
-        <div className="relative flex min-h-0 flex-1 flex-col" id="terminal-code-content">
-          {terminalContentVisible && <div aria-label="Terminal ready" className="relative flex min-h-0 flex-1 flex-col font-mono"><QuestCommandHistory scrollable showPrompt /></div>}
-        </div>
-      </section>}
     </div></LayoutGroup>
   );
 }
