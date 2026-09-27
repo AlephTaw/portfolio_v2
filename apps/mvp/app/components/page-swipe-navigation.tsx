@@ -5,10 +5,10 @@ import { useEffect, useRef } from "react";
 import { pageTransitionEvent, WORLD_ORIGIN_KEY, type PageTransitionDetail } from "./page-transition-events";
 
 const routes: Record<string, { left?: string; right?: string }> = {
-  "/stats": { left: "/terminal" },
-  "/terminal": { left: "/chat", right: "/stats" },
-  "/chat": { right: "/terminal" },
-  "/world": { left: "/stats" },
+  "/state": { left: "/actions" },
+  "/actions": { left: "/interactions", right: "/state" },
+  "/interactions": { right: "/actions" },
+  "/world": { left: "/state" },
 };
 const excluded = "input, textarea, select, [contenteditable]:not([contenteditable='false']), [role='dialog'], [role='slider'], [role='separator'], [data-rail-gesture-ignore], [data-page-swipe-ignore]";
 

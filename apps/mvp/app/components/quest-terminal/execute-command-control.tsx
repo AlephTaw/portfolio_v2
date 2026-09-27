@@ -3,8 +3,9 @@
 import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { FiGrid, FiPlus, FiX } from "react-icons/fi";
+import { FiGrid, FiMic, FiPlus, FiX, FiXCircle } from "react-icons/fi";
 import { ChatConversationPicker, useChatConversation } from "../chat-conversations";
+import { InteractionsApp } from "../interactions-app";
 import { useActivityWorkspace } from "../activity-workspace-context";
 import { editActivityNameEvent } from "../activity-workspace-events";
 import { KnapsackButton } from "../knapsack-button";
@@ -12,7 +13,7 @@ import { PinScrollArea } from "../pin-scroll-area";
 import { findSpeedrunViewAction, speedrunViews } from "../speedrun-view-options";
 import { findSplitScreenAction, SplitModeIcon, splitScreenActions, useApplySplitMode } from "../split-screen-actions";
 import { useSplitView } from "../split-view-context";
-import { useTerminalView } from "../terminal-view-context";
+import { useActionsView } from "../actions-view-context";
 import { commandOptions, getCommandText, type CommandOption } from "./quest-terminal-data";
 import { useActiveActivity } from "./use-active-activity";
 import { useQuestCommands } from "./use-quest-commands";
@@ -20,6 +21,7 @@ import { useQuestCommands } from "./use-quest-commands";
 type ExecuteCommandControlProps = {
   onDockElementChange?: (element: HTMLElement | null) => void;
   onSuggestionsOpenChange?: (open: boolean) => void;
+  onChatPreviewExpandedChange?: (expanded: boolean) => void;
   variant?: "button" | "command-line";
 };
 
@@ -119,7 +121,7 @@ function CommandList({
   return inline ? list : <PinScrollArea className="max-h-72" wrapperClassName="max-h-72">{list}</PinScrollArea>;
 }
 
-export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenChange, variant = "button" }: ExecuteCommandControlProps) {
+export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenChange, onChatPreviewExpandedChange, variant = "button" }: ExecuteCommandControlProps) {
   const { addCommand } = useQuestCommands();
   const { activeActivity, startActivity, updateActivityName } = useActiveActivity();
   const { setActivityOpen } = useActivityWorkspace();
@@ -128,10 +130,11 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
   const pathname = usePathname();
   const router = useRouter();
   const { conversation } = useChatConversation();
-  const { setView, view } = useTerminalView();
+  const { setView, view } = useActionsView();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
+  const [chatExpanded, setChatExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [editingActivityName, setEditingActivityName] = useState(false);
@@ -149,9 +152,16 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
   }, [onSuggestionsOpenChange, open, variant]);
 
   useEffect(() => {
+    onChatPreviewExpandedChange?.(open && entryMode === "chat" && chatExpanded);
+  }, [chatExpanded, entryMode, onChatPreviewExpandedChange, open]);
+
+  useEffect(() => {
     if (variant !== "command-line") return;
-    return () => onSuggestionsOpenChange?.(false);
-  }, [onSuggestionsOpenChange, variant]);
+    return () => {
+      onSuggestionsOpenChange?.(false);
+      onChatPreviewExpandedChange?.(false);
+    };
+  }, [onChatPreviewExpandedChange, onSuggestionsOpenChange, variant]);
 
   useLayoutEffect(() => {
     if (variant !== "command-line") return;
@@ -195,6 +205,7 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
   }, [open]);
 
   const setSearch = (value: string) => {
+    if (parseComposerEntry(value).mode !== "chat" || !open) setChatExpanded(false);
     setQuery(value);
     setSelectedKey(null);
     setActiveIndex(-1);
@@ -225,7 +236,7 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
     setSelectedKey(null);
     setActiveIndex(-1);
     setOpen(false);
-    if (!splitViewOpen && pathname !== "/terminal") router.push("/terminal");
+    if (!splitViewOpen && pathname !== "/actions") router.push("/actions");
   };
 
   const executeSuggestedSplitAction = (mode: (typeof splitScreenActions)[number]["mode"]) => {
@@ -332,7 +343,9 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
               enterKeyHint="send"
               id="terminal-command-input"
               onChange={(event) => setSearch(event.target.value)}
-              onBlur={() => setInputFocused(false)}
+              onBlur={(event) => {
+                if (!(event.relatedTarget instanceof HTMLElement && event.relatedTarget.hasAttribute("data-composer-dismiss"))) setInputFocused(false);
+              }}
               onFocus={() => {
                 setInputFocused(true);
                 if (entryMode && !editingActivityName) setOpen(true);
@@ -363,7 +376,7 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
                   chooseCommand(inferredCommand);
                 }
               }}
-              placeholder={editingActivityName ? "Name this activity" : "What would you like to do?"}
+              placeholder={editingActivityName ? "Name this activity" : "...Advance"}
               ref={inputRef}
               role="combobox"
               rows={1}
@@ -371,14 +384,61 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
               />
               </label>
           </div>
+          <div aria-label="Composer controls" className={`ml-1 flex w-[6.75rem] shrink-0 items-center ${inputFocused ? "mt-1 self-start" : "mb-1"}`}>
+            <button
+              aria-label="Voice input (coming soon)"
+              aria-disabled="true"
+              className="grid size-9 shrink-0 cursor-default place-items-center rounded-full text-white/55 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+              title="Voice input is not connected yet"
+              type="button"
+            >
+              <FiMic aria-hidden="true" className="size-4" />
+            </button>
+            {inputFocused ? (
+              <button
+                aria-label="Clear prompt and close preview"
+                data-composer-dismiss
+                className="ml-auto grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-white/55 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+                onPointerDown={(event) => event.preventDefault()}
+                onBlur={() => setInputFocused(false)}
+                onClick={() => {
+                  setSearch("");
+                  inputRef.current?.blur();
+                  setInputFocused(false);
+                  setOpen(false);
+                }}
+                type="button"
+              >
+                <FiXCircle aria-hidden="true" className="size-5" />
+              </button>
+            ) : ([{ prefix: "@", mode: "chat", label: "Chat mode" }, { prefix: "/", mode: "command", label: "Command mode" }] as const).map(({ prefix, mode, label }) => (
+              <button
+                key={mode}
+                type="button"
+                aria-label={label}
+                aria-pressed={!editingActivityName && entryMode === mode}
+                disabled={editingActivityName}
+                className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-full font-mono text-lg text-white/55 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-default disabled:opacity-30"
+                onClick={() => {
+                  setSearch(`${prefix}${entryBody}`);
+                  requestAnimationFrame(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(1, 1);
+                  });
+                }}
+              >
+                {prefix}
+              </button>
+            ))}
+          </div>
           <button className="sr-only" tabIndex={-1} type="submit">
             Submit entry
           </button>
         </form>
         {open && typeof document !== "undefined" && document.getElementById("command-suggestions-pane") && createPortal(
           <div className="relative h-full min-h-0 bg-black" id="terminal-command-suggestions">
-            <button aria-label="Close recommendations" className="absolute right-4 top-3 z-10 grid size-7 cursor-pointer place-items-center bg-black text-white/55 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white" onClick={() => setOpen(false)} type="button"><FiX aria-hidden="true" className="size-4" /></button>
-            {entryMode === "chat" ? <PinScrollArea aria-label="Chat conversations" wrapperClassName="h-full"><h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">Choose a conversation</h2><ChatConversationPicker /></PinScrollArea> : <PinScrollArea aria-label="Suggested actions and system calls" wrapperClassName="h-full">
+            <button aria-label="Close suggestions" className="absolute right-3 top-2 z-20 grid size-8 cursor-pointer place-items-center rounded-full bg-black text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white" onClick={() => { setOpen(false); setChatExpanded(false); }} type="button"><FiX aria-hidden="true" className="size-4" /></button>
+            {entryMode === "chat" ? chatExpanded ? <InteractionsApp embedded /> : <PinScrollArea aria-label="Chat conversations" wrapperClassName="h-full"><h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">Choose a conversation</h2><ChatConversationPicker onSelect={() => setChatExpanded(true)} /></PinScrollArea> : <PinScrollArea aria-label="Suggested actions and system calls" wrapperClassName="h-full">
               <section aria-labelledby="suggested-actions-heading" className="border-b border-white/15">
                 <h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45" id="suggested-actions-heading">Suggested Actions</h2>
                 <ul aria-label="Suggested actions" className="pb-2">

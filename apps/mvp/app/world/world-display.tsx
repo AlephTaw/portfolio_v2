@@ -4,11 +4,12 @@ import { LayoutGroup, motion } from "framer-motion";
 import { FiArrowLeft, FiBarChart2, FiCornerDownRight } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import cognitiveNetworkMap from "../../../agent/public/cognitive-network-map.png";
-import { TerminalActivityWorkspace } from "../components/activity-workspace";
+import { AttentionCountBadge, worldTreeNotifications } from "../components/attention-notifications";
+import { ActionsWorkspace } from "../components/activity-workspace";
 import { StoreContent } from "../components/bounty-board";
 import { PinScrollArea } from "../components/pin-scroll-area";
 import { openWorkshopEvent, WORLD_VIEW_STATE_KEY } from "../components/page-transition-events";
-import { CampaignActivitySummary, StatsLevelsContent } from "../stats/stats-display";
+import { CampaignActivitySummary, StatsLevelsContent } from "../state/state-display";
 
 const worldLocations = ["Guild", "Inventory", "Store", "Workshop", "Dungeon"] as const;
 type WorldLocation = (typeof worldLocations)[number];
@@ -120,9 +121,9 @@ function WorldGrid({
 
 function SquareGrid() {
   return (
-    <div aria-label="Square grid view" className="grid w-full grid-cols-3 gap-3" role="grid">
+    <div aria-label="Vertical feed view" className="grid w-full grid-cols-1 gap-3" role="grid">
       {Array.from({ length: 18 }, (_, index) => (
-        <div aria-hidden="true" className="aspect-square min-w-0 rounded-2xl border border-white/15 bg-white/[0.04]" key={index} role="gridcell" />
+        <div aria-hidden="true" className="aspect-square min-w-0 border border-white/15 bg-white/[0.04]" key={index} role="gridcell" />
       ))}
     </div>
   );
@@ -516,13 +517,14 @@ export function WorldDisplay({
             tabIndex={navigationInteractive ? -1 : 0}
             type="button"
           />}
+          <AttentionCountBadge count={worldTreeNotifications.length} />
         </div>
         )}
 
         {workshopTerminalOpen ? (
           <section aria-label="Workshop terminal" className={`pointer-events-auto absolute left-0 bottom-20 top-0 z-10 ${embedded ? "right-0" : "right-[var(--composer-gutter,1.5rem)]"}`}>
             <div className="flex h-full w-full flex-col">
-              <TerminalActivityWorkspace workshop showSummary={!embedded} />
+              <ActionsWorkspace workshop showSummary={!embedded} />
             </div>
           </section>
         ) : (

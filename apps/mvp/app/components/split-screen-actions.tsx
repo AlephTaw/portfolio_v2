@@ -34,7 +34,7 @@ export function useApplySplitMode() {
   return (mode: SplitMode) => {
     if (mode === "none") {
       setSplitMode("none");
-      router.push("/terminal");
+      router.push("/actions");
       return;
     }
     if (splitMode === "none") setLeftPane(pathname === "/world" ? "world" : "stats");

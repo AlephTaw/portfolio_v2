@@ -2,7 +2,7 @@
 
 import { FiMessageCircle, FiMonitor, FiShield } from "react-icons/fi";
 import { WorldDisplay } from "../world/world-display";
-import StatsDisplay from "../stats/stats-display";
+import StateDisplay from "../state/state-display";
 import { useActivityWorkspace } from "./activity-workspace-context";
 import { ActivityCategoryIcon } from "./activity-category-icon";
 import { CodeWorkspace } from "./code-workspace";
@@ -10,7 +10,7 @@ import { InventoryContent } from "./inventory-content";
 import { PinScrollArea } from "./pin-scroll-area";
 import { useQuestCommands } from "./quest-terminal/use-quest-commands";
 import { activityCategories } from "./quest-terminal/use-active-activity";
-import { type TerminalView } from "./terminal-view-context";
+import { type ActionsView } from "./actions-view-context";
 
 const systems = [
   { name: "Advocate", Icon: FiShield },
@@ -53,7 +53,7 @@ export function CampaignQuestContent() {
   );
 }
 
-export function TerminalSelectedView({ view }: { view: Exclude<TerminalView, "code" | "notes" | "notes-hidden"> }) {
+export function ActionsSelectedView({ view }: { view: Exclude<ActionsView, "code" | "notes" | "notes-hidden"> }) {
   const { commands } = useQuestCommands();
   const chatMessages = commands.filter((command) => command.type === "chat-message");
 
@@ -63,8 +63,8 @@ export function TerminalSelectedView({ view }: { view: Exclude<TerminalView, "co
 
   if (view === "stats") {
     return (
-      <PinScrollArea aria-label="Stats view" className="flex flex-col pb-24" wrapperClassName="min-h-0 flex-1">
-        <StatsDisplay embedded />
+      <PinScrollArea aria-label="State view" className="flex flex-col pb-24" wrapperClassName="min-h-0 flex-1">
+        <StateDisplay embedded />
       </PinScrollArea>
     );
   }

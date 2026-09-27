@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiCheck, FiChevronDown, FiVideo } from "react-icons/fi";
 import portrait from "../../../agent/public/assets/live-stats-profile.png";
+import { AttentionCountBadge, mapPlanNotifications } from "../components/attention-notifications";
 import { ActivityCategoryIcon } from "../components/activity-category-icon";
 import { getArcDay, getArcTimeRemaining } from "../components/arc-time";
 import { AdminContent } from "../components/admin";
@@ -13,10 +14,10 @@ import { PinScrollArea } from "../components/pin-scroll-area";
 import { ExecuteCommandControl, QuestCommandHistory } from "../components/quest-terminal";
 import { type ActiveActivity, useActiveActivity } from "../components/quest-terminal/use-active-activity";
 import { StoryboardBuilder, StoryboardContent } from "../components/storyboard";
-import { statsAppLabelTypography } from "./components/stats-view-toolbar";
-import { StatsFigureNavigation } from "./components/stats-figure-navigation";
+import { statsAppLabelTypography } from "./components/state-view-toolbar";
+import { StateFigureNavigation } from "./components/state-figure-navigation";
 import { SystemsView } from "./components/systems-view";
-import { useStatsView } from "./components/stats-view-context";
+import { useStateView } from "./components/state-view-context";
 
 type AppSummary = {
   id: HudCategory;
@@ -419,10 +420,11 @@ export function CampaignActivitySummary({
                   type="button"
                   onClick={(event) => { event.stopPropagation(); onActivityViewChange("tasks"); }}
                   onKeyDown={(event) => event.stopPropagation()}
-                  className="grid size-10 cursor-pointer place-items-center rounded-[4px] bg-background text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="relative grid size-10 cursor-pointer place-items-center rounded-[4px] bg-background text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img alt="" aria-hidden="true" className={`size-7 ${expanded && activityView === "tasks" ? "brightness-0 invert" : ""}`} height={28} src="/cleaned-treasure-map.svg" width={28} />
+                  <AttentionCountBadge count={mapPlanNotifications.length} />
                 </button>
               </div>
             )}
@@ -562,12 +564,12 @@ function StatChart({ stat }: { stat: Stat }) {
 }
 
 const arcPreviewImages = [
-  { src: "/arc-preview/robot-arms.png", alt: "Robotic arms in a workshop" },
-  { src: "/arc-preview/rainbow.png", alt: "Rainbow over forested mountains" },
-  { src: "/arc-preview/canyon.png", alt: "Sunlit canyon beneath a blue sky" },
+  { src: "/arc-preview/robot-arms.png", mangaSrc: "/arc-preview/robot-arms-manga.webp", alt: "Robotic arms in a workshop" },
+  { src: "/arc-preview/rainbow.png", mangaSrc: "/arc-preview/rainbow-manga.webp", alt: "Rainbow over forested mountains" },
+  { src: "/arc-preview/canyon.png", mangaSrc: "/arc-preview/canyon-manga.webp", alt: "Sunlit canyon beneath a blue sky" },
 ];
 
-function ArcVideoPanel({ className, panel }: { className?: string; panel: number }) {
+function ArcVideoPanel({ className, manga, panel }: { className?: string; manga: boolean; panel: number }) {
   const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
   return (
     <div
@@ -575,35 +577,36 @@ function ArcVideoPanel({ className, panel }: { className?: string; panel: number
       className={`relative min-h-24 overflow-hidden border border-white/55 bg-white/[0.025] ${className ?? ""}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt={image.alt} src={image.src} className="absolute inset-0 h-full w-full object-cover" />
+      <img alt={`${image.alt}${manga ? ", manga illustration" : ""}`} src={manga ? image.mangaSrc : image.src} className="absolute inset-0 h-full w-full object-cover" />
     </div>
   );
 }
 
-function ArcPanelLayouts() {
+function ArcPanelLayouts({ manga }: { manga: boolean }) {
   return (
     <div className="w-full space-y-10" aria-label="ARC comic panels">
       <article aria-label="ARC layout 1" className="grid grid-cols-[2fr_1fr] items-start gap-2">
-        <ArcVideoPanel className="aspect-[16/9]" panel={1} />
-        <ArcVideoPanel className="aspect-[3/4]" panel={2} />
+        <ArcVideoPanel className="aspect-[16/9]" manga={manga} panel={1} />
+        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={2} />
       </article>
       <article aria-label="ARC layout 2" className="grid grid-cols-[1fr_1.45fr] gap-2">
-        <ArcVideoPanel className="aspect-square" panel={3} />
+        <ArcVideoPanel className="aspect-square" manga={manga} panel={3} />
         <div className="grid grid-rows-2 gap-2">
-          <ArcVideoPanel className="h-full" panel={4} />
-          <ArcVideoPanel className="h-full" panel={5} />
+          <ArcVideoPanel className="h-full" manga={manga} panel={4} />
+          <ArcVideoPanel className="h-full" manga={manga} panel={5} />
         </div>
       </article>
       <article aria-label="ARC layout 3" className="grid grid-cols-3 gap-2">
-        <ArcVideoPanel className="aspect-[3/4]" panel={6} />
-        <ArcVideoPanel className="aspect-[3/4]" panel={7} />
-        <ArcVideoPanel className="aspect-[3/4]" panel={8} />
+        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={6} />
+        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={7} />
+        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={8} />
       </article>
     </div>
   );
 }
 
 function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: "worldline" | "logs" | "storyboard"; onSelect: (view: "worldline" | "logs" | "storyboard") => void; onOpenArr: () => void }) {
+  const [manga, setManga] = useState(false);
   return (
     <section aria-label="Campaign stories" className="mt-3">
       <div className="flex w-full justify-end" aria-label="Campaign stories views" role="tablist">
@@ -619,7 +622,7 @@ function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: "worldline" | 
       <div className="mt-3 [&>*]:mt-0" id="arc-view-content" role="tabpanel" aria-labelledby={`arc-${view}-tab`}>
         {view === "logs" ? <DayLogContent onOpenArr={onOpenArr} /> : view === "storyboard" ? (
           <div className="w-full border border-white/20 p-[clamp(1.25rem,3vw,2.5rem)]"><StoryboardContent /></div>
-        ) : <ArcPanelLayouts />}
+        ) : <div><button aria-pressed={manga} className={`mb-3 cursor-pointer rounded-full border px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${manga ? "border-white bg-white text-black" : "border-white/35 text-white/60 hover:border-white hover:text-white"}`} onClick={() => setManga((current) => !current)} type="button">Manga</button><ArcPanelLayouts manga={manga} /></div>}
       </div>
     </section>
   );
@@ -906,16 +909,34 @@ function ConnectionsView() {
   );
 }
 
-export default function StatsDisplay({ embedded = false }: { embedded?: boolean }) {
+export default function StateDisplay({ embedded = false }: { embedded?: boolean }) {
+  const [characterStatsOpen, setCharacterStatsOpen] = useState(false);
+  const profileDetailsRef = useRef<HTMLDivElement>(null);
+  const profileSummaryRef = useRef<HTMLDivElement>(null);
   const [activeStat, setActiveStat] = useState<Stat | null>(null);
   const {
     arcView, campaignSelected, displayedAppView, navigationHome, selectedCampaign,
     selectAppView, setArcView, setCampaignSelected, setNavigationHome, setSelectedCampaign,
-  } = useStatsView();
+  } = useStateView();
   const viewOpen = !navigationHome;
   const [arrOpen, setArrOpen] = useState(false);
   const [selectedHudCategory, setSelectedHudCategory] = useState<HudCategory | null>(null);
   const [sentienceExpanded, setSentienceExpanded] = useState(false);
+
+  useEffect(() => {
+    const details = profileDetailsRef.current;
+    const summary = profileSummaryRef.current;
+    if (!details || !summary || characterStatsOpen || displayedAppView !== "storyboard") return;
+    const measure = () => {
+      details.parentElement?.style.setProperty("--profile-stack-height", `${details.getBoundingClientRect().height}px`);
+      summary.style.setProperty("--profile-toggle-top", `${details.getBoundingClientRect().top - summary.getBoundingClientRect().top}px`);
+      summary.style.setProperty("--profile-toggle-width", `${details.getBoundingClientRect().width}px`);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(details);
+    return () => observer.disconnect();
+  }, [displayedAppView, characterStatsOpen, viewOpen]);
 
   useEffect(() => {
     if (!arrOpen) return;
@@ -983,13 +1004,13 @@ export default function StatsDisplay({ embedded = false }: { embedded?: boolean 
     </>
   );
   return (
-    <section className={`relative mx-auto flex w-full max-w-[72rem] flex-1 flex-col ${embedded ? "pb-8" : "px-[clamp(1.5rem,4.4vw,3.5rem)] pb-24"} ${navigationHome || displayedAppView === "arc" ? "pt-4" : displayedAppView === "admin" ? "pt-12" : displayedAppView === "storyboard" ? "pt-8" : "pt-16"}`}>
+    <section className={`relative mx-auto flex w-full max-w-[72rem] flex-1 flex-col ${embedded ? "pb-8" : "px-[clamp(1.5rem,4.4vw,3.5rem)] pb-24"} ${displayedAppView === "os" && !navigationHome ? "pt-2" : navigationHome || displayedAppView === "arc" ? "pt-4" : displayedAppView === "admin" ? "pt-12" : displayedAppView === "storyboard" ? "pt-8" : "pt-16"}`}>
       {viewOpen && displayedAppView === "admin" && (
         <header className={`absolute top-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-white/70 ${embedded ? "left-0" : "left-[clamp(1.5rem,4.4vw,3.5rem)]"}`}>
           APP VERSION 0.1.0
         </header>
       )}
-      <StatsFigureNavigation activeView={displayedAppView} inlineDiagram={viewOpen && displayedAppView === "admin"} navigationHome={navigationHome} onReturn={() => setNavigationHome(true)} onSelect={(view) => { selectAppView(view); setNavigationHome(false); }} />
+      <StateFigureNavigation activeView={displayedAppView} showPlayback={viewOpen && displayedAppView === "arc" && arcView === "worldline" && !campaignSelected} inlineDiagram={viewOpen && displayedAppView === "admin"} navigationHome={navigationHome} onReturn={() => setNavigationHome(true)} onSelect={(view) => { selectAppView(view); setNavigationHome(false); }} />
 
       <AnimatePresence initial={false}>
       {viewOpen && <motion.div animate={{ opacity: 1 }} className="w-full" exit={{ opacity: 0 }} initial={{ opacity: 0 }} key="stats-view-content" transition={{ duration: 0.2 }}>
@@ -1023,9 +1044,12 @@ export default function StatsDisplay({ embedded = false }: { embedded?: boolean 
               </div>
             ) : (
               <>
-                <div className={`mx-auto w-full ${displayedAppView === "storyboard" ? "mb-5" : "mb-10"}`}>
-                  <div className="character-summary-layout text-[0.5rem] font-semibold uppercase tracking-normal">
-                    <div className="character-summary-profile block size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-white/5">
+                <div ref={profileSummaryRef} className={`relative mx-auto w-full ${displayedAppView === "storyboard" ? "mb-5" : "mb-10"}`}>
+                  {displayedAppView === "storyboard" && <button type="button" aria-controls="character-profile-content" onClick={() => setCharacterStatsOpen(previous => !previous)} style={{ top: "var(--profile-toggle-top, 0px)", width: "var(--profile-toggle-width, 8.5rem)" }} className="absolute left-1/2 z-10 h-8 -translate-x-1/2 cursor-pointer rounded-full border border-white/30 px-3 text-center font-sans text-xs font-normal text-white/70 transition-colors hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">{characterStatsOpen ? "Profile Summary" : "Stats"}</button>}
+                  <div id="character-profile-content">
+                  {displayedAppView === "storyboard" && characterStatsOpen && <div style={{ paddingTop: "calc(var(--profile-toggle-top, 0px) + 3rem)" }}>{statsSummary}</div>}
+                  <div style={displayedAppView === "storyboard" && characterStatsOpen ? { display: "none" } : undefined} className="character-summary-layout text-[0.5rem] font-semibold uppercase tracking-normal">
+                    <div style={displayedAppView === "storyboard" ? { height: "var(--profile-stack-height, 4.75rem)", width: "var(--profile-stack-height, 4.75rem)" } : undefined} className="character-summary-profile block size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-white/5">
                       {activeStat ? (
                         <StatChart stat={activeStat} />
                       ) : (
@@ -1034,7 +1058,8 @@ export default function StatsDisplay({ embedded = false }: { embedded?: boolean 
                         <img alt="Illustrated portrait of Steven Wilcox" className="h-full w-full object-cover" src={portrait.src} />
                       )}
                     </div>
-                    <div className="character-summary-details grid min-h-[4.75rem] min-w-0 content-center gap-y-1 text-left font-mono text-white/60">
+                    <div ref={profileDetailsRef} className={`character-summary-details grid min-h-[4.75rem] content-center gap-y-1 text-left font-mono text-white/60 ${displayedAppView === "storyboard" ? "min-w-[8.5rem]" : "min-w-0"}`}>
+                      {displayedAppView === "storyboard" && <div aria-hidden="true" className="mb-2 h-8" />}
                       <p className="min-w-0 whitespace-nowrap">Character v0.1.0</p>
                       <p className="min-w-0 whitespace-nowrap">Job: Getaway Driver</p>
                       <p className="min-w-0 whitespace-nowrap">Build: NPC</p>
@@ -1043,10 +1068,11 @@ export default function StatsDisplay({ embedded = false }: { embedded?: boolean 
                         <span>Sync Ratio {syncRatioStatus}</span>
                       </p>
                     </div>
-                    <div className="character-summary-profile character-summary-secondary relative size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-black">
+                    <div style={displayedAppView === "storyboard" ? { height: "var(--profile-stack-height, 4.75rem)", width: "var(--profile-stack-height, 4.75rem)" } : undefined} className="character-summary-profile character-summary-secondary relative size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-black">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img alt="Character bust portrait" src="/chat-reader-figure.png" className="absolute left-[-12.5%] top-[-7.5%] h-auto w-[125%] max-w-none invert" />
                     </div>
+                  </div>
                   </div>
                 </div>
                 {displayedAppView !== "storyboard" && statsSummary}
@@ -1217,13 +1243,17 @@ export default function StatsDisplay({ embedded = false }: { embedded?: boolean 
 
       {displayedAppView === "storyboard" && (
         <section aria-label="Character" className="mt-4 w-full">
-          <StoryboardBuilder statsContent={statsSummary} />
+          <StoryboardBuilder layoutRevision={characterStatsOpen} />
         </section>
       )}
 
       {displayedAppView === "arc" && (
         <section aria-label="ARC" className="w-full">
-          <div className="w-full [&>section]:mb-0">
+          <div className="relative mb-3 w-full pl-12 [&>section]:mb-0">
+            <div className="absolute left-0 top-0 h-full aspect-square overflow-hidden rounded-full border border-white/25 bg-white/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="Portfolio profile portrait" className="h-full w-full object-cover" src={portrait.src} />
+            </div>
             <CampaignActivitySummary expanded={campaignSelected} onCampaignToggle={() => { setCampaignSelected((selected) => !selected); }} selectedCampaign={selectedCampaign} />
           </div>
           {campaignSelected ? (

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import type { StoryboardStep } from "./storyboard-data";
+import { CreateQuestControl } from "./create-quest-control";
 
 export function PlanVisualizer({
   activeStep,
@@ -16,7 +17,7 @@ export function PlanVisualizer({
   const [levelsOpen, setLevelsOpen] = useState(false);
 
   return (
-    <section aria-labelledby="plan-visualizer-title" className="min-w-0 lg:pr-8">
+    <section aria-labelledby="plan-visualizer-title" className="flex min-w-0 flex-col lg:pr-8">
       <header className="flex items-center justify-between gap-4 border-b border-white/20 pb-5">
         <div className="flex min-w-0 items-center gap-4">
           <span aria-hidden="true" className="grid size-5 shrink-0 place-items-center border border-white/70">
@@ -121,7 +122,8 @@ export function PlanVisualizer({
           </>
         )}
       </div>
-      <div className="mt-6 flex justify-end">
+      <div className="mt-auto flex flex-wrap items-start justify-between gap-3 pt-6">
+        <CreateQuestControl />
         <button
           aria-label="Edit plan visualizer"
           className="inline-flex cursor-pointer items-center gap-2 border border-white/35 px-3 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-white/60 transition-colors hover:border-white hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white"

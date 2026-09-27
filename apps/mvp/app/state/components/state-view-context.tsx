@@ -1,39 +1,48 @@
 "use client";
 
 import { createContext, useContext, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
-import type { StatsAppView } from "./stats-view-toolbar";
+import type { StateAppView } from "./state-view-toolbar";
 
-type StatsViewContextValue = {
-  appView: StatsAppView;
-  displayedAppView: StatsAppView;
-  previewAppView: StatsAppView | null;
+type StateViewContextValue = {
+  quests: string[];
+  setQuests: Dispatch<SetStateAction<string[]>>;
+  notesVisible: boolean;
+  setNotesVisible: Dispatch<SetStateAction<boolean>>;
+  editorOpen: boolean;
+  setEditorOpen: Dispatch<SetStateAction<boolean>>;
+  appView: StateAppView;
+  displayedAppView: StateAppView;
+  previewAppView: StateAppView | null;
   navigationHome: boolean;
   arcView: "worldline" | "logs" | "storyboard";
   campaignSelected: boolean;
   selectedCampaign: "all" | "current";
-  selectAppView: (view: StatsAppView) => void;
+  selectAppView: (view: StateAppView) => void;
   setNavigationHome: (home: boolean) => void;
   setArcView: Dispatch<SetStateAction<"worldline" | "logs" | "storyboard">>;
   setCampaignSelected: Dispatch<SetStateAction<boolean>>;
   setSelectedCampaign: Dispatch<SetStateAction<"all" | "current">>;
-  setPreviewAppView: (view: StatsAppView | null) => void;
+  setPreviewAppView: (view: StateAppView | null) => void;
   toggleSummaryView: (view: "guild" | "connections") => void;
-  toolbarActiveView: StatsAppView;
-  toolbarDisplayedView: StatsAppView;
+  toolbarActiveView: StateAppView;
+  toolbarDisplayedView: StateAppView;
 };
 
-const StatsViewContext = createContext<StatsViewContextValue | null>(null);
+const StateViewContext = createContext<StateViewContextValue | null>(null);
 
-export function StatsViewProvider({ children }: { children: ReactNode }) {
-  const [appView, setAppView] = useState<StatsAppView>("arc");
-  const [lastIconAppView, setLastIconAppView] = useState<StatsAppView>("arc");
-  const [previewAppView, setPreviewAppView] = useState<StatsAppView | null>(null);
+export function StateViewProvider({ children }: { children: ReactNode }) {
+  const [quests, setQuests] = useState<string[]>([]);
+  const [notesVisible, setNotesVisible] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [appView, setAppView] = useState<StateAppView>("arc");
+  const [lastIconAppView, setLastIconAppView] = useState<StateAppView>("arc");
+  const [previewAppView, setPreviewAppView] = useState<StateAppView | null>(null);
   const [navigationHome, setNavigationHome] = useState(false);
   const [arcView, setArcView] = useState<"worldline" | "logs" | "storyboard">("worldline");
   const [campaignSelected, setCampaignSelected] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<"all" | "current">("current");
 
-  const selectAppView = (view: StatsAppView) => {
+  const selectAppView = (view: StateAppView) => {
     setAppView(view);
     if (view !== "guild" && view !== "connections") setLastIconAppView(view);
     setPreviewAppView(null);
@@ -46,7 +55,9 @@ export function StatsViewProvider({ children }: { children: ReactNode }) {
   const toolbarActiveView = appView === "guild" || appView === "connections" ? lastIconAppView : appView;
 
   return (
-    <StatsViewContext.Provider value={{
+    <StateViewContext.Provider value={{
+      quests, setQuests,
+      notesVisible, setNotesVisible, editorOpen, setEditorOpen,
       appView,
       displayedAppView: previewAppView ?? appView,
       previewAppView,
@@ -65,12 +76,12 @@ export function StatsViewProvider({ children }: { children: ReactNode }) {
       toolbarDisplayedView: previewAppView ?? toolbarActiveView,
     }}>
       {children}
-    </StatsViewContext.Provider>
+    </StateViewContext.Provider>
   );
 }
 
-export function useStatsView() {
-  const context = useContext(StatsViewContext);
-  if (!context) throw new Error("useStatsView must be used within StatsViewProvider");
+export function useStateView() {
+  const context = useContext(StateViewContext);
+  if (!context) throw new Error("useStateView must be used within StateViewProvider");
   return context;
 }

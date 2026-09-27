@@ -15,10 +15,10 @@ import { RightRailVisibilityProvider } from "./right-rail-visibility-context";
 import { SplitViewProvider } from "./split-view-context";
 import { SplitResizeHandle } from "./split-resize-handle";
 import { SplitWorkspace } from "./split-workspace";
-import { TerminalViewProvider } from "./terminal-view-context";
-import { StatsViewProvider } from "../stats/components/stats-view-context";
+import { ActionsViewProvider } from "./actions-view-context";
+import { StateViewProvider } from "../state/components/state-view-context";
 
-const privateRoutes = new Set(["/admin", "/chat", "/stats", "/terminal", "/world"]);
+const privateRoutes = new Set(["/admin", "/interactions", "/state", "/actions", "/world", "/chat", "/stats", "/terminal"]);
 
 const pageVariants = {
   enter: (direction: number) => ({ x: direction ? `${direction * -100}%` : 0 }),
@@ -30,13 +30,13 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
   return (
     <SplitViewProvider>
       <ActivityWorkspaceProvider>
-        <TerminalViewProvider>
+        <ActionsViewProvider>
           <ChatConversationProvider>
-          <StatsViewProvider>
+          <StateViewProvider>
             <PrivateAppShellContent>{children}</PrivateAppShellContent>
-          </StatsViewProvider>
+          </StateViewProvider>
           </ChatConversationProvider>
-        </TerminalViewProvider>
+        </ActionsViewProvider>
       </ActivityWorkspaceProvider>
     </SplitViewProvider>
   );
@@ -48,6 +48,13 @@ function PrivateAppShellContent({ children }: { children: ReactNode }) {
   const [rightRailHidden, setRightRailHidden] = useState(false);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [suggestionsRatio, setSuggestionsRatio] = useState(50);
+  const previewRatio = useRef(50);
+  const chatPreviewExpanded = useRef(false);
+  const handleChatPreviewExpanded = useCallback((expanded: boolean) => {
+    if (expanded === chatPreviewExpanded.current) return;
+    chatPreviewExpanded.current = expanded;
+    setSuggestionsRatio(expanded ? 2 : previewRatio.current);
+  }, []);
   const [composerHeight, setComposerHeight] = useState(72);
   const [composerDock, setComposerDock] = useState<HTMLElement | null>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
@@ -103,9 +110,10 @@ function PrivateAppShellContent({ children }: { children: ReactNode }) {
             </motion.div>
           </AnimatePresence>
           <section aria-label="Composer recommendations pane" className={`relative row-start-2 min-h-0 overflow-hidden bg-black pb-[calc(var(--composer-height)+0.5rem)] ${suggestionsOpen ? "" : "hidden"}`}><div className="h-full min-h-0" id="command-suggestions-pane" /></section>
-          {suggestionsOpen && <SplitResizeHandle containerRef={workspaceRef} direction="horizontal" label="Resize system calls and suggested actions pane" onRatioChange={setSuggestionsRatio} ratio={suggestionsRatio} />}
+          {suggestionsOpen && <SplitResizeHandle containerRef={workspaceRef} direction="horizontal" label="Resize composer preview pane" minRatio={2} onRatioChange={(ratio) => { if (!chatPreviewExpanded.current) previewRatio.current = ratio; setSuggestionsRatio(ratio); }} ratio={suggestionsRatio} />}
         </div>
-        <PrivateComposer onDockElementChange={setComposerDock} onHeightChange={setComposerHeight} onSuggestionsOpenChange={setSuggestionsOpen} />
+        <div id="chat-feed-overlay" />
+        <PrivateComposer onDockElementChange={setComposerDock} onHeightChange={setComposerHeight} onSuggestionsOpenChange={setSuggestionsOpen} onChatPreviewExpandedChange={handleChatPreviewExpanded} />
         <Suspense fallback={null}>
           <MinimapRail />
         </Suspense>

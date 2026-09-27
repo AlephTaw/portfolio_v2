@@ -91,6 +91,68 @@ function EmptyLog({ label }: { label: string }) {
   );
 }
 
+export const minimumViableDay = [
+  { category: "Fitness", items: ["10 toe touches", "10 pushups", "10 situps", "10 squats", "50 jumping jacks"] },
+  { category: "Sleep", items: ["7 hours"] },
+  { category: "Meal Prep", items: ["Oatmeal", "Rotisserie chicken", "Bread", "Grain", "Salad", "Water"] },
+  {
+    category: "Nutrition",
+    items: ["Micros", "Macros", "Calories"],
+    note: "One chicken breast, 4–5 cups fruits and veg, 64 oz water, oatmeal, protein shake",
+  },
+  { category: "Skin", items: ["Daily cleanser morning and night", "Sunscreen face & head (4 dots)"] },
+  { category: "Mouth", items: ["Brush morning", "Floss morning", "Brush at night", "Floss at night", "Mouthwash at night"] },
+  { category: "Hair", items: ["5 min whole-scalp warmup massage"] },
+];
+
+function HealthSummary() {
+  const [completedItems, setCompletedItems] = useState<string[]>([]);
+  const completionItem = (category: string, item: string) => {
+    const itemId = `${category}:${item}`;
+    return (
+    <label key={item} className="mr-3 inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap last:mr-0">
+      <input
+        type="checkbox"
+        checked={completedItems.includes(itemId)}
+        onChange={(event) => {
+          const checked = event.target.checked;
+          setCompletedItems((items) => checked ? [...items, itemId] : items.filter((entry) => entry !== itemId));
+        }}
+        className="size-3.5 cursor-pointer accent-white"
+      />
+      <span className={completedItems.includes(itemId) ? "text-white" : undefined}>{item}</span>
+    </label>
+    );
+  };
+
+  return (
+    <section aria-label="Health summary" className="mb-6 space-y-5">
+      <h3 className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-white/45">Summary</h3>
+      <div>
+        <p className="text-xs text-white/60">HP / Total available</p>
+        <p className="mt-2 font-mono text-2xl text-white">
+          0 <span className="text-sm text-white/45">/ 100 HP</span>
+        </p>
+        <p className="mt-2 text-xs text-white/40">Placeholder health points</p>
+      </div>
+      <section aria-label="Minimum Viable Day" className="rounded-xl bg-white/[0.04] p-5">
+        <h4 className="text-sm font-medium text-white">Minimum Viable Day (MVD)</h4>
+        <dl className="mt-3 space-y-2 text-sm text-white/75">
+          {minimumViableDay.map(({ category, items, note }) => (
+            <div key={category}>
+              <dt className="inline font-medium text-white">{category}: </dt>
+              <dd className="inline">
+                {items.map((item) => completionItem(category, item))}
+                {note && <span className="text-white/45">({note})</span>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </section>
+  );
+}
+
 function HealthApp() {
   return (
     <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
@@ -197,7 +259,8 @@ const categoryLabels: Record<HudCategory, string> = {
 export function HudCategoryApp({ category, className = "mt-12" }: { category: HudCategory; className?: string }) {
   const AppContent = categoryApp[category];
   const categoryLabel = categoryLabels[category];
-  const [questContext, setQuestContext] = useState<(typeof questContexts)[number]>("Mastery Path");
+  const availableQuests: readonly string[] = category === "health" ? ["Minimum Viable Day (MVD)"] : questContexts;
+  const [questContext, setQuestContext] = useState<string>(availableQuests[0]);
   const [questSelectorOpen, setQuestSelectorOpen] = useState(false);
   const questSelectorRef = useRef<HTMLDivElement>(null);
 
@@ -239,7 +302,7 @@ export function HudCategoryApp({ category, className = "mt-12" }: { category: Hu
                   onClick={() => setQuestSelectorOpen((open) => !open)}
                   type="button"
                 >
-                  {questContext}
+                  {category === "health" ? availableQuests[0] : questContext}
                 </button>
                 {questSelectorOpen && (
                   <div
@@ -247,11 +310,11 @@ export function HudCategoryApp({ category, className = "mt-12" }: { category: Hu
                     className="absolute left-0 top-[calc(100%+0.5rem)] z-30 min-w-52 border border-white/35 bg-black p-1"
                     role="listbox"
                   >
-                    {questContexts.map((quest) => (
+                    {availableQuests.map((quest) => (
                       <button
-                        aria-selected={questContext === quest}
+                        aria-selected={(category === "health" ? availableQuests[0] : questContext) === quest}
                         className={`block w-full cursor-pointer px-3 py-2 text-left text-[0.6rem] font-semibold uppercase tracking-[0.12em] transition-colors ${
-                          questContext === quest
+                          (category === "health" ? availableQuests[0] : questContext) === quest
                             ? "bg-white text-black"
                             : "text-white/60 hover:bg-white hover:text-black"
                         }`}
@@ -284,6 +347,7 @@ export function HudCategoryApp({ category, className = "mt-12" }: { category: Hu
           </Link>
         </div>
       </header>
+      {category === "health" && <HealthSummary />}
       <Metrics metrics={categoryMetrics[category]} />
       <div className="mt-5">
         <AppContent />

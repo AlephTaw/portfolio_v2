@@ -3,10 +3,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { FiBarChart2, FiBox, FiCpu, FiFilm, FiLayers, FiSettings } from "react-icons/fi";
-import { PiPersonSimple, PiSpeedometer } from "../../components/local-icons";
+import { PiSpeedometer } from "../../components/local-icons";
 import { useRightRailVisibility } from "../../components/right-rail-visibility-context";
 
-export type StatsAppView =
+export type StateAppView =
   | "storyboard"
   | "stats"
   | "os"
@@ -69,12 +69,12 @@ function useDocumentScrollLock(locked: boolean) {
 }
 
 type StatsViewToolbarProps = {
-  activeView: StatsAppView;
-  displayedView: StatsAppView;
+  activeView: StateAppView;
+  displayedView: StateAppView;
   forceRail?: boolean;
   hideOnNarrowRail?: boolean;
-  onPreview: (view: StatsAppView | null) => void;
-  onSelect: (view: StatsAppView) => void;
+  onPreview: (view: StateAppView | null) => void;
+  onSelect: (view: StateAppView) => void;
 };
 
 export function StatsViewToolbar(props: StatsViewToolbarProps) {
@@ -101,9 +101,9 @@ function StatsViewToolbarContent({
   const toolbarRef = useRef<HTMLElement | null>(null);
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const highlightRef = useRef<HTMLSpanElement | null>(null);
-  const previousHighlightedView = useRef<StatsAppView | null>(null);
-  const ignoreNextClickView = useRef<StatsAppView | null>(null);
-  const draggedView = useRef<StatsAppView | null>(null);
+  const previousHighlightedView = useRef<StateAppView | null>(null);
+  const ignoreNextClickView = useRef<StateAppView | null>(null);
+  const draggedView = useRef<StateAppView | null>(null);
   const dragStartedOpen = useRef(false);
   const pointerOrigin = useRef<{ x: number; y: number } | null>(null);
   const hoverOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -215,7 +215,7 @@ function StatsViewToolbarContent({
         if (!isNarrowRail || !isOpen || draggedView.current !== null || !pointerOrigin.current) return;
         if (!pointerMoved(event)) return;
         const hoveredView = document.elementFromPoint(event.clientX, event.clientY)
-          ?.closest<HTMLButtonElement>("[data-stats-view]")?.dataset.statsView as StatsAppView | undefined;
+          ?.closest<HTMLButtonElement>("[data-stats-view]")?.dataset.statsView as StateAppView | undefined;
         previewView(hoveredView && statsApps.some(({ id }) => id === hoveredView) ? hoveredView : null);
       }}
     >
@@ -304,7 +304,7 @@ function StatsViewToolbarContent({
             const hoveredButton = document
               .elementFromPoint(event.clientX, event.clientY)
               ?.closest<HTMLButtonElement>("[data-stats-view]");
-            const hoveredView = hoveredButton?.dataset.statsView as StatsAppView | undefined;
+            const hoveredView = hoveredButton?.dataset.statsView as StateAppView | undefined;
 
             if (!hoveredView || !statsApps.some(({ id: appId }) => appId === hoveredView)) return;
             if (draggedView.current === hoveredView) return;
@@ -378,7 +378,9 @@ function StatsViewToolbarContent({
           title="Character views"
           type="button"
         >
-          <PiPersonSimple aria-hidden="true" className="size-5" />
+          {/* The world-tree mark is the compact launcher for this page's view rail. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="" aria-hidden="true" className="size-5 object-contain" height={20} src="/icons/solid-network.svg" width={20} />
         </button>
       )}
     </motion.nav>

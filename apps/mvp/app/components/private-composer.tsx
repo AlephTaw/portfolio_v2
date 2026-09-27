@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { ExecuteCommandControl } from "./quest-terminal";
 
-export function PrivateComposer({ onDockElementChange, onHeightChange, onSuggestionsOpenChange }: { onDockElementChange: (element: HTMLElement | null) => void; onHeightChange: (height: number) => void; onSuggestionsOpenChange: (open: boolean) => void }) {
+export function PrivateComposer({ onDockElementChange, onHeightChange, onSuggestionsOpenChange, onChatPreviewExpandedChange }: { onDockElementChange: (element: HTMLElement | null) => void; onHeightChange: (height: number) => void; onSuggestionsOpenChange: (open: boolean) => void; onChatPreviewExpandedChange: (expanded: boolean) => void }) {
   const pathname = usePathname();
   const composerRef = useRef<HTMLDivElement>(null);
 
@@ -27,7 +27,7 @@ export function PrivateComposer({ onDockElementChange, onHeightChange, onSuggest
     >
       <div className="relative z-50 mx-auto flex min-h-10 w-full max-w-[var(--composer-max-width)] items-end gap-3 px-[var(--composer-gutter)] text-xs text-white/55">
         <div className="min-w-0 flex-1">
-          <ExecuteCommandControl key={pathname} onDockElementChange={onDockElementChange} onSuggestionsOpenChange={onSuggestionsOpenChange} variant="command-line" />
+          <ExecuteCommandControl key={pathname} onDockElementChange={onDockElementChange} onSuggestionsOpenChange={onSuggestionsOpenChange} onChatPreviewExpandedChange={onChatPreviewExpandedChange} variant="command-line" />
         </div>
       </div>
     </div>

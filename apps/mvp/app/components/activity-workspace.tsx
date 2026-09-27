@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { LayoutGroup, motion } from "framer-motion";
 import { FiChevronDown, FiEdit2, FiPlus } from "react-icons/fi";
-import { CampaignActivitySummary, StatsLevelsContent } from "../stats/stats-display";
+import { mapPlanNotifications } from "./attention-notifications";
+import { CampaignActivitySummary, StatsLevelsContent } from "../state/state-display";
 import { ComposerDockContext } from "./composer-dock-context";
 import { ActivityCategoryIcon } from "./activity-category-icon";
 import { HudCategoryApp, type HudCategory } from "./hud";
+import { QuestHud } from "./hud/quest-hud";
 import { QuestCommandHistory } from "./quest-terminal";
 import { activityCategories, readActiveActivity, type ActivityCategory, useActiveActivity } from "./quest-terminal/use-active-activity";
 import { useQuestCommands } from "./quest-terminal/use-quest-commands";
@@ -17,12 +19,11 @@ import { openWorkshopEvent, WORLD_VIEW_STATE_KEY } from "./page-transition-event
 import { PinScrollArea } from "./pin-scroll-area";
 import { subjectMasteryQuest, type SubjectMasteryCategory } from "./quest-context";
 import { useSplitView } from "./split-view-context";
-import { CampaignQuestContent, TerminalSelectedView } from "./terminal-selected-view";
-import { useTerminalView } from "./terminal-view-context";
-import { speedrunViews } from "./speedrun-view-options";
+import { CampaignQuestContent, ActionsSelectedView } from "./actions-selected-view";
+import { useActionsView } from "./actions-view-context";
 
 type ActivityView = "current" | "tasks";
-type TaskView = "plan" | "campaign" | "levels" | "kanban" | "running";
+type TaskView = "plan" | "campaign" | "levels" | "kanban" | "running" | "inbox-notifications";
 const competenceCategories = subjectMasteryQuest.workingSystemModel.taskOntology.categories;
 type CompetenceCategory = SubjectMasteryCategory;
 type CompetenceView = "recent" | "created" | "categories";
@@ -89,9 +90,9 @@ const experienceStarterTasks: ActivityTask[] = experienceTaskNames.map((name) =>
   completed: false,
 }));
 const questStarterTasks: ActivityTask[] = [{
-  id: subjectMasteryQuest.id,
+  id: "Quest-minimum-viable-day",
   category: "Quests",
-  name: subjectMasteryQuest.name,
+  name: "Minimum Viable Day (MVD)",
   completed: false,
 }];
 const specifiedStarterTasks = [...healthStarterTasks, ...wealthStarterTasks, ...connectionStarterTasks, ...sentienceStarterTasks, ...competenceStarterTasks, ...experienceStarterTasks, ...questStarterTasks];
@@ -135,7 +136,7 @@ function readTasks(): ActivityTask[] {
       name: task.category === "Love" || task.category === "Interactions"
         ? task.name.replace(/^((?:Review|Practice|Record) )(?:love|interactions)(?=\b)/i, "$1connection")
         : task.name,
-    })).filter((task) => legacyPlaceholders[task.id] !== task.name);
+    })).filter((task) => legacyPlaceholders[task.id] !== task.name && !(task.category === "Quests" && (task.id === subjectMasteryQuest.id || task.name === subjectMasteryQuest.name)));
     const orderedSpecifiedTasks = specifiedStarterTasks.map((starter) => {
       const savedTask = savedTasks.find((task) => task.category === starter.category && (
         task.id === starter.id || task.name.toLowerCase() === starter.name.toLowerCase()
@@ -321,7 +322,7 @@ function ActivityWorkspaceContent({
         <>
         {taskGridVisible && (
           <div className="mb-3 flex w-full items-center justify-between gap-3">
-            <button type="button" title="Focus composer" onClick={() => document.getElementById("terminal-command-input")?.focus()} className="min-w-0 cursor-pointer rounded-full border border-white/25 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">Quest: {category === "Competence" || category === "Quests" ? subjectMasteryQuest.name : "Unassigned"}</button>
+            <button type="button" title="Focus composer" onClick={() => document.getElementById("terminal-command-input")?.focus()} className="min-w-0 cursor-pointer rounded-full border border-white/25 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">Quest: {category === "Health" || category === "Quests" ? "Minimum Viable Day (MVD)" : category === "Competence" ? subjectMasteryQuest.name : "Unassigned"}</button>
             <div className="flex shrink-0 items-center gap-2">
             {category === "Competence" && <label className="relative inline-flex items-center">
               <span className="sr-only">Competence view</span>
@@ -337,7 +338,7 @@ function ActivityWorkspaceContent({
           </div>
         )}
         {taskGridVisible && hudVisible && (
-          hudCategory ? <HudCategoryApp category={hudCategory} className="mt-0" /> : <section aria-label="Quests HUD" className="border-t border-white/15 py-6 text-sm text-white/45">No HUD configured for Quests yet.</section>
+          hudCategory ? <HudCategoryApp category={hudCategory} className="mt-0" /> : <QuestHud />
         )}
         {!category || choosingCategory ? (
           <div aria-label="Activity categories" className="grid w-full gap-y-3 py-4">
@@ -402,14 +403,28 @@ function ActivityWorkspaceContent({
       ) : (
         <div>
           <div aria-label="Task views" className="flex flex-wrap gap-2">
-            {(["campaign", "plan", "levels", "kanban", "running"] as const).map((view) => (
-              <button key={view} type="button" aria-pressed={taskView === view} onClick={() => setTaskView(view)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-medium capitalize transition-colors ${taskView === view ? "border-white/75 text-white" : "border-white/20 text-white/55 hover:border-white/50 hover:text-white"}`}>{view === "running" ? "Running tasks" : view}</button>
+            {(["campaign", "plan", "levels", "kanban", "running", "inbox-notifications"] as const).map((view) => (
+              <button key={view} type="button" aria-pressed={taskView === view} onClick={() => setTaskView(view)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-medium capitalize transition-colors ${taskView === view ? "border-white/75 text-white" : "border-white/20 text-white/55 hover:border-white/50 hover:text-white"}`}>{view === "running" ? "Running tasks" : view === "inbox-notifications" ? "Inbox Notifications" : view}</button>
             ))}
           </div>
           {taskView === "levels" ? <div className="mt-6"><StatsLevelsContent className="border-y-0 font-sans text-sm font-normal normal-case tracking-normal [&_header]:text-sm [&_header]:font-medium [&_header]:tracking-normal [&_h3]:text-sm [&_h3]:font-medium [&_h3]:normal-case [&_h3]:tracking-normal [&_dt]:text-xs [&_dt]:normal-case [&_dt]:tracking-normal [&_label]:text-xs [&_label]:normal-case [&_label]:tracking-normal [&_dd]:text-sm [&_p]:text-sm [&_input]:rounded-2xl [&_textarea]:rounded-2xl [&_input]:bg-white/[0.04] [&_textarea]:bg-white/[0.04] [&_dl>div]:rounded-2xl [&_section>div>div]:rounded-2xl [&_button]:rounded-full [&_button]:text-xs [&_button]:normal-case [&_button]:tracking-normal" /></div> : taskView === "plan" ? (
             <div className="mt-6 grid min-h-72 place-items-center text-sm text-white/40">Planning view</div>
           ) : taskView === "campaign" ? (
             <div className="mt-6"><CampaignQuestContent /></div>
+          ) : taskView === "inbox-notifications" ? (
+            <section aria-label="Inbox notifications" className="mt-6">
+              <h2 className="text-sm font-medium text-white/75">Inbox Notifications</h2>
+              {mapPlanNotifications.length > 0 ? (
+                <ul className="mt-4 divide-y divide-white/15">
+                  {mapPlanNotifications.map((notification) => (
+                    <li className="py-4 first:pt-0" key={notification.id}>
+                      <p className="text-sm font-medium text-white/90">{notification.title}</p>
+                      <p className="mt-1 text-xs text-white/55">{notification.detail}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : <p className="mt-4 text-sm text-white/45">No notifications need your attention.</p>}
+            </section>
           ) : taskView === "running" ? (
             <section aria-label="Running tasks" className="mt-6">
               {activeActivity ? (
@@ -435,14 +450,13 @@ function ActivityWorkspaceContent({
   );
 }
 
-export function TerminalActivityWorkspace({ workshop = false, showSummary = true }: { workshop?: boolean; showSummary?: boolean }) {
+export function ActionsWorkspace({ workshop = false, showSummary = true }: { workshop?: boolean; showSummary?: boolean }) {
   const { activityOpen, navigationRequest, setActivityOpen, setDetailTaskId } = useActivityWorkspace();
-  const { view } = useTerminalView();
+  const { view, chatVisible } = useActionsView();
   const { startActivity } = useActiveActivity();
   const { addCommand } = useQuestCommands();
-  // The Workshop lives inside the minimap view, so its terminal modes are local.
-  const [workshopView, setWorkshopView] = useState<(typeof speedrunViews)[number]["view"]>("notes");
-  const displayedView = workshop ? workshopView : view;
+  // Workshop history uses the shared rail's notes visibility control.
+  const displayedView = workshop ? "notes" : view;
   const fullWidthTerminal = !activityOpen && (workshop || ["code", "notes", "notes-hidden", "code-preview", "minimap", "world-tree"].includes(displayedView));
   const composerDock = useContext(ComposerDockContext);
   const [activityView, setActivityView] = useState<ActivityView>("current");
@@ -505,22 +519,6 @@ export function TerminalActivityWorkspace({ workshop = false, showSummary = true
       {showSummary && composerDock && createPortal(<div className="w-fit max-w-full [&>section]:mb-0" id={workshop ? "workshop-campaign-activity-summary" : "terminal-campaign-activity-summary"}>
         <CampaignActivitySummary expanded={activityOpen} summary="activity" activityView={activityView} categoryPickerOpen={activityOpen && choosingCategory} onCategoryClick={() => { setActivityView("current"); setActivityOpen(true); setChoosingCategory(false); setShowingTaskGrid(true); }} onCurrentActivityClick={openCurrentActivity} onActivityViewChange={(view) => { setChoosingCategory(false); setShowingTaskGrid(false); setActivityView(view); setActivityOpen(true); }} />
       </div>, composerDock)}
-      {workshop && !activityOpen && (
-        <nav aria-label="Workshop terminal mode" className="relative z-20 flex shrink-0 justify-start gap-1 py-3">
-          {speedrunViews.map(({ icon: Icon, label, view: mode }) => (
-            <button
-              aria-pressed={workshopView === mode}
-              className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 font-sans text-xs transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${workshopView === mode ? "border-white/55 text-white" : "border-transparent text-white/50 hover:text-white"}`}
-              key={mode}
-              onClick={() => setWorkshopView(mode)}
-              type="button"
-            >
-              <Icon aria-hidden="true" className="size-3.5" />
-              {label}
-            </button>
-          ))}
-        </nav>
-      )}
       <div className="relative flex min-h-0 flex-1 flex-col" id={workshop ? "workshop-terminal-main-content" : "terminal-main-content"}>
         {activityOpen && (
           <PinScrollArea className="pb-[calc(var(--composer-height)+1rem)]" wrapperClassName="flex-1">
@@ -528,11 +526,11 @@ export function TerminalActivityWorkspace({ workshop = false, showSummary = true
           </PinScrollArea>
         )}
         <div aria-hidden={activityOpen} className={`relative min-h-0 flex-1 flex-col ${activityOpen ? "hidden" : "flex"}`} inert={activityOpen}>
-          {displayedView === "code" || displayedView === "notes" ? (
+          {displayedView === "code" || displayedView === "notes" || displayedView === "notes-hidden" ? (
+            chatVisible ?
             <div aria-label="Command history" className="relative flex min-h-0 flex-1 flex-col"><QuestCommandHistory scrollable /></div>
-          ) : displayedView === "notes-hidden" ? (
-            <div aria-label="Terminal with dialogue history hidden" className="min-h-0 flex-1" />
-          ) : <TerminalSelectedView key={displayedView} view={displayedView} />}
+            : <div aria-label="Terminal with dialogue history hidden" className="min-h-0 flex-1" />
+          ) : <ActionsSelectedView key={displayedView} view={displayedView} />}
         </div>
       </div>
     </div></LayoutGroup>

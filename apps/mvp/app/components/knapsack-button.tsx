@@ -3,16 +3,16 @@
 import { usePathname } from "next/navigation";
 import { GiKnapsack } from "react-icons/gi";
 import { useActivityWorkspace } from "./activity-workspace-context";
-import { useOpenTerminalView, useTerminalView } from "./terminal-view-context";
+import { useOpenActionsView, useActionsView } from "./actions-view-context";
 
 export function KnapsackButton() {
   const pathname = usePathname();
   const { activityOpen } = useActivityWorkspace();
-  const { view } = useTerminalView();
-  const openView = useOpenTerminalView();
+  const { view } = useActionsView();
+  const openView = useOpenActionsView();
   const selected = !activityOpen && view === "inventory";
 
-  if (pathname === "/stats" || pathname === "/chat") return null;
+  if (pathname === "/state" || pathname === "/interactions") return null;
 
   return (
     <div className="shrink-0">

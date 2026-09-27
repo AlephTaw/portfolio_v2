@@ -1,12 +1,12 @@
 import { FiCode, FiFileText, FiLayout } from "react-icons/fi";
-import type { TerminalView } from "./terminal-view-context";
+import type { ActionsView } from "./actions-view-context";
 
 export const speedrunViews = [
   { view: "notes-hidden", label: "No notes", actionLabel: "Change to no notes view", icon: FiLayout },
   { view: "notes", label: "Notes", actionLabel: "Change to notes view", icon: FiFileText },
   { view: "code-preview", label: "Code view", actionLabel: "Change to code view", icon: FiCode },
 ] as const satisfies ReadonlyArray<{
-  view: TerminalView;
+  view: ActionsView;
   label: string;
   actionLabel: string;
   icon: typeof FiCode;

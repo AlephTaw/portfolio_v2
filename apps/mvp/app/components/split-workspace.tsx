@@ -2,18 +2,18 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { StatsScreen } from "../stats/components/stats-screen";
+import { StateScreen } from "../state/components/state-screen";
 import { PinScrollArea } from "./pin-scroll-area";
 import { SplitResizeHandle } from "./split-resize-handle";
-import { TerminalActivityWorkspace } from "./activity-workspace";
+import { ActionsWorkspace } from "./activity-workspace";
 import { useSplitView } from "./split-view-context";
 import { WorldDisplay } from "../world/world-display";
 
-function TerminalPane() {
+function ActionsPane() {
   return (
     <section className="h-full min-h-0 min-w-0 overflow-hidden bg-background text-foreground">
       <div className="flex h-full min-h-0 w-full flex-col pb-10">
-        <TerminalActivityWorkspace />
+        <ActionsWorkspace />
       </div>
     </section>
   );
@@ -26,7 +26,7 @@ export function SplitWorkspace({ children }: { children: ReactNode }) {
   const workspaceRef = useRef<HTMLDivElement>(null);
   const isHorizontalSplit = splitMode === "horizontal";
 
-  if (!splitViewOpen || pathname === "/chat") return children;
+  if (!splitViewOpen || pathname === "/interactions") return children;
 
   return (
     <div
@@ -45,7 +45,7 @@ export function SplitWorkspace({ children }: { children: ReactNode }) {
         onTouchStart={() => setActivePane("left")}
       >
         <PinScrollArea className="overscroll-contain touch-pan-y" tabIndex={0} wrapperClassName="h-full">
-          {leftPane === "world" ? <WorldDisplay /> : <StatsScreen />}
+          {leftPane === "world" ? <WorldDisplay /> : <StateScreen />}
         </PinScrollArea>
       </section>
       <div
@@ -55,7 +55,7 @@ export function SplitWorkspace({ children }: { children: ReactNode }) {
         onPointerEnter={() => setActivePane("right")}
         onTouchStart={() => setActivePane("right")}
       >
-        <TerminalPane />
+        <ActionsPane />
       </div>
       <SplitResizeHandle containerRef={workspaceRef} direction={isHorizontalSplit ? "horizontal" : "vertical"} label="Resize split panes" onRatioChange={setSplitRatio} ratio={splitRatio} />
     </div>
