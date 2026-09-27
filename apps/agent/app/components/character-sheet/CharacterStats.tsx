@@ -246,7 +246,7 @@ export function CharacterStats({
           </div>
           <div aria-hidden="true" className="h-3 shrink-0" />
           <p className="w-[7.75rem] whitespace-nowrap text-center text-[0.55rem] italic uppercase leading-3 tracking-[0.28em] text-[#7f7f7f] sm:w-[9.5rem]">
-            {visibleStat ? "Aura Salience" : "Title: Data Scientist"}
+            {visibleStat ? "Placeholder" : "Title: Data Scientist"}
           </p>
           <div aria-hidden="true" className="h-3 shrink-0" />
           {showAttributeWorkspace ? (

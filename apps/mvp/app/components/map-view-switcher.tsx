@@ -55,9 +55,9 @@ export function WorldGridViewButton() {
         // eslint-disable-next-line @next/next/no-img-element
         <img alt="" aria-hidden="true" className="size-6" height={24} src="/icons/solid-network.svg" width={24} />
       ) : (
-        <svg aria-hidden="true" className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="6" y="2" width="12" height="20" rx="1.5" fill="currentColor" />
-          <path d="M12 6v12m-3-9 3-3 3 3m-6 6 3 3 3-3" stroke="black" />
+        <svg aria-hidden="true" className="size-6" viewBox="0 0 24 24">
+          <rect x="6" y="2" width="12" height="20" rx="1" fill="currentColor" />
+          <path d="M9 4h6v4H9zm0 6h6v4H9zm0 6h6v4H9zM7 5h1v2H7zm9 0h1v2h-1zM7 11h1v2H7zm9 0h1v2h-1zM7 17h1v2H7zm9 0h1v2h-1z" fill="black" />
         </svg>
       )}
     </button>
