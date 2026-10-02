@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FiLogOut } from "react-icons/fi";
 import portrait from "../../../../agent/public/assets/live-stats-profile.png";
 import { adminLabelClass } from "./admin-styles";
+import { AppearanceSection } from "./appearance-section";
 import { IntegrationsSection } from "./integrations-section";
 import { ProfileSection } from "./profile-section";
 
@@ -13,6 +14,7 @@ export function AdminContent({ showPortrait = true }: { showPortrait?: boolean }
         <img alt="Steven Wilcox profile" className="size-full object-cover" src={portrait.src} />
       </div>}
       <ProfileSection />
+      <AppearanceSection />
       <IntegrationsSection />
       <section aria-labelledby="account-logout-heading" className="mx-auto mt-16 w-full max-w-2xl border-t border-white/20 pt-10 text-white">
         <p className={adminLabelClass}>Account</p>

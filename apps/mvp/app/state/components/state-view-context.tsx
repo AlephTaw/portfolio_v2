@@ -1,9 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { createContext, useContext, useEffect, useEffectEvent, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import type { StateAppView } from "./state-view-toolbar";
+import { useActionSpaceState } from "../../components/storyboard/action-space-state";
+
+export type ArcView = "worldline" | "logs" | "storyboard" | "storyboard-v2";
 
 type StateViewContextValue = {
+  actionSpace: ReturnType<typeof useActionSpaceState>;
   quests: string[];
   setQuests: Dispatch<SetStateAction<string[]>>;
   notesVisible: boolean;
@@ -14,12 +18,12 @@ type StateViewContextValue = {
   displayedAppView: StateAppView;
   previewAppView: StateAppView | null;
   navigationHome: boolean;
-  arcView: "worldline" | "logs" | "storyboard";
+  arcView: ArcView;
   campaignSelected: boolean;
   selectedCampaign: "all" | "current";
   selectAppView: (view: StateAppView) => void;
   setNavigationHome: (home: boolean) => void;
-  setArcView: Dispatch<SetStateAction<"worldline" | "logs" | "storyboard">>;
+  setArcView: Dispatch<SetStateAction<ArcView>>;
   setCampaignSelected: Dispatch<SetStateAction<boolean>>;
   setSelectedCampaign: Dispatch<SetStateAction<"all" | "current">>;
   setPreviewAppView: (view: StateAppView | null) => void;
@@ -31,6 +35,7 @@ type StateViewContextValue = {
 const StateViewContext = createContext<StateViewContextValue | null>(null);
 
 export function StateViewProvider({ children }: { children: ReactNode }) {
+  const actionSpace = useActionSpaceState();
   const [quests, setQuests] = useState<string[]>([]);
   const [notesVisible, setNotesVisible] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
@@ -38,9 +43,22 @@ export function StateViewProvider({ children }: { children: ReactNode }) {
   const [lastIconAppView, setLastIconAppView] = useState<StateAppView>("arc");
   const [previewAppView, setPreviewAppView] = useState<StateAppView | null>(null);
   const [navigationHome, setNavigationHome] = useState(false);
-  const [arcView, setArcView] = useState<"worldline" | "logs" | "storyboard">("worldline");
+  const [arcView, updateArcView] = useState<ArcView>("worldline");
   const [campaignSelected, setCampaignSelected] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<"all" | "current">("current");
+  const actionSpaceReady = actionSpace.state !== null;
+  const restoreArcView = useEffectEvent(() => {
+    if (actionSpace.state?.view.open) updateArcView("storyboard-v2");
+  });
+  useEffect(() => {
+    if (actionSpaceReady) restoreArcView();
+  }, [actionSpaceReady]);
+
+  const setArcView: Dispatch<SetStateAction<ArcView>> = (update) => {
+    const next = typeof update === "function" ? update(arcView) : update;
+    updateArcView(next);
+    actionSpace.updateView((current) => ({ ...current, open: next === "storyboard-v2" }));
+  };
 
   const selectAppView = (view: StateAppView) => {
     setAppView(view);
@@ -56,6 +74,7 @@ export function StateViewProvider({ children }: { children: ReactNode }) {
 
   return (
     <StateViewContext.Provider value={{
+      actionSpace,
       quests, setQuests,
       notesVisible, setNotesVisible, editorOpen, setEditorOpen,
       appView,

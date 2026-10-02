@@ -8,15 +8,17 @@ import { ChatConversationPicker, useChatConversation } from "../chat-conversatio
 import { InteractionsApp } from "../interactions-app";
 import { useActivityWorkspace } from "../activity-workspace-context";
 import { editActivityNameEvent } from "../activity-workspace-events";
-import { KnapsackButton } from "../knapsack-button";
+import { ComposerShortcutDock } from "../composer-shortcuts";
 import { PinScrollArea } from "../pin-scroll-area";
-import { findSpeedrunViewAction, speedrunViews } from "../speedrun-view-options";
-import { findSplitScreenAction, SplitModeIcon, splitScreenActions, useApplySplitMode } from "../split-screen-actions";
+import { findSpeedrunViewAction } from "../speedrun-view-options";
+import { findSplitScreenAction, splitScreenActions, useApplySplitMode } from "../split-screen-actions";
 import { useSplitView } from "../split-view-context";
-import { useActionsView } from "../actions-view-context";
+import { useActionsView, type ActionsView } from "../actions-view-context";
+import { useStateView } from "../../state/components/state-view-context";
 import { commandOptions, getCommandText, type CommandOption } from "./quest-terminal-data";
 import { useActiveActivity } from "./use-active-activity";
 import { useQuestCommands } from "./use-quest-commands";
+import { SuggestedActions, type SuggestedActionDestination } from "./suggested-actions";
 
 type ExecuteCommandControlProps = {
   onDockElementChange?: (element: HTMLElement | null) => void;
@@ -24,11 +26,6 @@ type ExecuteCommandControlProps = {
   onChatPreviewExpandedChange?: (expanded: boolean) => void;
   variant?: "button" | "command-line";
 };
-
-const suggestedActions = [
-  ...speedrunViews.map((option) => ({ ...option, kind: "view" as const })),
-  ...splitScreenActions.map((option) => ({ ...option, kind: "split" as const })),
-].sort((a, b) => a.actionLabel.localeCompare(b.actionLabel));
 
 function parseComposerEntry(value: string) {
   const trimmed = value.trimStart();
@@ -124,13 +121,14 @@ function CommandList({
 export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenChange, onChatPreviewExpandedChange, variant = "button" }: ExecuteCommandControlProps) {
   const { addCommand } = useQuestCommands();
   const { activeActivity, startActivity, updateActivityName } = useActiveActivity();
-  const { setActivityOpen } = useActivityWorkspace();
+  const { setActivityOpen, requestActivityMap, requestCurrentActivity } = useActivityWorkspace();
   const { splitMode, splitViewOpen } = useSplitView();
   const applySplitMode = useApplySplitMode();
   const pathname = usePathname();
   const router = useRouter();
   const { conversation } = useChatConversation();
   const { setView, view } = useActionsView();
+  const { selectAppView, setNavigationHome, setEditorOpen } = useStateView();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
@@ -229,7 +227,7 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
     if (variant === "command-line") requestAnimationFrame(() => inputRef.current?.focus());
   };
 
-  const executeSuggestedViewAction = (nextView: (typeof speedrunViews)[number]["view"]) => {
+  const executeSuggestedViewAction = (nextView: ActionsView) => {
     setActivityOpen(false);
     setView(nextView);
     setQuery("");
@@ -237,6 +235,41 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
     setActiveIndex(-1);
     setOpen(false);
     if (!splitViewOpen && pathname !== "/actions") router.push("/actions");
+  };
+
+  const executeSuggestedNavigation = (destination: SuggestedActionDestination) => {
+    if (destination === "terminal") {
+      executeSuggestedViewAction("minimap");
+      return;
+    }
+    if (destination === "planning" || destination === "current-activity") {
+      if (destination === "planning") requestActivityMap();
+      else requestCurrentActivity();
+      setQuery("");
+      setSelectedKey(null);
+      setActiveIndex(-1);
+      setOpen(false);
+      if (!splitViewOpen && pathname !== "/actions") router.push("/actions");
+      return;
+    }
+    if (destination === "activities") {
+      executeSuggestedViewAction("apps");
+      return;
+    }
+    if (destination === "inventory" || destination === "systems") {
+      executeSuggestedViewAction(destination);
+      return;
+    }
+    selectAppView(destination === "profile" ? "storyboard" : destination);
+    setNavigationHome(false);
+    setEditorOpen(false);
+    setActivityOpen(false);
+    setQuery("");
+    setSelectedKey(null);
+    setActiveIndex(-1);
+    setOpen(false);
+    if (splitViewOpen) setView("stats");
+    else if (pathname !== "/state") router.push("/state");
   };
 
   const executeSuggestedSplitAction = (mode: (typeof splitScreenActions)[number]["mode"]) => {
@@ -293,10 +326,7 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
     return (
       <div className="group/composer relative flex w-full min-w-0 flex-col">
         <div aria-label="Composer dock" className="mb-1 flex min-h-7 w-full shrink-0 flex-col justify-center px-2">
-          <div className="flex min-w-0 w-full items-center gap-0">
-            <div id="composer-activity-summary-slot" className="min-w-0 flex-[0_1_auto] empty:hidden" ref={onDockElementChange} />
-            <KnapsackButton />
-          </div>
+          <ComposerShortcutDock view={view} splitMode={splitMode} onNavigate={executeSuggestedNavigation} onSelectView={executeSuggestedViewAction} onSelectSplit={executeSuggestedSplitAction} activitySlot={<div id="composer-activity-summary-slot" className="min-w-0 empty:hidden" ref={onDockElementChange} />} />
           {inputFocused && !editingActivityName && <span className="font-sans text-[0.65rem] text-white/55" id="composer-prefix-hint">Start with <span className="text-white">@</span> for chat or <span className="text-white">/</span> for a command</span>}
         </div>
         <form
@@ -436,29 +466,11 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
           </button>
         </form>
         {open && typeof document !== "undefined" && document.getElementById("command-suggestions-pane") && createPortal(
-          <div className="relative h-full min-h-0 bg-black" id="terminal-command-suggestions">
+          <div className="relative flex h-full min-h-0 flex-col bg-black" id="terminal-command-suggestions">
+            {entryMode !== "chat" && <h2 className="absolute right-14 top-3 z-20 bg-black text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">Suggested Actions</h2>}
             <button aria-label="Close suggestions" className="absolute right-3 top-2 z-20 grid size-8 cursor-pointer place-items-center rounded-full bg-black text-white/65 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white" onClick={() => { setOpen(false); setChatExpanded(false); }} type="button"><FiX aria-hidden="true" className="size-4" /></button>
-            {entryMode === "chat" ? chatExpanded ? <InteractionsApp embedded /> : <PinScrollArea aria-label="Chat conversations" wrapperClassName="h-full"><h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">Choose a conversation</h2><ChatConversationPicker onSelect={() => setChatExpanded(true)} /></PinScrollArea> : <PinScrollArea aria-label="Suggested actions and system calls" wrapperClassName="h-full">
-              <section aria-labelledby="suggested-actions-heading" className="border-b border-white/15">
-                <h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45" id="suggested-actions-heading">Suggested Actions</h2>
-                <ul aria-label="Suggested actions" className="pb-2">
-                  {suggestedActions.map((action) => (
-                    <li key={action.actionLabel}>
-                      <button
-                        aria-current={(action.kind === "view" ? view === action.view : splitMode === action.mode) ? "true" : undefined}
-                        className="flex min-h-9 w-full cursor-pointer items-center gap-3 px-4 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:bg-white/10 focus-visible:text-white focus-visible:outline-none"
-                        onClick={() => action.kind === "view" ? executeSuggestedViewAction(action.view) : executeSuggestedSplitAction(action.mode)}
-                        type="button"
-                      >
-                        <span className="grid w-6 shrink-0 place-items-center">
-                          {action.kind === "view" ? <action.icon aria-hidden="true" className="size-4" /> : <SplitModeIcon mode={action.mode} />}
-                        </span>
-                        <span>{action.actionLabel}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+            {entryMode === "chat" ? chatExpanded ? <InteractionsApp embedded /> : <PinScrollArea aria-label="Chat conversations" wrapperClassName="h-full"><h2 className="px-4 pb-1 pr-12 pt-3 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">Choose a conversation</h2><ChatConversationPicker onSelect={() => setChatExpanded(true)} /></PinScrollArea> : <PinScrollArea aria-label="Suggested actions and system calls" wrapperClassName="min-h-0 flex-1">
+              <SuggestedActions view={view} splitMode={splitMode} onSelectView={executeSuggestedViewAction} onSelectSplit={executeSuggestedSplitAction} onNavigate={executeSuggestedNavigation} />
               <div className="flex items-center justify-between gap-4 border-b border-white/15 px-4 py-3">
                 <span className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/45">System Calls</span>
                 <span className="flex items-center gap-2 text-right text-[0.55rem] uppercase tracking-[0.12em] text-white/30"><FiGrid aria-hidden="true" className="size-4 shrink-0" /><span className="hidden sm:inline">Tab to complete · Enter to execute</span></span>

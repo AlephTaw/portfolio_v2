@@ -2,10 +2,8 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FiCheck, FiChevronDown, FiVideo } from "react-icons/fi";
+import { FiCheck, FiChevronDown, FiFilm, FiMaximize2, FiPause, FiPlay, FiVolume2 } from "react-icons/fi";
 import portrait from "../../../agent/public/assets/live-stats-profile.png";
-import { AttentionCountBadge, mapPlanNotifications } from "../components/attention-notifications";
-import { ActivityCategoryIcon } from "../components/activity-category-icon";
 import { getArcDay, getArcTimeRemaining } from "../components/arc-time";
 import { AdminContent } from "../components/admin";
 import { InventoryContent } from "../components/inventory-content";
@@ -13,11 +11,11 @@ import { HudCategoryApp, type HudCategory } from "../components/hud";
 import { PinScrollArea } from "../components/pin-scroll-area";
 import { ExecuteCommandControl, QuestCommandHistory } from "../components/quest-terminal";
 import { type ActiveActivity, useActiveActivity } from "../components/quest-terminal/use-active-activity";
-import { StoryboardBuilder, StoryboardContent } from "../components/storyboard";
+import { StoryboardBuilder, StoryboardContent, StoryboardV2 } from "../components/storyboard";
 import { statsAppLabelTypography } from "./components/state-view-toolbar";
 import { StateFigureNavigation } from "./components/state-figure-navigation";
 import { SystemsView } from "./components/systems-view";
-import { useStateView } from "./components/state-view-context";
+import { useStateView, type ArcView } from "./components/state-view-context";
 
 type AppSummary = {
   id: HudCategory;
@@ -260,19 +258,15 @@ const revealedSummarySurface = "border-transparent bg-transparent shadow-none ho
 function CurrentActivitySummary({
   activeActivity,
   activityView,
-  categoryPickerOpen = false,
   expanded = false,
   onActivityViewChange,
   onCurrentActivityClick,
-  onCategoryClick,
 }: {
   activeActivity: ActiveActivity | null;
   activityView: "current" | "tasks";
-  categoryPickerOpen?: boolean;
   expanded?: boolean;
   onActivityViewChange?: (view: "current" | "tasks") => void;
   onCurrentActivityClick?: () => void;
-  onCategoryClick?: () => void;
 }) {
   const [titleSelected, setTitleSelected] = useState(false);
   const title = activeActivity?.name && activeActivity.name !== activeActivity.category
@@ -283,22 +277,6 @@ function CurrentActivitySummary({
 
   return (
     <div className="flex min-w-0 flex-[0_1_auto] items-center gap-2 font-sans text-xs font-medium">
-      {activeActivity?.category && !categoryPickerOpen ? (
-        <motion.button
-          layoutId={`activity-category-${activeActivity.category}`}
-          transition={{ layout: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }}
-          aria-label={`View ${activeActivity.category} activity grid`}
-          title={`View ${activeActivity.category} activity grid`}
-          className="grid size-7 shrink-0 cursor-pointer place-items-center rounded-full hover:opacity-60 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 max-[430px]:size-5"
-          onClick={(event) => { event.stopPropagation(); onCategoryClick?.(); }}
-          onKeyDown={(event) => event.stopPropagation()}
-          type="button"
-        >
-          <motion.span layoutId={`activity-category-icon-${activeActivity.category}`} className="grid size-7 place-items-center rounded-full max-[430px]:size-5">
-            <ActivityCategoryIcon category={activeActivity.category} className="size-5 max-[430px]:size-4" />
-          </motion.span>
-        </motion.button>
-      ) : null}
       <div className={`flex w-[clamp(9rem,40vw,16rem)] min-w-0 flex-[0_1_auto] items-center rounded-lg transition-colors ${titleHighlighted ? "bg-[#e8e8e8] text-black" : "bg-black/30 text-white"}`}>
           <button
             id="activity-current-tab"
@@ -369,22 +347,18 @@ export function ActiveQuestPanel({
 
 export function CampaignActivitySummary({
   activityView = "current",
-  categoryPickerOpen = false,
   expanded = false,
   onActivityViewChange,
   onCurrentActivityClick,
   onCampaignToggle,
-  onCategoryClick,
   selectedCampaign = "current",
   summary = "quest",
 }: {
   activityView?: "current" | "tasks";
-  categoryPickerOpen?: boolean;
   expanded?: boolean;
   onActivityViewChange?: (view: "current" | "tasks") => void;
   onCurrentActivityClick?: () => void;
   onCampaignToggle?: () => void;
-  onCategoryClick?: () => void;
   selectedCampaign?: "all" | "current";
   summary?: "activity" | "quest";
 }) {
@@ -402,32 +376,12 @@ export function CampaignActivitySummary({
   return (
     <section
       aria-label={summary === "quest" ? "Campaign summary" : "Activity summary"}
-      className={`relative ${summary === "activity" ? "mb-12" : "mb-3"} grid min-w-0 grid-cols-1 items-stretch ${summary === "activity" ? "w-fit max-w-full rounded-2xl bg-transparent py-1.5" : `arc-summary-container w-full border ${onCampaignToggle ? `${expanded ? "px-3" : "px-0 hover:px-3"} py-0 transition-[background-color,border-color,box-shadow,padding] ${summarySurface}` : "border-transparent bg-transparent"}`}`}
+      className={`relative ${summary === "activity" ? "mb-12" : "mb-3"} grid min-w-0 grid-cols-1 items-stretch ${summary === "activity" ? "w-fit max-w-full rounded-2xl bg-transparent py-1.5" : `arc-summary-container w-full border ${onCampaignToggle ? `${expanded ? "px-3" : "px-0 hover:px-3"} py-0 hover:py-1.5 transition-[background-color,border-color,box-shadow,padding] ${summarySurface}` : "border-transparent bg-transparent"}`}`}
     >
       {summary === "activity" ? (
         <div className="flex min-w-0 items-center gap-2 py-0.5 font-sans text-xs font-medium text-white/60 max-[430px]:gap-1" id="terminal-campaign-activity-summary-content">
           <div className="flex min-w-0 items-center gap-2">
-            <CurrentActivitySummary activeActivity={activeActivity} activityView={activityView} categoryPickerOpen={categoryPickerOpen} expanded={expanded} onActivityViewChange={onActivityViewChange} onCurrentActivityClick={onCurrentActivityClick} onCategoryClick={onCategoryClick} />
-            {onActivityViewChange && (
-              <div aria-label="Activity views" role="tablist" className="flex shrink-0 gap-1">
-                <button
-                  id="activity-tasks-tab"
-                  aria-label="Activities"
-                  title="Activities"
-                  aria-controls="activity-tasks-panel"
-                  aria-selected={expanded && activityView === "tasks"}
-                  role="tab"
-                  type="button"
-                  onClick={(event) => { event.stopPropagation(); onActivityViewChange("tasks"); }}
-                  onKeyDown={(event) => event.stopPropagation()}
-                  className="relative grid size-10 cursor-pointer place-items-center rounded-[4px] bg-background text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="" aria-hidden="true" className={`size-7 ${expanded && activityView === "tasks" ? "brightness-0 invert" : ""}`} height={28} src="/cleaned-treasure-map.svg" width={28} />
-                  <AttentionCountBadge count={mapPlanNotifications.length} />
-                </button>
-              </div>
-            )}
+            <CurrentActivitySummary activeActivity={activeActivity} activityView={activityView} expanded={expanded} onActivityViewChange={onActivityViewChange} onCurrentActivityClick={onCurrentActivityClick} />
           </div>
         </div>
       ) : (
@@ -529,11 +483,11 @@ function CampaignSelectorChip({ selectedCampaign, onSelect }: { selectedCampaign
   );
 }
 
-function CampaignLeaderboardPlaceholder({ selectedCampaign, onSelect }: { selectedCampaign: "all" | "current"; onSelect: (campaign: "all" | "current") => void }) {
+export function CampaignDetailsContent({ selectedCampaign, onSelect, id = "stats-campaign-view" }: { selectedCampaign: "all" | "current"; onSelect: (campaign: "all" | "current") => void; id?: string }) {
   return (
-    <section aria-labelledby="campaign-leaderboard-heading" className="mt-6 w-full text-white" id="stats-campaign-view">
+    <section aria-labelledby={`${id}-leaderboard-heading`} className="mt-6 w-full text-white" id={id}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70" id="campaign-leaderboard-heading">Leaderboard</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70" id={`${id}-leaderboard-heading`}>Leaderboard</h2>
         <CampaignSelectorChip onSelect={onSelect} selectedCampaign={selectedCampaign} />
       </div>
       <div className="mt-5 grid min-h-48 place-items-center border border-dashed border-white/25 p-6 text-center text-[0.65rem] uppercase tracking-[0.16em] text-white/40">Leaderboard coming soon</div>
@@ -564,65 +518,233 @@ function StatChart({ stat }: { stat: Stat }) {
 }
 
 const arcPreviewImages = [
-  { src: "/arc-preview/robot-arms.png", mangaSrc: "/arc-preview/robot-arms-manga.webp", alt: "Robotic arms in a workshop" },
-  { src: "/arc-preview/rainbow.png", mangaSrc: "/arc-preview/rainbow-manga.webp", alt: "Rainbow over forested mountains" },
-  { src: "/arc-preview/canyon.png", mangaSrc: "/arc-preview/canyon-manga.webp", alt: "Sunlit canyon beneath a blue sky" },
+  { src: "/arc-preview/robot-arms.png", mangaSrc: "/arc-preview/robot-arms-manga-color.webp", monochromeSrc: "/arc-preview/robot-arms-manga.webp", alt: "Robotic arms in a workshop" },
+  { src: "/arc-preview/rainbow.png", mangaSrc: "/arc-preview/rainbow-manga-color.webp", monochromeSrc: "/arc-preview/rainbow-manga.webp", alt: "Rainbow over forested mountains" },
+  { src: "/arc-preview/canyon.png", mangaSrc: "/arc-preview/canyon-manga-color.webp", monochromeSrc: "/arc-preview/canyon-manga.webp", alt: "Sunlit canyon beneath a blue sky" },
 ];
 
-function ArcVideoPanel({ className, manga, panel }: { className?: string; manga: boolean; panel: number }) {
+const colorArcStoryCount = 4;
+const arcMangaSource = (panel: number, colorized: boolean) => {
   const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
+  return colorized ? image.mangaSrc : image.monochromeSrc;
+};
+
+// Simulated Crucible · Act I sequence for previewing story treatments.
+const arcPanelStory = [
+  { setting: "DAY 49 · WORKSHOP", caption: "The trial began with a machine that could almost choose." },
+  { setting: "09:42 · RIDGE", bubble: { type: "thought", text: "I think I can hold it..." } },
+  { setting: "10:18 · THE PASS", bubble: { type: "speech", text: "You take the left side." } },
+  { setting: "14:06 · WORKSHOP", caption: "One adjustment. Another attempt." },
+  { setting: "16:21 · RIDGE" },
+  { setting: "17:03 · CANYON" },
+  { setting: "DUSK · WORKSHOP", caption: "This time, both arms moved together." },
+  { setting: "17:40 · RIDGE", caption: "Beyond the test, a path opened." },
+];
+
+function ArcVideoPanel({ className, colorized, manga, panel }: { className?: string; colorized: boolean; manga: boolean; panel: number }) {
+  const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
+  const story = arcPanelStory[(panel - 1) % arcPanelStory.length];
   return (
     <div
       aria-label={`Panel ${panel}`}
-      className={`relative min-h-24 overflow-hidden border border-white/55 bg-white/[0.025] ${className ?? ""}`}
+      className={`relative min-h-24 overflow-hidden border border-black/80 bg-black ${className ?? ""}`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt={`${image.alt}${manga ? ", manga illustration" : ""}`} src={manga ? image.mangaSrc : image.src} className="absolute inset-0 h-full w-full object-cover" />
+      <img alt={`${image.alt}${manga ? ", manga illustration" : ""}`} src={manga ? arcMangaSource(panel, colorized) : image.src} className="absolute inset-0 h-full w-full object-cover" />
+      <span className="absolute left-2 top-2 max-w-[calc(100%-1rem)] bg-[#ecebe7] px-2 py-1 font-mono text-[0.55rem] leading-3 tracking-[0.08em] text-black sm:left-3 sm:top-3">
+        {story.setting}
+      </span>
+      {story.bubble && (
+        <span
+          className={`arc-bubble right-2 top-2 max-w-[72%] text-[0.85rem] sm:right-3 sm:top-3 ${story.bubble.type === "thought" ? "arc-bubble-thought" : "arc-bubble-speech"}`}
+        >
+          {story.bubble.text}
+        </span>
+      )}
+      {story.caption && (
+        <span className="arc-narrator-caption absolute bottom-2 left-2 max-w-[min(85%,22rem)] bg-[#ecebe7] px-2 py-1.5 sm:bottom-3 sm:left-3">
+          {story.caption}
+        </span>
+      )}
     </div>
   );
 }
 
-function ArcPanelLayouts({ manga }: { manga: boolean }) {
+function ArcPanelLayouts({ colorized, manga }: { colorized: boolean; manga: boolean }) {
+  const panelGap = "gap-2 sm:gap-3";
+
   return (
-    <div className="w-full space-y-10" aria-label="ARC comic panels">
-      <article aria-label="ARC layout 1" className="grid grid-cols-[2fr_1fr] items-start gap-2">
-        <ArcVideoPanel className="aspect-[16/9]" manga={manga} panel={1} />
-        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={2} />
-      </article>
-      <article aria-label="ARC layout 2" className="grid grid-cols-[1fr_1.45fr] gap-2">
-        <ArcVideoPanel className="aspect-square" manga={manga} panel={3} />
-        <div className="grid grid-rows-2 gap-2">
-          <ArcVideoPanel className="h-full" manga={manga} panel={4} />
-          <ArcVideoPanel className="h-full" manga={manga} panel={5} />
+    <article aria-label="ARC comic panels" className={`mx-auto grid w-full max-w-[48rem] bg-[#ecebe7] p-[clamp(0.625rem,2vw,1.25rem)] ${panelGap}`}>
+      <div className={`grid grid-cols-2 ${panelGap}`}>
+        <ArcVideoPanel className="col-span-2 aspect-[16/8]" colorized={colorized} manga={manga} panel={1} />
+        <ArcVideoPanel className="aspect-[4/3]" colorized={colorized} manga={manga} panel={2} />
+        <ArcVideoPanel className="aspect-[4/3]" colorized={colorized} manga={manga} panel={3} />
+      </div>
+      <div className={`grid grid-cols-[1.05fr_1fr] ${panelGap}`}>
+        <ArcVideoPanel className="aspect-[3/4]" colorized={colorized} manga={manga} panel={4} />
+        <div className={`grid min-h-0 grid-rows-2 ${panelGap}`}>
+          <ArcVideoPanel className="h-full" colorized={colorized} manga={manga} panel={5} />
+          <ArcVideoPanel className="h-full" colorized={colorized} manga={manga} panel={6} />
         </div>
-      </article>
-      <article aria-label="ARC layout 3" className="grid grid-cols-3 gap-2">
-        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={6} />
-        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={7} />
-        <ArcVideoPanel className="aspect-[3/4]" manga={manga} panel={8} />
-      </article>
+      </div>
+      <div className={`grid ${panelGap}`}>
+        <ArcVideoPanel className="aspect-[16/9]" colorized={colorized} manga={manga} panel={7} />
+        <ArcVideoPanel className="aspect-[3/1]" colorized={colorized} manga={manga} panel={8} />
+      </div>
+    </article>
+  );
+}
+
+const arcChapterCards = [
+  { label: "Chapter 01", panel: 1 },
+  { label: "Chapter 02", panel: 2 },
+  { label: "Chapter 03", panel: 3 },
+  { label: "Chapter 04", panel: 4 },
+  { label: "Chapter 05", panel: 5 },
+  { label: "Chapter 06", panel: 6 },
+  { label: "Chapter 07", panel: 7 },
+  { label: "Chapter 08", panel: 8 },
+];
+
+function ArcStoryGrid({ type, onSelect }: { type: "chapters" | "quests" | "episodes"; onSelect: (index: number) => void }) {
+  const isChapters = type === "chapters";
+  const isQuests = type === "quests";
+  return (
+    <div className={`grid grid-cols-1 gap-2 sm:grid-cols-4 sm:gap-3 ${isChapters ? "md:grid-cols-4" : "md:grid-cols-5"}`}>
+      {arcChapterCards.map(({ label, panel }, index) => (
+        <motion.button
+          aria-label={`Open ${isChapters ? label : isQuests ? `Quest ${String(index + 1).padStart(2, "0")}` : `Episode ${String(index + 1).padStart(2, "0")}`}`}
+          className={`group relative grid cursor-pointer overflow-hidden border border-black/80 bg-black text-left sm:block ${isChapters || isQuests ? "grid-cols-[minmax(0,1fr)_auto] sm:aspect-[3/4]" : "grid-cols-[minmax(0,1fr)_auto] rounded-xl sm:aspect-square"}`}
+          key={`${type}-${label}`}
+          onClick={() => onSelect(index)}
+          type="button"
+          whileHover={{ rotate: index % 2 === 0 ? 2.5 : -2.5, scale: 1.06, zIndex: 10 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover max-sm:relative max-sm:inset-auto max-sm:h-28 max-sm:min-h-0 max-sm:w-full" src={arcMangaSource(panel, index < colorArcStoryCount)} />
+          <span className="absolute inset-x-0 bottom-0 bg-black/55 px-2 py-2 font-display text-[0.9rem] uppercase tracking-[0.08em] text-white max-sm:inset-y-0 max-sm:right-0 max-sm:bottom-auto max-sm:left-auto max-sm:flex max-sm:w-[min(42%,8rem)] max-sm:items-center max-sm:justify-center max-sm:text-center">
+            {isChapters ? label : isQuests ? `Quest ${String(index + 1).padStart(2, "0")}` : `Episode ${String(index + 1).padStart(2, "0")}`}
+          </span>
+        </motion.button>
+      ))}
     </div>
   );
 }
 
-function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: "worldline" | "logs" | "storyboard"; onSelect: (view: "worldline" | "logs" | "storyboard") => void; onOpenArr: () => void }) {
-  const [manga, setManga] = useState(false);
+function ArcEpisodePlayer({ selectedEpisode, onSelect, onBack }: { selectedEpisode: number; onSelect: (index: number) => void; onBack: () => void }) {
+  const selectedPanel = arcChapterCards[selectedEpisode]?.panel ?? 1;
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(34);
+  return (
+    <div className="min-w-0">
+      <button className="mb-2 cursor-pointer font-display text-sm uppercase tracking-[0.08em] text-white/65 hover:text-white" onClick={onBack} type="button">
+        ← Episodes
+      </button>
+      <div className="grid min-w-0 grid-cols-1 md:grid-cols-[minmax(0,1fr)_8rem] md:gap-x-3">
+        <div className="group relative aspect-video min-w-0">
+          <ArcVideoPanel className="h-full w-full" colorized={selectedEpisode < colorArcStoryCount} manga panel={selectedPanel} />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-black/60 px-3 py-2 opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100">
+            <div className="flex items-center gap-3">
+              <button aria-label={playing ? "Pause video" : "Play video"} className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-full bg-white/90 text-black transition-transform hover:scale-105" onClick={() => setPlaying((current) => !current)} type="button">
+                {playing ? <FiPause aria-hidden="true" className="size-4" /> : <FiPlay aria-hidden="true" className="size-4 translate-x-px" />}
+              </button>
+              <input aria-label="Video progress" className="h-1 min-w-0 flex-1 accent-white" max="100" min="0" onChange={(event) => setProgress(Number(event.target.value))} type="range" value={progress} />
+              <span className="shrink-0 font-mono text-[0.55rem] tabular-nums text-white/75">00:{String(Math.round(progress)).padStart(2, "0")} / 01:00</span>
+              <FiVolume2 aria-hidden="true" className="hidden size-4 shrink-0 text-white/75 sm:block" />
+              <FiMaximize2 aria-hidden="true" className="hidden size-4 shrink-0 text-white/75 sm:block" />
+            </div>
+          </div>
+        </div>
+        <div className="mt-2 font-display text-sm uppercase tracking-[0.08em] text-white md:col-start-1 md:row-start-2">Episode {String(selectedEpisode + 1).padStart(2, "0")}</div>
+        <div aria-label="Episode thumbnails" className="mt-3 flex min-w-0 max-h-[28rem] flex-col gap-2 overflow-y-auto overscroll-contain md:col-start-2 md:row-start-1 md:mt-0 md:h-0 md:max-h-none md:min-h-full md:pl-1">
+          {arcChapterCards.map(({ panel }, index) => (
+            <motion.button
+              aria-label={`Select episode ${String(index + 1).padStart(2, "0")}`}
+              aria-pressed={selectedEpisode === index}
+              className={`relative z-0 aspect-video w-full min-w-0 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-black text-left ${selectedEpisode === index ? "border-white" : "border-black/80"}`}
+              key={`player-episode-${index}`}
+              onClick={() => onSelect(index)}
+              type="button"
+              whileHover={{ rotate: index % 2 === 0 ? 1 : -1, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="" aria-hidden="true" className="h-full w-full object-cover" src={arcMangaSource(panel, index < colorArcStoryCount)} />
+              <span className="absolute inset-x-0 bottom-0 bg-black/75 px-1.5 py-1 font-display text-[0.6rem] uppercase tracking-[0.06em] text-white">
+                EP {String(index + 1).padStart(2, "0")}
+              </span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: ArcView; onSelect: (view: ArcView) => void; onOpenArr: () => void }) {
+  const [worldlineMode, setWorldlineMode] = useState<"manga" | "chapters" | "quests" | "episodes">("manga");
+  const [selectedChapter, setSelectedChapter] = useState(0);
+  const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
   return (
     <section aria-label="Campaign stories" className="mt-3">
       <div className="flex w-full justify-end" aria-label="Campaign stories views" role="tablist">
         <div className="flex items-center rounded-full border border-white/35 p-0.5">
-          {(["worldline", "storyboard", "logs"] as const).map((option) => (
-            <button key={option} type="button" role="tab" aria-selected={view === option} aria-controls="arc-view-content" id={`arc-${option}-tab`} onClick={() => onSelect(option)} className={`relative cursor-pointer rounded-full px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${view === option ? "text-black" : "text-white/55 hover:text-white"}`}>
-              {view === option && <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white" layoutId="arc-view-fill" transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} />}
+          {(["worldline", "logs"] as const).map((option) => (
+            <button key={option} type="button" role="tab" aria-selected={option === "worldline" ? view !== "logs" : view === "logs"} aria-controls="arc-view-content" id={`arc-${option}-tab`} onClick={() => onSelect(option)} className={`relative cursor-pointer rounded-full px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white ${(option === "worldline" ? view !== "logs" : view === "logs") ? "text-black" : "text-white/55 hover:text-white"}`}>
+              {(option === "worldline" ? view !== "logs" : view === "logs") && <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white" layoutId="arc-view-fill" transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} />}
               <span className="relative z-10">{option}</span>
             </button>
           ))}
         </div>
       </div>
-      <div className="mt-3 [&>*]:mt-0" id="arc-view-content" role="tabpanel" aria-labelledby={`arc-${view}-tab`}>
-        {view === "logs" ? <DayLogContent onOpenArr={onOpenArr} /> : view === "storyboard" ? (
-          <div className="w-full border border-white/20 p-[clamp(1.25rem,3vw,2.5rem)]"><StoryboardContent /></div>
-        ) : <div><button aria-pressed={manga} className={`mb-3 cursor-pointer rounded-full border px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${manga ? "border-white bg-white text-black" : "border-white/35 text-white/60 hover:border-white hover:text-white"}`} onClick={() => setManga((current) => !current)} type="button">Manga</button><ArcPanelLayouts manga={manga} /></div>}
+      <div className="mt-3 [&>*]:mt-0" id="arc-view-content" role="tabpanel" aria-labelledby={`arc-${view === "logs" ? "logs" : "worldline"}-tab`}>
+        {view === "logs" ? <DayLogContent onOpenArr={onOpenArr} /> : (
+          <div>
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <div aria-label="Story collections" className="flex items-center rounded-full border border-white/35 p-0.5" role="tablist">
+                {(["chapters", "quests"] as const).map((option) => (
+                  <button
+                    aria-selected={view === "worldline" && worldlineMode === option}
+                    className={`relative cursor-pointer rounded-full px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-white ${view === "worldline" && worldlineMode === option ? "text-black" : "text-white/60 hover:text-white"}`}
+                    key={option}
+                    onClick={() => { onSelect("worldline"); setSelectedEpisode(null); setWorldlineMode(option); }}
+                    role="tab"
+                    type="button"
+                  >
+                    {view === "worldline" && worldlineMode === option && <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white" layoutId="arc-story-collection-fill" transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }} />}
+                    <span className="relative z-10">{option}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                aria-label="Show episodes"
+                aria-pressed={view === "worldline" && worldlineMode === "episodes"}
+                className={`grid size-8 cursor-pointer place-items-center rounded-full border transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-white ${view === "worldline" && worldlineMode === "episodes" ? "border-white bg-white text-black" : "border-white/35 text-white/60 hover:border-white hover:text-white"}`}
+                onClick={() => { onSelect("worldline"); setWorldlineMode((current) => view === "worldline" && current === "episodes" ? "manga" : "episodes"); setSelectedEpisode(null); }}
+                title="Episodes"
+                type="button"
+              >
+                <FiFilm aria-hidden="true" className="size-4" />
+              </button>
+              <div className="flex items-center gap-2">
+                {(["storyboard", "storyboard-v2"] as const).map((option) => (
+                  <button
+                    aria-pressed={view === option}
+                    className={`cursor-pointer whitespace-nowrap rounded-full border px-3 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-1 focus-visible:outline-white ${view === option ? "border-white bg-white text-black" : "border-white/35 text-white/60 hover:border-white hover:text-white"}`}
+                    key={option}
+                    onClick={() => onSelect(option)}
+                    type="button"
+                  >
+                    {option === "storyboard" ? "Storyboard" : "Storyboard v.2"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {view === "storyboard" ? <div className="w-full border border-white/20 p-[clamp(1.25rem,3vw,2.5rem)]"><StoryboardContent /></div> : view === "storyboard-v2" ? <StoryboardV2 /> : worldlineMode === "chapters" || worldlineMode === "quests" ? <ArcStoryGrid onSelect={(index) => { setSelectedChapter(index); setWorldlineMode("manga"); }} type={worldlineMode} /> : worldlineMode === "episodes" ? selectedEpisode === null ? <ArcStoryGrid onSelect={(index) => setSelectedEpisode(index)} type="episodes" /> : <ArcEpisodePlayer onBack={() => setSelectedEpisode(null)} onSelect={setSelectedEpisode} selectedEpisode={selectedEpisode} /> : <ArcPanelLayouts colorized={selectedChapter < colorArcStoryCount} manga />}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -1010,7 +1132,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
           APP VERSION 0.1.0
         </header>
       )}
-      <StateFigureNavigation activeView={displayedAppView} showPlayback={viewOpen && displayedAppView === "arc" && arcView === "worldline" && !campaignSelected} inlineDiagram={viewOpen && displayedAppView === "admin"} navigationHome={navigationHome} onReturn={() => setNavigationHome(true)} onSelect={(view) => { selectAppView(view); setNavigationHome(false); }} />
+      <StateFigureNavigation activeView={displayedAppView} inlineDiagram={viewOpen && displayedAppView === "admin"} navigationHome={navigationHome} onReturn={() => setNavigationHome(true)} onSelect={(view) => { selectAppView(view); setNavigationHome(false); }} />
 
       <AnimatePresence initial={false}>
       {viewOpen && <motion.div animate={{ opacity: 1 }} className="w-full" exit={{ opacity: 0 }} initial={{ opacity: 0 }} key="stats-view-content" transition={{ duration: 0.2 }}>
@@ -1160,7 +1282,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
                               onClick={() => setArrOpen(true)}
                               type="button"
                             >
-                              <FiVideo aria-hidden="true" className="size-5" />
+                              <FiFilm aria-hidden="true" className="size-5" />
                             </button>
                           </li>
                         ))}
@@ -1249,7 +1371,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
 
       {displayedAppView === "arc" && (
         <section aria-label="ARC" className="w-full">
-          <div className="relative mb-3 w-full pl-12 [&>section]:mb-0">
+          <div className="relative mb-3 w-full pl-16 [&>section]:mb-0">
             <div className="absolute left-0 top-0 h-full aspect-square overflow-hidden rounded-full border border-white/25 bg-white/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Portfolio profile portrait" className="h-full w-full object-cover" src={portrait.src} />
@@ -1258,7 +1380,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
           </div>
           {campaignSelected ? (
             <section aria-label="Campaign details" className="mt-3 [&>*]:mt-0">
-              <CampaignLeaderboardPlaceholder onSelect={setSelectedCampaign} selectedCampaign={selectedCampaign} />
+              <CampaignDetailsContent onSelect={setSelectedCampaign} selectedCampaign={selectedCampaign} />
             </section>
           ) : (
             <ArcStoriesContent view={arcView} onSelect={setArcView} onOpenArr={() => setArrOpen(true)} />

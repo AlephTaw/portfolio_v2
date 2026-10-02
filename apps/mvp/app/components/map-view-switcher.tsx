@@ -30,6 +30,15 @@ export function MapViewSwitcher() {
   );
 }
 
+export function WorldTreeShortcut() {
+  const openView = useOpenActionsView();
+  return <button type="button" aria-label="Open World Tree" title="World Tree" onClick={() => openView("world-tree")} className="relative grid size-10 shrink-0 cursor-pointer place-items-center rounded-[4px] bg-black text-white/55 transition-colors hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img alt="" aria-hidden="true" className="size-[1.875rem] rounded-full object-contain" src={cognitiveNetworkMap.src} />
+    <AttentionCountBadge count={worldTreeNotifications.length} />
+  </button>;
+}
+
 export function ActionsChatToggle({ visible, onToggle }: { visible?: boolean; onToggle?: () => void } = {}) {
   const terminal = useActionsView();
   const chatVisible = visible ?? terminal.chatVisible;

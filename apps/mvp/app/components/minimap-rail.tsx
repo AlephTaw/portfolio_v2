@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { FiArrowLeft, FiPause, FiPlay } from "react-icons/fi";
 import { useActivityWorkspace } from "./activity-workspace-context";
 import { useChatConversation } from "./chat-conversations";
-import { MapViewSwitcher, WorldGridViewButton } from "./map-view-switcher";
+import { WorldGridViewButton } from "./map-view-switcher";
 import { useActionsView } from "./actions-view-context";
 
 // Toggle bottom (3.75rem) + its height (2.5rem) + two icon heights (5rem).
@@ -78,7 +78,7 @@ export function MinimapRail() {
     {showRail && <aside aria-label="Application navigation" className="pointer-events-none fixed inset-0 z-[160]">
       <div className="flex h-dvh w-full justify-end" style={{ paddingRight: "var(--rail-edge-inset)" }}>
         <nav aria-label="Page navigation" className="relative z-[160] flex h-dvh w-10 flex-col items-center">
-          <div className="pointer-events-auto absolute right-[5px]" style={{ bottom: "calc(var(--composer-height) + 3.75rem)" }}><MapViewSwitcher /></div>
+          <div aria-hidden="true" className="absolute right-[5px] grid size-10 place-items-center" style={{ bottom: "calc(var(--composer-height) + 3.75rem)" }}><span className="size-6 rounded-full bg-white/40" /></div>
           {showGridToggle && (
             <div className="pointer-events-auto absolute right-[5px]" style={{ bottom: railBackButtonBottom }}>
               <WorldGridViewButton />

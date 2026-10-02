@@ -14,7 +14,7 @@ export function ArcStatusLine() {
   const { view, chatVisible } = useActionsView();
   const { notesVisible, setNotesVisible, editorOpen, displayedAppView, navigationHome } = useStateView();
   const showEditor = view === "code-preview" || chatVisible;
-  const showSystemsHeading = displayedAppView === "os" && !navigationHome && !editorOpen && (pathname === "/state" || (pathname === "/actions" && view === "stats"));
+  const showSystemsHeading = (pathname === "/actions" && view === "systems") || (displayedAppView === "os" && !navigationHome && !editorOpen && (pathname === "/state" || (pathname === "/actions" && view === "stats")));
   const [now, setNow] = useState(() => Date.now());
   const { activeActivity } = useActiveActivity();
   const arcDay = getArcDay(getArcTimeRemaining(now).days);

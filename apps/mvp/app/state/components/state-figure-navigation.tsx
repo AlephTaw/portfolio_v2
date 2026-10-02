@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { FiPause } from "react-icons/fi";
 import type { StateAppView } from "./state-view-toolbar";
 import { adminCharacterDiagramDestinations } from "./admin-character-diagram-layout";
 
@@ -40,10 +39,9 @@ const railBottom = "calc(var(--composer-height) + 0.75rem)";
 const characterBottom = `calc(${railBottom} + 5.8125rem)`;
 const dockedMenuHeight = dockedDestinations.length * 2.625 + (dockedDestinations.length - 1) * 0.375 + 1.5;
 
-export function StateFigureNavigation({ activeView, navigationHome, onSelect, inlineDiagram = false, fullDiagram = false, showPlayback = false, onInspectLabel }: { activeView: StateAppView; navigationHome: boolean; onReturn: () => void; onSelect: (view: StateAppView) => void; inlineDiagram?: boolean; fullDiagram?: boolean; showPlayback?: boolean; onInspectLabel?: (view: StateAppView) => void }) {
+export function StateFigureNavigation({ activeView, navigationHome, onSelect, inlineDiagram = false, fullDiagram = false, onInspectLabel }: { activeView: StateAppView; navigationHome: boolean; onReturn: () => void; onSelect: (view: StateAppView) => void; inlineDiagram?: boolean; fullDiagram?: boolean; onInspectLabel?: (view: StateAppView) => void }) {
   const compactDiagram = inlineDiagram && !fullDiagram;
   const [phase, setPhase] = useState<FigurePhase>(navigationHome ? "home" : "docked");
-  const [playing, setPlaying] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [flight, setFlight] = useState<FigureFlight | null>(null);
   const navRef = useRef<HTMLElement | null>(null);
@@ -138,22 +136,6 @@ export function StateFigureNavigation({ activeView, navigationHome, onSelect, in
       style={{ height: fullDiagram ? "auto" : inlineDiagram ? "6rem" : phase === "docked" ? 0 : "min(26rem, 58dvh)" }}
     >
       <div aria-hidden="true" className="pointer-events-none fixed opacity-0" ref={dockAnchorRef} style={{ bottom: characterBottom, height: dockedWidth, right: railRight, width: dockedWidth }} />
-      {showPlayback && phase === "docked" && (
-        <button
-          aria-label={playing ? "Pause Worldline" : "Play Worldline"}
-          aria-pressed={playing}
-          className={`fixed z-30 grid size-10 cursor-pointer place-items-center rounded-full border-2 transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${playing ? "border-white bg-white text-black" : "border-white/45 bg-black text-white/70 hover:border-white/75 hover:text-white"}`}
-          onClick={() => setPlaying((current) => !current)}
-          style={{ bottom: `calc(${railBottom} + ${dockedMenuHeight + 1}rem)`, right: `calc(${railRight} + 1rem)` }}
-          type="button"
-        >
-          {playing ? <FiPause aria-hidden="true" className="size-5" /> : (
-            <svg aria-hidden="true" className="size-5" viewBox="0 0 10 10">
-              <path d="M3 1.75 8 5 3 8.25Z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.5" />
-            </svg>
-          )}
-        </button>
-      )}
       <motion.div
         animate={{ opacity: labelsVisible ? 1 : 0 }}
         aria-hidden={!labelsVisible}

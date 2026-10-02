@@ -35,7 +35,17 @@ export function usePinScrollThumb(enabled = true) {
     const container = scrollRef.current;
     if (!container) return;
     const onScroll = () => updateThumb(true);
-    const resizeObserver = new ResizeObserver(() => updateThumb());
+    // Keep layout reads/writes out of ResizeObserver delivery. Multiple observed
+    // children can resize together while a pane divider is being dragged.
+    let frame = 0;
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        updateThumb();
+      });
+    };
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
     const observedChildren = new Set<Element>();
     const observeChildren = () => {
       const currentChildren = new Set(container.children);
@@ -54,7 +64,7 @@ export function usePinScrollThumb(enabled = true) {
     };
     const mutationObserver = new MutationObserver(() => {
       observeChildren();
-      updateThumb();
+      scheduleUpdate();
     });
     container.addEventListener("scroll", onScroll, { passive: true });
     resizeObserver.observe(container);
@@ -64,6 +74,7 @@ export function usePinScrollThumb(enabled = true) {
       container.removeEventListener("scroll", onScroll);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
+      cancelAnimationFrame(frame);
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
   }, [enabled, updateThumb]);

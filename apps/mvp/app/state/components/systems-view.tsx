@@ -67,9 +67,16 @@ export function SystemsView() {
             >
               {viewMode === "manifest" ? "View Factory" : "View Manifest"}
             </button>
-            <div aria-label="Systems layout" className="flex gap-1" role="group">
-              {(["grid", "list"] as const).map((mode) => <button aria-label={`${mode === "grid" ? "Grid" : "List"} view`} aria-pressed={displayMode === mode} className={`grid size-9 cursor-pointer place-items-center rounded-full transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-white disabled:cursor-default disabled:opacity-35 ${displayMode === mode ? "bg-white text-black" : "text-white/50 hover:bg-white/10 hover:text-white"}`} disabled={viewMode === "factory"} key={mode} onClick={() => setDisplayMode(mode)} type="button">{mode === "grid" ? <FiGrid aria-hidden="true" className="size-4" /> : <FiList aria-hidden="true" className="size-4" />}</button>)}
-            </div>
+            <button
+              aria-label={`Switch to ${displayMode === "list" ? "grid" : "list"} view`}
+              className="grid size-9 cursor-pointer place-items-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-white disabled:cursor-default disabled:opacity-35"
+              disabled={viewMode === "factory"}
+              onClick={() => setDisplayMode((current) => current === "list" ? "grid" : "list")}
+              title={`Switch to ${displayMode === "list" ? "grid" : "list"} view`}
+              type="button"
+            >
+              {displayMode === "list" ? <FiGrid aria-hidden="true" className="size-4" /> : <FiList aria-hidden="true" className="size-4" />}
+            </button>
           </div>
           {viewMode === "factory" ? (
             <section aria-label="Systems factory" className="py-3">

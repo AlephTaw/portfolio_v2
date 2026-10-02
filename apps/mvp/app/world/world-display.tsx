@@ -9,7 +9,7 @@ import { ActionsWorkspace } from "../components/activity-workspace";
 import { StoreContent } from "../components/bounty-board";
 import { PinScrollArea } from "../components/pin-scroll-area";
 import { openWorkshopEvent, WORLD_VIEW_STATE_KEY } from "../components/page-transition-events";
-import { CampaignActivitySummary, StatsLevelsContent } from "../state/state-display";
+import { StatsLevelsContent } from "../state/state-display";
 
 const worldLocations = ["Guild", "Inventory", "Store", "Workshop", "Dungeon"] as const;
 type WorldLocation = (typeof worldLocations)[number];
@@ -538,7 +538,6 @@ export function WorldDisplay({
                   onMouseLeave={() => setWorldTreeHover(null)}
                   onMouseMove={(event) => setWorldTreeHover({ x: event.clientX, y: event.clientY })}
                 >
-                  <div className="mt-12 mb-3"><CampaignActivitySummary summary="quest" /></div>
                   <WorldImage />
                   {worldTreeHover && <WorldTreeHoverPreview x={worldTreeHover.x} y={worldTreeHover.y} />}
                 </div>

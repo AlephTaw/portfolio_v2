@@ -17,6 +17,8 @@ import { SplitResizeHandle } from "./split-resize-handle";
 import { SplitWorkspace } from "./split-workspace";
 import { ActionsViewProvider } from "./actions-view-context";
 import { StateViewProvider } from "../state/components/state-view-context";
+import { applyTheme, getTheme, themeStorageKey } from "./theme-preference";
+import { ComposerShortcutsProvider } from "./composer-shortcuts";
 
 const privateRoutes = new Set(["/admin", "/interactions", "/state", "/actions", "/world", "/chat", "/stats", "/terminal"]);
 
@@ -33,7 +35,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
         <ActionsViewProvider>
           <ChatConversationProvider>
           <StateViewProvider>
-            <PrivateAppShellContent>{children}</PrivateAppShellContent>
+            <ComposerShortcutsProvider><PrivateAppShellContent>{children}</PrivateAppShellContent></ComposerShortcutsProvider>
           </StateViewProvider>
           </ChatConversationProvider>
         </ActionsViewProvider>
@@ -59,6 +61,15 @@ function PrivateAppShellContent({ children }: { children: ReactNode }) {
   const [composerDock, setComposerDock] = useState<HTMLElement | null>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const revealRightRail = useCallback(() => setRightRailHidden(false), []);
+
+  useEffect(() => {
+    applyTheme(getTheme(), false);
+    const syncTheme = (event: StorageEvent) => {
+      if (event.key === themeStorageKey || event.key === null) applyTheme(getTheme(), false);
+    };
+    window.addEventListener("storage", syncTheme);
+    return () => window.removeEventListener("storage", syncTheme);
+  }, []);
 
   useEffect(() => {
     const prepareTransition = (event: Event) => {

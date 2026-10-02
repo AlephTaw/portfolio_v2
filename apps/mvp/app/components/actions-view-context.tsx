@@ -5,7 +5,7 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { useActivityWorkspace } from "./activity-workspace-context";
 import { useSplitView } from "./split-view-context";
 
-export type ActionsView = "code" | "notes-hidden" | "notes" | "code-preview" | "communications" | "world-tree" | "world-grid" | "world-heatmap" | "minimap" | "inventory" | "stats" | "apps";
+export type ActionsView = "code" | "notes-hidden" | "notes" | "code-preview" | "communications" | "world-tree" | "world-grid" | "world-heatmap" | "minimap" | "inventory" | "stats" | "apps" | "running-tasks" | "systems";
 
 export function isSpeedrunView(view: ActionsView) {
   return view === "notes-hidden" || view === "notes" || view === "code-preview";

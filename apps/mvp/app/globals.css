@@ -1,8 +1,21 @@
 @import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
 
 :root {
   --background: #000000;
   --foreground: #f5f5f5;
+}
+
+html[data-theme="light"] {
+  --background: #f7f7f5;
+  --foreground: #1b1b1b;
+  --color-black: var(--background);
+  --color-white: var(--foreground);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -10,6 +23,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bangers);
 }
 
 body {
@@ -40,7 +54,7 @@ body {
 
 /* Native scrolling controls cannot host an overlay thumb; keep their track pin-thin. */
 textarea {
-  scrollbar-color: rgb(255 255 255 / 70%) transparent;
+  scrollbar-color: color-mix(in srgb, var(--foreground) 70%, transparent) transparent;
   scrollbar-width: thin;
 }
 
@@ -53,11 +67,91 @@ textarea::-webkit-scrollbar-track {
 }
 
 textarea::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 70%);
+  background: color-mix(in srgb, var(--foreground) 70%, transparent);
 }
 
 .arc-summary-container {
   container: arc-summary / inline-size;
+}
+
+.storyboard-v2-flow {
+  --xy-background-color: var(--background);
+  --xy-controls-button-background-color: var(--background);
+  --xy-controls-button-background-color-hover: color-mix(in srgb, var(--foreground) 12%, var(--background));
+  --xy-controls-button-color: var(--foreground);
+  --xy-controls-button-color-hover: var(--foreground);
+  --xy-controls-button-border-color: color-mix(in srgb, var(--foreground) 25%, transparent);
+}
+
+.arc-bubble {
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-bangers), Impact, sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  position: absolute;
+  z-index: 1;
+}
+
+.arc-narrator-caption {
+  color: #000;
+  font-family: var(--font-bangers), Impact, sans-serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  transform: skewX(-5deg) rotate(-1deg);
+}
+
+.arc-bubble-speech {
+  border-radius: 48% 52% 49% 51% / 53% 46% 54% 47%;
+  padding: 0.7rem 0.85rem 0.8rem;
+  transform: rotate(2deg);
+}
+
+.arc-bubble-speech::after {
+  background: #fff;
+  border-bottom: 2px solid #000;
+  border-right: 2px solid #000;
+  bottom: -0.45rem;
+  content: "";
+  height: 0.7rem;
+  left: 22%;
+  position: absolute;
+  transform: rotate(28deg) skew(-12deg);
+  width: 0.7rem;
+}
+
+.arc-bubble-thought {
+  border-radius: 51% 49% 53% 47% / 47% 54% 46% 53%;
+  padding: 0.7rem 0.9rem;
+  transform: rotate(-3deg);
+}
+
+.arc-bubble-thought::before,
+.arc-bubble-thought::after {
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 9999px;
+  content: "";
+  position: absolute;
+}
+
+.arc-bubble-thought::before {
+  bottom: -0.7rem;
+  height: 0.55rem;
+  left: 24%;
+  width: 0.55rem;
+}
+
+.arc-bubble-thought::after {
+  bottom: -1.25rem;
+  height: 0.32rem;
+  left: 16%;
+  width: 0.32rem;
 }
 
 .arc-summary-heading,

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Bangers, Geist_Mono, Inter } from "next/font/google";
 import { PrivateAppShell } from "./components/private-app-shell";
 import "./globals.css";
 
@@ -11,6 +11,12 @@ const inter = Inter({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const bangers = Bangers({
+  variable: "--font-bangers",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${geistMono.variable} ${bangers.variable} antialiased`}
       >
         <PrivateAppShell>{children}</PrivateAppShell>
       </body>

@@ -11,6 +11,8 @@ import { PinScrollArea } from "./pin-scroll-area";
 import { useQuestCommands } from "./quest-terminal/use-quest-commands";
 import { activityCategories } from "./quest-terminal/use-active-activity";
 import { type ActionsView } from "./actions-view-context";
+import { TaskRunnerPage } from "./running-tasks";
+import { SystemsView } from "../state/components/systems-view";
 
 const systems = [
   { name: "Advocate", Icon: FiShield },
@@ -87,6 +89,16 @@ export function ActionsSelectedView({ view }: { view: Exclude<ActionsView, "code
 
   if (view === "inventory") {
     return <PinScrollArea aria-label="Inventory" className="pb-24 pt-8" wrapperClassName="min-h-0 flex-1"><InventoryContent /></PinScrollArea>;
+  }
+
+  if (view === "running-tasks") {
+    return <PinScrollArea aria-label="Tasks view" className="pb-24 pt-8" wrapperClassName="min-h-0 flex-1">
+      <TaskRunnerPage />
+    </PinScrollArea>;
+  }
+
+  if (view === "systems") {
+    return <PinScrollArea aria-label="Systems view" className="pb-24" wrapperClassName="min-h-0 flex-1"><SystemsView /></PinScrollArea>;
   }
 
   return (
