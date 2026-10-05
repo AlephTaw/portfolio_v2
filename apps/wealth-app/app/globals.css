@@ -1,0 +1,84 @@
+@import "tailwindcss";
+:root {
+  color-scheme: dark;
+  --background: #02030f;
+  --foreground: #f5f5f5;
+  --app-accent: #353f89;
+}
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+button, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid #9daaf0; outline-offset: 4px; }
+.wealth-page {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #151936 0%, #0b0e1e 14%, #020306 28%, #000 42%);
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.view-glass {
+  background: rgb(255 255 255 / 2%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
+}
+.terminal-input { background: #16171c; }
+.terminal-input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--app-accent) 65%, white);
+  outline-offset: 2px;
+}
+.actions-icon-dock {
+  background: rgb(17 17 21 / 76%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 20%);
+}
+.actions-create-button { background: var(--app-accent); }
+.actions-create-button:hover { background: color-mix(in srgb, var(--app-accent) 90%, white); }
+.terminal-scroll { scrollbar-width: thin; scrollbar-color: #35363d transparent; }
+
+.planner { scrollbar-width: thin; scrollbar-color: #35363d transparent; }
+.planner-button {
+  min-height: 44px; padding: 8px 12px; border-radius: 10px;
+  background: rgb(255 255 255 / 5%); color: rgb(255 255 255 / 65%);
+  border: 1px solid transparent; font-size: 12px; cursor: pointer;
+}
+.planner-button:hover { background: rgb(255 255 255 / 9%); }
+.planner-button[aria-selected="true"] { background: var(--app-accent); color: white; }
+.planner-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; font-size: 11px; color: rgb(255 255 255 / 60%); }
+.planner-field input, .planner-field select {
+  width: 100%; min-width: 0; max-width: 100%; min-height: 44px;
+  padding: 9px 8px; border: 1px solid rgb(255 255 255 / 12%); border-radius: 8px;
+  background: #16171c; color: #f5f5f5; font-size: 16px; color-scheme: dark;
+}
+.entry-editor, .window-detail { border-bottom: 1px solid rgb(255 255 255 / 8%); }
+.entry-editor summary::-webkit-details-marker, .window-detail summary::-webkit-details-marker { display: none; }
+.entry-editor summary::after, .window-detail summary::after { content: "+"; color: rgb(255 255 255 / 35%); }
+.entry-editor[open] summary::after, .window-detail[open] summary::after { content: "−"; }
+.funding-day {
+  min-height: 74px; padding: 5px 1px; border-top: 1px solid rgb(255 255 255 / 9%);
+  min-width: 0; color: #f5f5f5; cursor: pointer; text-align: center;
+}
+.funding-day.below { background: rgb(52 211 153 / 13%); }
+.funding-day.above { background: rgb(248 113 113 / 15%); }
+.funding-day.equal { background: rgb(255 255 255 / 4%); }
+.funding-day.inactive { color: rgb(255 255 255 / 30%); cursor: default; }
+.funding-day[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 65%); }
+.calendar-key { display: inline-block; height: 8px; width: 8px; margin-right: 5px; }
+.funding-bar { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 3px 4px; background: rgb(157 170 240 / 14%); color: rgb(255 255 255 / 65%); font-size: 11px; }
+.reserve-bar { background: rgb(255 255 255 / 5%); color: rgb(255 255 255 / 45%); }
+.journey .planner-button:disabled { opacity: 0.35; cursor: default; }
+.journey-timeline { margin-left: 6px; border-left: 1px solid rgb(232 121 249 / 30%); }
+.journey-marker { position: absolute; left: -5px; top: 4px; width: 9px; height: 9px; border-radius: 50%; }

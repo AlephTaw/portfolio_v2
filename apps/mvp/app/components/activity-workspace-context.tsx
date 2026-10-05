@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type Dispatch, type Rea
 import type { ActivityCategory } from "./quest-terminal/use-active-activity";
 import { activityWorkspaceStateEvent, toggleActivityWorkspaceEvent } from "./activity-workspace-events";
 
-type NavigationRequest = { id: number; action: "current" | "categories" | "task-grid" | "tasks" } | { id: number; action: "category"; category: ActivityCategory };
+type NavigationRequest = { id: number; action: "current" | "categories" | "task-grid" | "tasks" } | { id: number; action: "category"; category: ActivityCategory } | { id: number; action: "task"; taskId: string };
 type ActivityProgress = { category: ActivityCategory; completed: number; total: number };
 
 type ActivityWorkspaceContextValue = {
@@ -18,6 +18,7 @@ type ActivityWorkspaceContextValue = {
   requestCurrentActivity: () => void;
   requestActivityCategories: () => void;
   requestActivityCategory: (category: ActivityCategory) => void;
+  requestActivityTask: (taskId: string) => void;
   requestTaskGrid: () => void;
   requestActivityMap: () => void;
   activityMapOpen: boolean;
@@ -35,6 +36,7 @@ export function ActivityWorkspaceProvider({ children }: { children: ReactNode })
   const requestCurrentActivity = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "current" }));
   const requestActivityCategories = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "categories" }));
   const requestActivityCategory = (category: ActivityCategory) => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "category", category }));
+  const requestActivityTask = (taskId: string) => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "task", taskId }));
   const requestTaskGrid = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "task-grid" }));
   const requestActivityMap = () => setNavigationRequest((request) => ({ id: (request?.id ?? 0) + 1, action: "tasks" }));
 
@@ -62,7 +64,7 @@ export function ActivityWorkspaceProvider({ children }: { children: ReactNode })
   }, [activityOpen]);
 
   return (
-    <ActivityWorkspaceContext.Provider value={{ activityOpen, setActivityOpen, detailTaskId, setDetailTaskId, activityProgress, setActivityProgress, navigationRequest, requestCurrentActivity, requestActivityCategories, requestActivityCategory, requestTaskGrid, requestActivityMap, activityMapOpen, setActivityMapOpen }}>
+    <ActivityWorkspaceContext.Provider value={{ activityOpen, setActivityOpen, detailTaskId, setDetailTaskId, activityProgress, setActivityProgress, navigationRequest, requestCurrentActivity, requestActivityCategories, requestActivityCategory, requestActivityTask, requestTaskGrid, requestActivityMap, activityMapOpen, setActivityMapOpen }}>
       {children}
     </ActivityWorkspaceContext.Provider>
   );

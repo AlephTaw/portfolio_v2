@@ -12,19 +12,19 @@ export type DemoConversation = {
   id: string;
   title: string;
   description: string;
-  context: "contacts" | "guild";
+  context: "campaign" | "contacts" | "guild";
   kind: "overview" | "direct" | "guild";
   unread?: number;
   members?: string[];
 };
 
 export const demoConversations: DemoConversation[] = [
-  { id: "recent", title: "Recent chat", description: "Latest messages across conversations", context: "contacts", kind: "overview" },
-  { id: "history", title: "Full Chat History", description: "Every conversation, in order", context: "contacts", kind: "overview" },
+  { id: "recent", title: "Recent chat", description: "Latest messages across conversations", context: "campaign", kind: "overview" },
+  { id: "history", title: "Full Chat History", description: "Every conversation, in order", context: "campaign", kind: "overview" },
   { id: "dm:raphaelin", title: "Raphaelin", description: "Your guide", context: "contacts", kind: "direct", unread: 2 },
   { id: "dm:maya", title: "Maya Chen", description: "Design and build partner", context: "contacts", kind: "direct", unread: 1 },
   { id: "dm:leo", title: "Leo Ortiz", description: "Training partner", context: "contacts", kind: "direct" },
-  { id: "world", title: "World", description: "Worldline updates", context: "contacts", kind: "direct" },
+  { id: "world", title: "World", description: "Worldline updates", context: "campaign", kind: "direct" },
   { id: "guild", title: "Crucible Guild", description: "General guild channel", context: "guild", kind: "guild", unread: 3, members: ["Alex", "Raphaelin", "Maya", "Nora", "Leo"] },
   { id: "guild:workshop", title: "Workshop", description: "Share what you are building", context: "guild", kind: "guild", unread: 1, members: ["Alex", "Maya", "Nora", "Leo"] },
 ];

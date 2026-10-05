@@ -9,7 +9,7 @@ export type ActiveActivity = {
   taskId?: string;
 };
 
-export const activityCategories = ["Health", "Wealth", "Connection", "Sentience", "Competence", "Experience", "Quests"] as const;
+export const activityCategories = ["Health", "Wealth", "Connection", "Sentience", "Competence", "Purpose", "Experience", "Builds", "Quests"] as const;
 export type ActivityCategory = (typeof activityCategories)[number];
 
 const storageKey = "speedrun-irl:active-activity";

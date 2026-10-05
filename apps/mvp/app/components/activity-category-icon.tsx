@@ -1,4 +1,4 @@
-import { FiActivity, FiAward, FiBookOpen, FiFlag, FiTarget, FiTrendingUp, FiUsers } from "react-icons/fi";
+import { FiActivity, FiAward, FiBookOpen, FiCompass, FiFlag, FiTarget, FiTool, FiTrendingUp, FiUsers } from "react-icons/fi";
 import type { ActivityCategory } from "./quest-terminal/use-active-activity";
 
 const categoryIcons = {
@@ -7,7 +7,9 @@ const categoryIcons = {
   Connection: FiUsers,
   Sentience: FiBookOpen,
   Competence: FiTarget,
+  Purpose: FiCompass,
   Experience: FiAward,
+  Builds: FiTool,
   Quests: FiFlag,
 };
 

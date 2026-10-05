@@ -1,0 +1,7 @@
+{
+  "id": "/", "name": "Wealth", "short_name": "Wealth",
+  "description": "Bills, deadlines, and daily earning plans.",
+  "start_url": "/", "scope": "/", "display": "standalone",
+  "background_color": "#02030f", "theme_color": "#02030f",
+  "icons": [{ "src": "/icons/app.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

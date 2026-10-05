@@ -159,7 +159,7 @@ export function DraggableShortcut({ id, inDock = false, onActivate, selected = f
   </button>;
 }
 
-function CurrentActivityShortcut({ children }: { children: ReactNode }) {
+function CurrentActivityShortcut({ children, onActivate }: { children: ReactNode; onActivate?: () => void }) {
   const { dock, handlers } = useShortcutDrag(activityId, true);
   const elementRef = useRef<HTMLDivElement>(null);
   const handlePointer = useEffectEvent((event: globalThis.PointerEvent, handler: keyof typeof handlers) => {
@@ -167,7 +167,10 @@ function CurrentActivityShortcut({ children }: { children: ReactNode }) {
     if (!element) return;
     handlers[handler]({ currentTarget: element, pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY, isPrimary: event.isPrimary, button: event.button, stopPropagation: () => event.stopPropagation() });
   });
-  const handleClick = useEffectEvent((event: MouseEvent) => { if (dock.clickSuppressed()) { event.preventDefault(); event.stopPropagation(); } });
+  const handleClick = useEffectEvent((event: MouseEvent) => {
+    if (dock.clickSuppressed()) { event.preventDefault(); event.stopPropagation(); return; }
+    onActivate?.();
+  });
   const handleKey = useEffectEvent((event: KeyboardEvent) => {
       if (event.key === "Delete" || event.key === "Backspace") { event.preventDefault(); dock.remove(activityId); }
       if (event.altKey && (event.key === "ArrowLeft" || event.key === "ArrowRight")) { event.preventDefault(); dock.move(activityId, dock.order.indexOf(activityId) + (event.key === "ArrowLeft" ? -1 : 1)); }
@@ -201,8 +204,9 @@ function CurrentActivityShortcut({ children }: { children: ReactNode }) {
   return <div ref={elementRef} className="touch-none cursor-grab active:cursor-grabbing" title="Current activity · Drag to reorder or back to suggestions to remove">{children}</div>;
 }
 
-export function ComposerShortcutDock({ activitySlot, onNavigate, onSelectView, onSelectSplit, view, splitMode }: {
+export function ComposerShortcutDock({ activitySlot, onCurrentActivity, onNavigate, onSelectView, onSelectSplit, view, splitMode }: {
   activitySlot: ReactNode; onNavigate: (destination: SuggestedActionDestination) => void;
+  onCurrentActivity?: () => void;
   onSelectView: (view: ActionsView) => void; onSelectSplit: (mode: SplitMode) => void; view: ActionsView; splitMode: SplitMode;
 }) {
   const { order, drag } = useDock();
@@ -212,7 +216,7 @@ export function ComposerShortcutDock({ activitySlot, onNavigate, onSelectView, o
   return <div data-shortcut-dock data-page-swipe-ignore aria-label="Composer shortcuts" className="relative flex min-h-10 w-full min-w-0 items-center gap-0 overflow-x-auto">
     {order.map((id) => <div key={id} data-dock-item={id} className={`relative ${id === activityId ? "min-w-28 max-w-full flex-[0_1_auto]" : "shrink-0"} ${drag?.id === id ? "opacity-40" : ""}`}>
       {id !== drag?.id && drag?.index === dropOrder.indexOf(id) && marker}
-      {id === activityId ? <CurrentActivityShortcut>{activitySlot}</CurrentActivityShortcut> : (() => {
+      {id === activityId ? <CurrentActivityShortcut onActivate={onCurrentActivity}>{activitySlot}</CurrentActivityShortcut> : (() => {
         const shortcut = shortcuts.find((item) => item.id === id)!;
         return <DraggableShortcut id={id} inDock selected={id === "planning" ? activityOpen && activityMapOpen : "view" in shortcut ? view === shortcut.view : "mode" in shortcut ? splitMode === shortcut.mode : view === shortcut.destination} onActivate={() => { if ("destination" in shortcut) onNavigate(shortcut.destination); else if ("view" in shortcut) onSelectView(shortcut.view); else onSelectSplit(shortcut.mode); }} />;
       })()}

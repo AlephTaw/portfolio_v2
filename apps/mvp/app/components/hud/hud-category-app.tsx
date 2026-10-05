@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
+import { minimumViableDay } from "../mvd-protocol-data";
+export { minimumViableDay } from "../mvd-protocol-data";
 
 export type HudCategory =
   | "health"
@@ -91,19 +93,6 @@ function EmptyLog({ label }: { label: string }) {
   );
 }
 
-export const minimumViableDay = [
-  { category: "Fitness", items: ["10 toe touches", "10 pushups", "10 situps", "10 squats", "50 jumping jacks"] },
-  { category: "Sleep", items: ["7 hours"] },
-  { category: "Meal Prep", items: ["Oatmeal", "Rotisserie chicken", "Bread", "Grain", "Salad", "Water"] },
-  {
-    category: "Nutrition",
-    items: ["Micros", "Macros", "Calories"],
-    note: "One chicken breast, 4–5 cups fruits and veg, 64 oz water, oatmeal, protein shake",
-  },
-  { category: "Skin", items: ["Daily cleanser morning and night", "Sunscreen face & head (4 dots)"] },
-  { category: "Mouth", items: ["Brush morning", "Floss morning", "Brush at night", "Floss at night", "Mouthwash at night"] },
-  { category: "Hair", items: ["5 min whole-scalp warmup massage"] },
-];
 
 function HealthSummary() {
   const [completedItems, setCompletedItems] = useState<string[]>([]);

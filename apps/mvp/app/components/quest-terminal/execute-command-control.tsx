@@ -326,7 +326,7 @@ export function ExecuteCommandControl({ onDockElementChange, onSuggestionsOpenCh
     return (
       <div className="group/composer relative flex w-full min-w-0 flex-col">
         <div aria-label="Composer dock" className="mb-1 flex min-h-7 w-full shrink-0 flex-col justify-center px-2">
-          <ComposerShortcutDock view={view} splitMode={splitMode} onNavigate={executeSuggestedNavigation} onSelectView={executeSuggestedViewAction} onSelectSplit={executeSuggestedSplitAction} activitySlot={<div id="composer-activity-summary-slot" className="min-w-0 empty:hidden" ref={onDockElementChange} />} />
+          <ComposerShortcutDock view={view} splitMode={splitMode} onCurrentActivity={requestCurrentActivity} onNavigate={executeSuggestedNavigation} onSelectView={executeSuggestedViewAction} onSelectSplit={executeSuggestedSplitAction} activitySlot={<div id="composer-activity-summary-slot" className="min-w-0 empty:hidden" ref={onDockElementChange} />} />
           {inputFocused && !editingActivityName && <span className="font-sans text-[0.65rem] text-white/55" id="composer-prefix-hint">Start with <span className="text-white">@</span> for chat or <span className="text-white">/</span> for a command</span>}
         </div>
         <form

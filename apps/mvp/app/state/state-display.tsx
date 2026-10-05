@@ -1,7 +1,8 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useId, useRef, useState } from "react";
+import { CharacterStatsSummary, CharacterViewContent, StatChart, type Stat } from "../components/character-view-content";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { FiCheck, FiChevronDown, FiFilm, FiMaximize2, FiPause, FiPlay, FiVolume2 } from "react-icons/fi";
 import portrait from "../../../agent/public/assets/live-stats-profile.png";
 import { getArcDay, getArcTimeRemaining } from "../components/arc-time";
@@ -11,11 +12,40 @@ import { HudCategoryApp, type HudCategory } from "../components/hud";
 import { PinScrollArea } from "../components/pin-scroll-area";
 import { ExecuteCommandControl, QuestCommandHistory } from "../components/quest-terminal";
 import { type ActiveActivity, useActiveActivity } from "../components/quest-terminal/use-active-activity";
-import { StoryboardBuilder, StoryboardContent, StoryboardV2 } from "../components/storyboard";
+import { StoryboardContent, StoryboardV2 } from "../components/storyboard";
 import { statsAppLabelTypography } from "./components/state-view-toolbar";
 import { StateFigureNavigation } from "./components/state-figure-navigation";
 import { SystemsView } from "./components/systems-view";
+import { CampaignLeaderboard, CampaignPlayerSummary } from "../components/campaign-leaderboard";
+import { TaskPlan } from "../components/task-plan";
+import { TasksKanban } from "../components/tasks-kanban";
+import { InteractionsApp } from "../components/interactions-app";
+import { type ActivityTask } from "../components/activity-task-data";
 import { useStateView, type ArcView } from "./components/state-view-context";
+
+const arcPreviewImages = [
+  { src: "/arc-preview/robot-arms.png", mangaSrc: "/arc-preview/robot-arms-manga-color.webp", monochromeSrc: "/arc-preview/robot-arms-manga.webp", alt: "Robotic arms in a workshop" },
+  { src: "/arc-preview/rainbow.png", mangaSrc: "/arc-preview/rainbow-manga-color.webp", monochromeSrc: "/arc-preview/rainbow-manga.webp", alt: "Rainbow over forested mountains" },
+  { src: "/arc-preview/canyon.png", mangaSrc: "/arc-preview/canyon-manga-color.webp", monochromeSrc: "/arc-preview/canyon-manga.webp", alt: "Sunlit canyon beneath a blue sky" },
+];
+
+const colorArcStoryCount = 4;
+const arcMangaSource = (panel: number, colorized: boolean) => {
+  const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
+  return colorized ? image.mangaSrc : image.monochromeSrc;
+};
+
+// Simulated Crucible · Act I sequence for previewing story treatments.
+const arcPanelStory = [
+  { setting: "DAY 49 · WORKSHOP", caption: "The trial began with a machine that could almost choose." },
+  { setting: "09:42 · RIDGE", bubble: { type: "thought", text: "I think I can hold it..." } },
+  { setting: "10:18 · THE PASS", bubble: { type: "speech", text: "You take the left side." } },
+  { setting: "14:06 · WORKSHOP", caption: "One adjustment. Another attempt." },
+  { setting: "16:21 · RIDGE" },
+  { setting: "17:03 · CANYON" },
+  { setting: "DUSK · WORKSHOP", caption: "This time, both arms moved together." },
+  { setting: "17:40 · RIDGE", caption: "Beyond the test, a path opened." },
+];
 
 type AppSummary = {
   id: HudCategory;
@@ -24,36 +54,6 @@ type AppSummary = {
   detail: string;
 };
 
-type Stat = {
-  label: string;
-  status: string;
-  points: string;
-  chartLabel: string;
-  chartValue: number;
-  chartDisplay: string;
-};
-
-const syncRatioStatus = "84%";
-const streakStatus = "6 days";
-
-const stats: Stat[] = [
-  { label: "Sync Ratio", status: syncRatioStatus, points: "", chartLabel: "Sync Ratio", chartValue: 84, chartDisplay: "84%" },
-  { label: "Streak", status: streakStatus, points: "", chartLabel: "Sync Ratio", chartValue: 84, chartDisplay: "84%" },
-  { label: "Experience", status: "—", points: "0 XP", chartLabel: "Experience", chartValue: 0, chartDisplay: "0 XP" },
-  { label: "Health", status: "hours/24", points: "0 HP", chartLabel: "Health", chartValue: 0, chartDisplay: "0 / 24" },
-  { label: "Wealth", status: "—", points: "", chartLabel: "Wealth", chartValue: 0, chartDisplay: "0" },
-  { label: "Sentience", status: "—", points: "0 AP · 0 PP · 0 MP", chartLabel: "Sentience", chartValue: 0, chartDisplay: "0 AP · 0 PP · 0 MP" },
-  { label: "Skills", status: "—", points: "0 SP", chartLabel: "Skills", chartValue: 0, chartDisplay: "0 SP" },
-  { label: "Titles", status: "—", points: "", chartLabel: "Titles", chartValue: 0, chartDisplay: "0" },
-  { label: "Builds", status: "0", points: "0 BP", chartLabel: "Builds", chartValue: 0, chartDisplay: "0 BP" },
-];
-
-const sentienceStats: Stat[] = [
-  { label: "Interaction", status: "hours/24", points: "0 KP", chartLabel: "Interaction", chartValue: 0, chartDisplay: "0 / 24" },
-  { label: "Personality", status: "—", points: "0 AP", chartLabel: "Personality", chartValue: 0, chartDisplay: "0 AP" },
-  { label: "Perception", status: "—", points: "0 PP", chartLabel: "Perception", chartValue: 0, chartDisplay: "0 PP" },
-  { label: "Volition", status: "hours/24", points: "0 MP", chartLabel: "Volition", chartValue: 0, chartDisplay: "0 / 24" },
-];
 
 const connectionCategories = ["Family", "Friends", "Professional", "Roster", "Guild", "Acquaintance", "Proselyte"] as const;
 type ConnectionCategory = (typeof connectionCategories)[number];
@@ -483,63 +483,54 @@ function CampaignSelectorChip({ selectedCampaign, onSelect }: { selectedCampaign
   );
 }
 
-export function CampaignDetailsContent({ selectedCampaign, onSelect, id = "stats-campaign-view" }: { selectedCampaign: "all" | "current"; onSelect: (campaign: "all" | "current") => void; id?: string }) {
+export function CampaignDetailsContent({ selectedCampaign = "current", onSelect, onSelectTask, id = "stats-campaign-view", className = "mt-6", compact = false }: { selectedCampaign?: "all" | "current"; onSelect?: (campaign: "all" | "current") => void; onSelectTask?: (task: ActivityTask) => void; id?: string; className?: string; compact?: boolean }) {
+  const [view, setView] = useState<"campaign" | "task-runner" | "inbox">("campaign");
+  const [campaignView, setCampaignView] = useState<"summary" | "plan" | "levels" | "gameplay">("summary");
   return (
-    <section aria-labelledby={`${id}-leaderboard-heading`} className="mt-6 w-full text-white" id={id}>
+    <section aria-label="Campaign details" className={`w-full min-w-0 text-white ${className}`} id={id}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70" id={`${id}-leaderboard-heading`}>Leaderboard</h2>
-        <CampaignSelectorChip onSelect={onSelect} selectedCampaign={selectedCampaign} />
+        <div role="group" aria-label="Campaign views" className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          {(["campaign", "task-runner", "inbox"] as const).map((option) => (
+            <button key={option} type="button" aria-pressed={view === option} aria-controls={`${id}-content`} onClick={() => setView(option)} className={`${compact ? "min-h-7" : "min-h-11"} cursor-pointer text-xs font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-white ${view === option ? "text-white" : "text-white/45 hover:text-white/80"}`}>
+              {option === "task-runner" ? "Task runner" : option}
+            </button>
+          ))}
+        </div>
+        {onSelect && <CampaignSelectorChip onSelect={onSelect} selectedCampaign={selectedCampaign} />}
       </div>
-      <div className="mt-5 grid min-h-48 place-items-center border border-dashed border-white/25 p-6 text-center text-[0.65rem] uppercase tracking-[0.16em] text-white/40">Leaderboard coming soon</div>
+      <div id={`${id}-content`}>
+        {view === "campaign" ? (
+          <div>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <CampaignPlayerSummary />
+              <div role="group" aria-label="Campaign content views" className="flex flex-wrap items-center gap-2">
+              {(["summary", "plan", "levels", "gameplay"] as const).map((option) => (
+                <button key={option} type="button" aria-pressed={campaignView === option} onClick={() => setCampaignView(option)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-medium capitalize transition-colors ${campaignView === option ? "border-white/75 text-white" : "border-white/20 text-white/55 hover:border-white/50 hover:text-white"}`}>
+                  {option}
+                </button>
+              ))}
+              </div>
+            </div>
+            {campaignView === "summary" ? <CampaignLeaderboard characterContent={<CharacterViewContent />} /> : campaignView === "gameplay" ? <GameplayContent /> : (
+              <div className="mt-6">
+                {campaignView === "plan" ? <TaskPlan /> : <StatsLevelsContent className="border-y-0 font-sans text-sm font-normal normal-case tracking-normal [&_header]:text-sm [&_header]:font-medium [&_header]:tracking-normal [&_h3]:text-sm [&_h3]:font-medium [&_h3]:normal-case [&_h3]:tracking-normal [&_dt]:text-xs [&_dt]:normal-case [&_dt]:tracking-normal [&_label]:text-xs [&_label]:normal-case [&_label]:tracking-normal [&_dd]:text-sm [&_p]:text-sm [&_input]:rounded-2xl [&_textarea]:rounded-2xl [&_input]:bg-white/[0.04] [&_textarea]:bg-white/[0.04] [&_dl>div]:rounded-2xl [&_section>div>div]:rounded-2xl [&_button]:rounded-full [&_button]:text-xs [&_button]:normal-case [&_button]:tracking-normal" />}
+              </div>
+            )}
+          </div>
+        ) : view === "task-runner" ? (
+          <section aria-label="Task runner" className="mt-6 min-w-0">
+            <TasksKanban onSelect={onSelectTask} />
+          </section>
+        ) : (
+          <section aria-label="Inbox" className="mt-6 h-[max(20rem,calc(100dvh_-_var(--composer-height)_-_12rem))] min-w-0">
+            <InteractionsApp embedded />
+          </section>
+        )}
+      </div>
     </section>
   );
 }
 
-function StatChart({ stat }: { stat: Stat }) {
-  return (
-    <div
-      aria-label={`${stat.chartLabel}: ${stat.chartDisplay}`}
-      className="relative grid h-full w-full place-items-center rounded-full transition-opacity duration-200"
-      role="img"
-      style={{
-        background: `conic-gradient(#f5f5f5 ${stat.chartValue}%, rgba(245,245,245,0.16) 0)`,
-      }}
-    >
-      <div className="grid size-[72%] place-content-center rounded-full bg-black px-2 text-center">
-        <span className="text-[0.42rem] font-semibold uppercase tracking-[0.08em] text-white/50">
-          {stat.chartLabel}
-        </span>
-        <strong className="mt-1 text-sm font-medium tracking-[0.06em] text-white">
-          {stat.chartDisplay}
-        </strong>
-      </div>
-    </div>
-  );
-}
-
-const arcPreviewImages = [
-  { src: "/arc-preview/robot-arms.png", mangaSrc: "/arc-preview/robot-arms-manga-color.webp", monochromeSrc: "/arc-preview/robot-arms-manga.webp", alt: "Robotic arms in a workshop" },
-  { src: "/arc-preview/rainbow.png", mangaSrc: "/arc-preview/rainbow-manga-color.webp", monochromeSrc: "/arc-preview/rainbow-manga.webp", alt: "Rainbow over forested mountains" },
-  { src: "/arc-preview/canyon.png", mangaSrc: "/arc-preview/canyon-manga-color.webp", monochromeSrc: "/arc-preview/canyon-manga.webp", alt: "Sunlit canyon beneath a blue sky" },
-];
-
-const colorArcStoryCount = 4;
-const arcMangaSource = (panel: number, colorized: boolean) => {
-  const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
-  return colorized ? image.mangaSrc : image.monochromeSrc;
-};
-
-// Simulated Crucible · Act I sequence for previewing story treatments.
-const arcPanelStory = [
-  { setting: "DAY 49 · WORKSHOP", caption: "The trial began with a machine that could almost choose." },
-  { setting: "09:42 · RIDGE", bubble: { type: "thought", text: "I think I can hold it..." } },
-  { setting: "10:18 · THE PASS", bubble: { type: "speech", text: "You take the left side." } },
-  { setting: "14:06 · WORKSHOP", caption: "One adjustment. Another attempt." },
-  { setting: "16:21 · RIDGE" },
-  { setting: "17:03 · CANYON" },
-  { setting: "DUSK · WORKSHOP", caption: "This time, both arms moved together." },
-  { setting: "17:40 · RIDGE", caption: "Beyond the test, a path opened." },
-];
 
 function ArcVideoPanel({ className, colorized, manga, panel }: { className?: string; colorized: boolean; manga: boolean; panel: number }) {
   const image = arcPreviewImages[(panel - 1) % arcPreviewImages.length];
@@ -683,24 +674,26 @@ function ArcEpisodePlayer({ selectedEpisode, onSelect, onBack }: { selectedEpiso
   );
 }
 
-function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: ArcView; onSelect: (view: ArcView) => void; onOpenArr: () => void }) {
+function ArcStoriesContent({ view, onSelect, onOpenArr, defaultWorldlineOnly = false }: { view: ArcView; onSelect: (view: ArcView) => void; onOpenArr: () => void; defaultWorldlineOnly?: boolean }) {
+  const instanceId = useId();
   const [worldlineMode, setWorldlineMode] = useState<"manga" | "chapters" | "quests" | "episodes">("manga");
   const [selectedChapter, setSelectedChapter] = useState(0);
   const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
   return (
+    <LayoutGroup id={instanceId}>
     <section aria-label="Campaign stories" className="mt-3">
       <div className="flex w-full justify-end" aria-label="Campaign stories views" role="tablist">
         <div className="flex items-center rounded-full border border-white/35 p-0.5">
           {(["worldline", "logs"] as const).map((option) => (
-            <button key={option} type="button" role="tab" aria-selected={option === "worldline" ? view !== "logs" : view === "logs"} aria-controls="arc-view-content" id={`arc-${option}-tab`} onClick={() => onSelect(option)} className={`relative cursor-pointer rounded-full px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white ${(option === "worldline" ? view !== "logs" : view === "logs") ? "text-black" : "text-white/55 hover:text-white"}`}>
+            <button key={option} type="button" role="tab" aria-selected={option === "worldline" ? view !== "logs" : view === "logs"} aria-controls={`${instanceId}-content`} id={`${instanceId}-${option}-tab`} onClick={() => onSelect(option)} className={`relative cursor-pointer rounded-full px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white ${(option === "worldline" ? view !== "logs" : view === "logs") ? "text-black" : "text-white/55 hover:text-white"}`}>
               {(option === "worldline" ? view !== "logs" : view === "logs") && <motion.span aria-hidden="true" className="absolute inset-0 rounded-full bg-white" layoutId="arc-view-fill" transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }} />}
-              <span className="relative z-10">{option}</span>
+              <span className="relative z-10">{defaultWorldlineOnly && option === "worldline" ? "Arc" : option}</span>
             </button>
           ))}
         </div>
       </div>
-      <div className="mt-3 [&>*]:mt-0" id="arc-view-content" role="tabpanel" aria-labelledby={`arc-${view === "logs" ? "logs" : "worldline"}-tab`}>
-        {view === "logs" ? <DayLogContent onOpenArr={onOpenArr} /> : (
+      <div className="mt-3 [&>*]:mt-0" id={`${instanceId}-content`} role="tabpanel" aria-labelledby={`${instanceId}-${view === "logs" ? "logs" : "worldline"}-tab`}>
+        {view === "logs" ? <DayLogContent onOpenArr={onOpenArr} /> : defaultWorldlineOnly ? <ArcPanelLayouts colorized manga /> : (
           <div>
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <div aria-label="Story collections" className="flex items-center rounded-full border border-white/35 p-0.5" role="tablist">
@@ -747,6 +740,7 @@ function ArcStoriesContent({ view, onSelect, onOpenArr }: { view: ArcView; onSel
         )}
       </div>
     </section>
+    </LayoutGroup>
   );
 }
 
@@ -1031,10 +1025,132 @@ function ConnectionsView() {
   );
 }
 
+function GameplayContent() {
+  const [view, setView] = useState<ArcView>("worldline");
+  const [arrOpen, setArrOpen] = useState(false);
+  return (
+    <section aria-label="Gameplay" className="mt-6 min-w-0">
+      <ArcStoriesContent defaultWorldlineOnly view={view} onSelect={setView} onOpenArr={() => setArrOpen(true)} />
+      {arrOpen && <AfterActionReportDialog onClose={() => setArrOpen(false)} />}
+    </section>
+  );
+}
+
+function AfterActionReportDialog({ onClose }: { onClose: () => void }) {
+  const titleId = useId();
+  useEffect(() => {
+    const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", dismiss);
+    return () => window.removeEventListener("keydown", dismiss);
+  }, [onClose]);
+  return (
+        <div
+          aria-labelledby={titleId}
+          aria-modal="true"
+          className="fixed inset-0 z-50 grid place-items-center bg-black/85 p-4 sm:p-8"
+          onClick={onClose}
+          role="dialog"
+        >
+          <article
+            className="max-h-[88dvh] w-full max-w-3xl overflow-hidden border border-white/40 bg-black text-white"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <PinScrollArea className="max-h-[88dvh] p-6 sm:p-10" wrapperClassName="max-h-[88dvh]">
+            <header className="flex items-start justify-between gap-8 border-b border-white/30 pb-6">
+              <div>
+                <p className="text-[0.65rem] uppercase tracking-[0.24em] text-white/45">
+                  ARR-001 · DAY 1
+                </p>
+                <h2
+                  className="mt-3 text-xl font-semibold uppercase tracking-[0.14em] sm:text-2xl"
+                  id={titleId}
+                >
+                  After Action Report
+                </h2>
+              </div>
+              <button
+                autoFocus
+                className="cursor-pointer text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-white"
+                onClick={onClose}
+                type="button"
+              >
+                Close
+              </button>
+            </header>
+
+            <dl className="grid gap-px border-b border-white/30 sm:grid-cols-3">
+              {[
+                ["Date", "09.03.2026"],
+                ["Mission", "Route calibration"],
+                ["Result", "Pass"],
+              ].map(([label, value]) => (
+                <div className="py-6 sm:pr-6" key={label}>
+                  <dt className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">
+                    {label}
+                  </dt>
+                  <dd className="mt-2 text-xs uppercase tracking-[0.14em]">{value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <section className="border-b border-white/30 py-7">
+              <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
+                Objective
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-white/85">
+                Complete the primary getaway route in under 45 minutes while maintaining a clean line and logging each route adjustment.
+              </p>
+            </section>
+
+            <section className="grid border-b border-white/30 py-7 sm:grid-cols-3 sm:gap-8">
+              <div>
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">Target</p>
+                <p className="mt-2 font-mono text-lg">00:45:00</p>
+              </div>
+              <div className="mt-5 sm:mt-0">
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">Actual</p>
+                <p className="mt-2 font-mono text-lg">00:42:18</p>
+              </div>
+              <div className="mt-5 sm:mt-0">
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">Delta</p>
+                <p className="mt-2 font-mono text-lg">−00:02:42</p>
+              </div>
+            </section>
+
+            <div className="grid sm:grid-cols-2">
+              <section className="border-b border-white/30 py-7 sm:border-r sm:pr-8">
+                <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
+                  What worked
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-white/80">
+                  Early braking points were consistent. The alternate turn sequence reduced idle time and kept the route below target.
+                </p>
+              </section>
+              <section className="border-b border-white/30 py-7 sm:pl-8">
+                <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
+                  Friction
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-white/80">
+                  The second checkpoint created hesitation. Two route notes were recorded too late to use during the active run.
+                </p>
+              </section>
+            </div>
+
+            <section className="pt-7">
+              <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
+                Next action
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-white/85">
+                Rehearse the second checkpoint three times, move route notes into the pre-run brief, and target a 41-minute clean run.
+              </p>
+            </section>
+            </PinScrollArea>
+          </article>
+        </div>
+  );
+}
+
 export default function StateDisplay({ embedded = false }: { embedded?: boolean }) {
-  const [characterStatsOpen, setCharacterStatsOpen] = useState(false);
-  const profileDetailsRef = useRef<HTMLDivElement>(null);
-  const profileSummaryRef = useRef<HTMLDivElement>(null);
   const [activeStat, setActiveStat] = useState<Stat | null>(null);
   const {
     arcView, campaignSelected, displayedAppView, navigationHome, selectedCampaign,
@@ -1043,22 +1159,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
   const viewOpen = !navigationHome;
   const [arrOpen, setArrOpen] = useState(false);
   const [selectedHudCategory, setSelectedHudCategory] = useState<HudCategory | null>(null);
-  const [sentienceExpanded, setSentienceExpanded] = useState(false);
 
-  useEffect(() => {
-    const details = profileDetailsRef.current;
-    const summary = profileSummaryRef.current;
-    if (!details || !summary || characterStatsOpen || displayedAppView !== "storyboard") return;
-    const measure = () => {
-      details.parentElement?.style.setProperty("--profile-stack-height", `${details.getBoundingClientRect().height}px`);
-      summary.style.setProperty("--profile-toggle-top", `${details.getBoundingClientRect().top - summary.getBoundingClientRect().top}px`);
-      summary.style.setProperty("--profile-toggle-width", `${details.getBoundingClientRect().width}px`);
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(details);
-    return () => observer.disconnect();
-  }, [displayedAppView, characterStatsOpen, viewOpen]);
 
   useEffect(() => {
     if (!arrOpen) return;
@@ -1073,58 +1174,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
   }, [arrOpen]);
 
 
-  const statsSummary = (
-    <>
-                <div className="grid grid-cols-[minmax(9rem,1fr)_minmax(7rem,0.65fr)_minmax(4rem,auto)] gap-x-5 border-b border-white/15 pb-4 text-xs font-semibold uppercase tracking-[0.28em] text-white/55">
-                  <span>Attributes</span>
-                  <span className="text-right">Status</span>
-                  <span className="text-right">Points</span>
-                </div>
-
-                <dl className="mt-6" onMouseLeave={() => setActiveStat(null)}>
-                  {stats.map((stat) => (
-                    <Fragment key={stat.label}>
-                      <div
-                        aria-expanded={stat.label === "Sentience" ? sentienceExpanded : undefined}
-                        className={`grid cursor-pointer grid-cols-[minmax(9rem,1fr)_minmax(7rem,0.65fr)_minmax(4rem,auto)] items-center gap-x-5 py-1.5 text-[0.7rem] uppercase tracking-[0.26em] outline-none transition-colors hover:text-white focus-visible:bg-white/5 ${
-                          stat.label === "Experience" || stat.label === "Skills" ? "mt-7" : ""
-                        }`}
-                        key={stat.label}
-                        onBlur={() => setActiveStat(null)}
-                        onClick={() => stat.label === "Sentience" && setSentienceExpanded((expanded) => !expanded)}
-                        onFocus={() => setActiveStat(stat)}
-                        onKeyDown={(event) => {
-                          if (stat.label !== "Sentience" || (event.key !== "Enter" && event.key !== " ")) return;
-                          event.preventDefault();
-                          setSentienceExpanded((expanded) => !expanded);
-                        }}
-                        onMouseEnter={() => setActiveStat(stat)}
-                        role={stat.label === "Sentience" ? "button" : undefined}
-                        tabIndex={0}
-                      >
-                        <dt className="flex items-center justify-between gap-3 text-white/50 transition-colors group-hover:text-white">
-                          <span>{stat.label}</span>
-                          {stat.label === "Sentience" && <span aria-hidden="true" className="text-white/45">{sentienceExpanded ? "−" : "+"}</span>}
-                        </dt>
-                        <dd className="text-right text-white">{stat.status}</dd>
-                        <dd className="text-right text-white">{stat.points}</dd>
-                      </div>
-                      {stat.label === "Sentience" && sentienceExpanded && (
-                        <div className="ml-4 border-l border-white/20 pl-4">
-                          {sentienceStats.map((substat) => (
-                            <div className="grid grid-cols-[minmax(9rem,1fr)_minmax(7rem,0.65fr)_minmax(4rem,auto)] items-center gap-x-5 py-1.5 text-[0.65rem] uppercase tracking-[0.2em]" key={substat.label}>
-                              <span className="text-white/45">{substat.label}</span>
-                              <span className="text-right text-white/80">{substat.status}</span>
-                              <span className="text-right text-white/80">{substat.points}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </Fragment>
-                  ))}
-                </dl>
-    </>
-  );
+  const statsSummary = <CharacterStatsSummary onActiveStat={setActiveStat} />;
   return (
     <section className={`relative mx-auto flex w-full max-w-[72rem] flex-1 flex-col ${embedded ? "pb-8" : "px-[clamp(1.5rem,4.4vw,3.5rem)] pb-24"} ${displayedAppView === "os" && !navigationHome ? "pt-2" : navigationHome || displayedAppView === "arc" ? "pt-4" : displayedAppView === "admin" ? "pt-12" : displayedAppView === "storyboard" ? "pt-8" : "pt-16"}`}>
       {viewOpen && displayedAppView === "admin" && (
@@ -1137,7 +1187,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
       <AnimatePresence initial={false}>
       {viewOpen && <motion.div animate={{ opacity: 1 }} className="w-full" exit={{ opacity: 0 }} initial={{ opacity: 0 }} key="stats-view-content" transition={{ duration: 0.2 }}>
 
-      {(displayedAppView === "stats" || displayedAppView === "hud" || displayedAppView === "storyboard") && (
+      {(displayedAppView === "stats" || displayedAppView === "hud") && (
         <div className="grid w-full gap-y-6">
           <div className="w-full lg:col-span-2">
             {displayedAppView === "hud" ? (
@@ -1166,12 +1216,10 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
               </div>
             ) : (
               <>
-                <div ref={profileSummaryRef} className={`relative mx-auto w-full ${displayedAppView === "storyboard" ? "mb-5" : "mb-10"}`}>
-                  {displayedAppView === "storyboard" && <button type="button" aria-controls="character-profile-content" onClick={() => setCharacterStatsOpen(previous => !previous)} style={{ top: "var(--profile-toggle-top, 0px)", width: "var(--profile-toggle-width, 8.5rem)" }} className="absolute left-1/2 z-10 h-8 -translate-x-1/2 cursor-pointer rounded-full border border-white/30 px-3 text-center font-sans text-xs font-normal text-white/70 transition-colors hover:border-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">{characterStatsOpen ? "Profile Summary" : "Stats"}</button>}
+                <div className="relative mx-auto mb-10 w-full">
                   <div id="character-profile-content">
-                  {displayedAppView === "storyboard" && characterStatsOpen && <div style={{ paddingTop: "calc(var(--profile-toggle-top, 0px) + 3rem)" }}>{statsSummary}</div>}
-                  <div style={displayedAppView === "storyboard" && characterStatsOpen ? { display: "none" } : undefined} className="character-summary-layout text-[0.5rem] font-semibold uppercase tracking-normal">
-                    <div style={displayedAppView === "storyboard" ? { height: "var(--profile-stack-height, 4.75rem)", width: "var(--profile-stack-height, 4.75rem)" } : undefined} className="character-summary-profile block size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-white/5">
+                  <div className="character-summary-layout text-[0.5rem] font-semibold uppercase tracking-normal">
+                    <div className="character-summary-profile block size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-white/5">
                       {activeStat ? (
                         <StatChart stat={activeStat} />
                       ) : (
@@ -1180,24 +1228,23 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
                         <img alt="Illustrated portrait of Steven Wilcox" className="h-full w-full object-cover" src={portrait.src} />
                       )}
                     </div>
-                    <div ref={profileDetailsRef} className={`character-summary-details grid min-h-[4.75rem] content-center gap-y-1 text-left font-mono text-white/60 ${displayedAppView === "storyboard" ? "min-w-[8.5rem]" : "min-w-0"}`}>
-                      {displayedAppView === "storyboard" && <div aria-hidden="true" className="mb-2 h-8" />}
+                    <div className={`character-summary-details grid min-h-[4.75rem] content-center gap-y-1 text-left font-mono text-white/60 ${"min-w-0"}`}>
                       <p className="min-w-0 whitespace-nowrap">Character v0.1.0</p>
                       <p className="min-w-0 whitespace-nowrap">Job: Getaway Driver</p>
                       <p className="min-w-0 whitespace-nowrap">Build: NPC</p>
                       <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
-                        <span>Streak {streakStatus}</span>
-                        <span>Sync Ratio {syncRatioStatus}</span>
+                        <span>Streak 6 days</span>
+                        <span>Sync Ratio 84%</span>
                       </p>
                     </div>
-                    <div style={displayedAppView === "storyboard" ? { height: "var(--profile-stack-height, 4.75rem)", width: "var(--profile-stack-height, 4.75rem)" } : undefined} className="character-summary-profile character-summary-secondary relative size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-black">
+                    <div className="character-summary-profile character-summary-secondary relative size-[4.75rem] overflow-hidden rounded-full border border-white/25 bg-black">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img alt="Character bust portrait" src="/chat-reader-figure.png" className="absolute left-[-12.5%] top-[-7.5%] h-auto w-[125%] max-w-none invert" />
                     </div>
                   </div>
                   </div>
                 </div>
-                {displayedAppView !== "storyboard" && statsSummary}
+                {statsSummary}
               </>
             )}
           </div>
@@ -1364,9 +1411,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
       {displayedAppView === "inventory" && <InventoryContent />}
 
       {displayedAppView === "storyboard" && (
-        <section aria-label="Character" className="mt-4 w-full">
-          <StoryboardBuilder layoutRevision={characterStatsOpen} />
-        </section>
+        <CharacterViewContent />
       )}
 
       {displayedAppView === "arc" && (
@@ -1389,111 +1434,7 @@ export default function StateDisplay({ embedded = false }: { embedded?: boolean 
       )}
 
 
-      {arrOpen && (
-        <div
-          aria-labelledby="arr-title"
-          aria-modal="true"
-          className="fixed inset-0 z-50 grid place-items-center bg-black/85 p-4 sm:p-8"
-          onClick={() => setArrOpen(false)}
-          role="dialog"
-        >
-          <article
-            className="max-h-[88dvh] w-full max-w-3xl overflow-hidden border border-white/40 bg-black text-white"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <PinScrollArea className="max-h-[88dvh] p-6 sm:p-10" wrapperClassName="max-h-[88dvh]">
-            <header className="flex items-start justify-between gap-8 border-b border-white/30 pb-6">
-              <div>
-                <p className="text-[0.65rem] uppercase tracking-[0.24em] text-white/45">
-                  ARR-001 · DAY 1
-                </p>
-                <h2
-                  className="mt-3 text-xl font-semibold uppercase tracking-[0.14em] sm:text-2xl"
-                  id="arr-title"
-                >
-                  After Action Report
-                </h2>
-              </div>
-              <button
-                autoFocus
-                className="cursor-pointer text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white/60 hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-white"
-                onClick={() => setArrOpen(false)}
-                type="button"
-              >
-                Close
-              </button>
-            </header>
-
-            <dl className="grid gap-px border-b border-white/30 sm:grid-cols-3">
-              {[
-                ["Date", "09.03.2026"],
-                ["Mission", "Route calibration"],
-                ["Result", "Pass"],
-              ].map(([label, value]) => (
-                <div className="py-6 sm:pr-6" key={label}>
-                  <dt className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">
-                    {label}
-                  </dt>
-                  <dd className="mt-2 text-xs uppercase tracking-[0.14em]">{value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <section className="border-b border-white/30 py-7">
-              <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
-                Objective
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-white/85">
-                Complete the primary getaway route in under 45 minutes while maintaining a clean line and logging each route adjustment.
-              </p>
-            </section>
-
-            <section className="grid border-b border-white/30 py-7 sm:grid-cols-3 sm:gap-8">
-              <div>
-                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">Target</p>
-                <p className="mt-2 font-mono text-lg">00:45:00</p>
-              </div>
-              <div className="mt-5 sm:mt-0">
-                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">Actual</p>
-                <p className="mt-2 font-mono text-lg">00:42:18</p>
-              </div>
-              <div className="mt-5 sm:mt-0">
-                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">Delta</p>
-                <p className="mt-2 font-mono text-lg">−00:02:42</p>
-              </div>
-            </section>
-
-            <div className="grid sm:grid-cols-2">
-              <section className="border-b border-white/30 py-7 sm:border-r sm:pr-8">
-                <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
-                  What worked
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-white/80">
-                  Early braking points were consistent. The alternate turn sequence reduced idle time and kept the route below target.
-                </p>
-              </section>
-              <section className="border-b border-white/30 py-7 sm:pl-8">
-                <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
-                  Friction
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-white/80">
-                  The second checkpoint created hesitation. Two route notes were recorded too late to use during the active run.
-                </p>
-              </section>
-            </div>
-
-            <section className="pt-7">
-              <h3 className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/50">
-                Next action
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-white/85">
-                Rehearse the second checkpoint three times, move route notes into the pre-run brief, and target a 41-minute clean run.
-              </p>
-            </section>
-            </PinScrollArea>
-          </article>
-        </div>
-      )}
+      {arrOpen && <AfterActionReportDialog onClose={() => setArrOpen(false)} />}
       </motion.div>}
       </AnimatePresence>
     </section>

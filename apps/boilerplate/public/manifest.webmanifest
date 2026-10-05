@@ -1,0 +1,7 @@
+{
+  "id": "/", "name": "Boilerplate", "short_name": "Boilerplate",
+  "description": "A mobile-first single-page app starter.",
+  "start_url": "/", "scope": "/", "display": "standalone",
+  "background_color": "#02030f", "theme_color": "#02030f",
+  "icons": [{ "src": "/icons/app.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

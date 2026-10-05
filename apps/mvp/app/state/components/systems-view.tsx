@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { FiArrowLeft, FiChevronRight, FiGrid, FiList } from "react-icons/fi";
 import { useStateView } from "./state-view-context";
+import { protocolsForSystem } from "../../components/mvd-protocols";
+import { MvdProtocolContent } from "../../components/mvd-protocol-content";
 
 const systemCategories = ["Health", "Wealth", "Connection", "Sentience", "Skills", "Experience", "Builds", "Quests"] as const;
 
@@ -41,6 +43,7 @@ export function SystemsView() {
   const [displayMode, setDisplayMode] = useState<"list" | "grid">("list");
   const { quests } = useStateView();
   const system = sampleSystems.find(({ id }) => id === selectedId);
+  const protocols = system ? protocolsForSystem(system.id) : [];
 
   return (
     <section aria-label="Systems" className="w-full font-sans text-white">
@@ -51,10 +54,11 @@ export function SystemsView() {
       {system ? (
         <section aria-label={`${system.name} details`}>
           <h2 className="text-lg font-medium">{system.name}</h2>
-          <p className="mt-3 text-sm leading-6 text-white/55">{system.description}</p>
+          <p className="mt-3 text-sm leading-6 text-white/55">{protocols.length && system.description === "System details to be defined." ? "Minimum Viable Day protocol." : system.description}</p>
           <ol className="mt-6 space-y-3 text-sm text-white/75">
             {system.steps.map((step, index) => <li className="flex gap-3" key={`${index}-${step}`}><span className="text-white/35">{index + 1}.</span>{step}</li>)}
           </ol>
+          <MvdProtocolContent protocols={protocols} />
         </section>
       ) : (
         <div>

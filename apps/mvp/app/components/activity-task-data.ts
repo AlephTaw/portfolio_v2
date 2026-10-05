@@ -1,8 +1,9 @@
 import { subjectMasteryQuest, type SubjectMasteryCategory } from "./quest-context";
 import type { ActivityCategory } from "./quest-terminal/use-active-activity";
+import { mvdProtocols } from "./mvd-protocols";
 
 type CompetenceCategory = SubjectMasteryCategory;
-export type ActivityTask = { id: string; category: ActivityCategory; name: string; completed: boolean; status?: "todo" | "in-progress" | "done"; skillCategory?: CompetenceCategory; createdAt?: number };
+export type ActivityTask = { id: string; category: ActivityCategory; name: string; completed: boolean; status?: "todo" | "in-progress" | "done"; skillCategory?: CompetenceCategory; createdAt?: number; protocolIds?: readonly string[] };
 type SavedActivityTask = Omit<ActivityTask, "category"> & { category: ActivityCategory | "Love" | "Interactions" | "Quest" };
 
 export const taskStorageKey = "speedrun-irl:activity-tasks";
@@ -25,19 +26,20 @@ const wealthStarterTasks: ActivityTask[] = wealthTaskNames.map((name) => ({
   name,
   completed: false,
 }));
-const connectionTaskNames = ["100 dates"] as const;
+const connectionTaskNames = ["Dating", "Family", "Friendship", "Professional"] as const;
 const connectionStarterTasks: ActivityTask[] = connectionTaskNames.map((name) => ({
-  id: "Connection-100-dates",
+  id: name === "Dating" ? "Connection-100-dates" : `Connection-${name.toLowerCase()}`,
   category: "Connection",
   name,
   completed: false,
 }));
-const sentienceStarterTasks: ActivityTask[] = [{
-  id: "Sentience-mvsos",
+const sentienceTaskNames = ["MVSOS", "Vision", "Personality", "Values", "World model", "Perception"] as const;
+const sentienceStarterTasks: ActivityTask[] = sentienceTaskNames.map((name) => ({
+  id: `Sentience-${name.toLowerCase().replaceAll(" ", "-")}`,
   category: "Sentience",
-  name: "MVSOS",
+  name,
   completed: false,
-}];
+}));
 const competenceStarterTasks: ActivityTask[] = subjectMasteryQuest.workingSystemModel.taskOntology.skills.map((skill) => ({
   id: `Competence-${skill.name.toLowerCase().replace("&", "and").replaceAll(" ", "-")}`,
   category: "Competence",
@@ -58,7 +60,19 @@ const questStarterTasks: ActivityTask[] = [{
   name: "Minimum Viable Day (MVD)",
   completed: false,
 }];
-const specifiedStarterTasks = [...healthStarterTasks, ...wealthStarterTasks, ...connectionStarterTasks, ...sentienceStarterTasks, ...competenceStarterTasks, ...experienceStarterTasks, ...questStarterTasks];
+const originalStarterTasks = [...healthStarterTasks, ...wealthStarterTasks, ...connectionStarterTasks, ...sentienceStarterTasks, ...competenceStarterTasks, ...experienceStarterTasks, ...questStarterTasks];
+const originalIds = new Set(originalStarterTasks.map((task) => task.id));
+const additionalMvdTasks: ActivityTask[] = mvdProtocols.flatMap((protocol) => protocol.taskIds.filter((id) => !originalIds.has(id)).map((id) => ({
+  id,
+  category: id.startsWith("Builds-") ? "Builds" as const : protocol.category,
+  name: id === "Sentience-accountability" ? "Accountability" : protocol.title,
+  completed: false,
+  ...(id === "Competence-mathematics" ? { skillCategory: "Mathematics" as const } : {}),
+})));
+const specifiedStarterTasks = [...originalStarterTasks, ...additionalMvdTasks].map((task) => ({
+  ...task,
+  protocolIds: task.id === "Quest-minimum-viable-day" ? mvdProtocols.map((protocol) => protocol.id) : mvdProtocols.filter((protocol) => protocol.taskIds.includes(task.id)).map((protocol) => protocol.id),
+}));
 export const starterTasks: ActivityTask[] = specifiedStarterTasks;
 const legacyPlaceholders: Record<string, string> = {
   "Health-01": "Review health goals",
@@ -98,13 +112,13 @@ export function readTasks(): ActivityTask[] {
       category: task.category === "Love" || task.category === "Interactions" ? "Connection" : task.category === "Quest" ? "Quests" : task.category,
       name: task.category === "Love" || task.category === "Interactions"
         ? task.name.replace(/^((?:Review|Practice|Record) )(?:love|interactions)(?=\b)/i, "$1connection")
-        : task.name,
+        : task.category === "Connection" && task.name.toLowerCase() === "100 dates" ? "Dating" : task.name,
     })).filter((task) => legacyPlaceholders[task.id] !== task.name && !(task.category === "Quests" && (task.id === subjectMasteryQuest.id || task.name === subjectMasteryQuest.name)));
     const orderedSpecifiedTasks = specifiedStarterTasks.map((starter) => {
       const savedTask = savedTasks.find((task) => task.category === starter.category && (
         task.id === starter.id || task.name.toLowerCase() === starter.name.toLowerCase()
       ));
-      return savedTask ? { ...starter, ...savedTask, skillCategory: savedTask.skillCategory ?? starter.skillCategory } : starter;
+      return savedTask ? { ...starter, ...savedTask, skillCategory: savedTask.skillCategory ?? starter.skillCategory, protocolIds: starter.protocolIds } : starter;
     });
     const orderedIds = new Set(orderedSpecifiedTasks.map((task) => task.id));
     return [...orderedSpecifiedTasks, ...savedTasks.filter((task) => !orderedIds.has(task.id))];
@@ -119,4 +133,3 @@ export function writeTasks(tasks: ActivityTask[]) {
   window.localStorage.setItem(taskStorageKey, JSON.stringify(tasks));
   window.dispatchEvent(new Event(activityTasksChangedEvent));
 }
-

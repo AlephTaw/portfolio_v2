@@ -7,7 +7,8 @@ import { demoAccount, demoConversations, demoGroups, getChatMessages } from "./c
 import { useQuestCommands } from "./quest-terminal/use-quest-commands";
 
 export type ConversationId = "recent" | "history" | "guild" | "world" | `group:${string}` | `dm:${string}` | `guild:${string}`;
-export type ChatContext = "contacts" | "guild";
+export const chatContexts = ["campaign", "contacts", "guild"] as const;
+export type ChatContext = (typeof chatContexts)[number];
 export type ChatGroup = { id: `group:${string}`; title: string; members: string[] };
 
 const groupStorageKey = "speedrun-irl:chat-groups";
@@ -42,9 +43,10 @@ const ChatConversationContext = createContext<{
 } | null>(null);
 
 export function ChatConversationProvider({ children }: { children: ReactNode }) {
-  const [chatContext, setChatContext] = useState<ChatContext>("contacts");
+  const [chatContext, setChatContext] = useState<ChatContext>("campaign");
   const [threadOpen, setThreadOpen] = useState(false);
   const [contactConversation, setContactConversation] = useState<ConversationId>("dm:raphaelin");
+  const [campaignConversation, setCampaignConversation] = useState<ConversationId>("world");
   const [guildConversation, setGuildConversation] = useState<ConversationId>("guild");
   const [readConversations, setReadConversations] = useState<ConversationId[]>([]);
   const [groups, setGroups] = useState<ChatGroup[]>(() => demoGroups.map((group) => ({ ...group, members: [...group.members] })));
@@ -72,10 +74,14 @@ export function ChatConversationProvider({ children }: { children: ReactNode }) 
   const updateGroup = (id: string, title: string, members: string[]) => {
     saveGroups(readGroups().map((group) => group.id === id ? { ...group, title, members } : group));
   };
-  const conversation = chatContext === "guild" ? guildConversation : contactConversation;
+  const conversation = chatContext === "campaign" ? campaignConversation : chatContext === "guild" ? guildConversation : contactConversation;
   const setConversation = (nextConversation: ConversationId) => {
     setReadConversations((current) => current.includes(nextConversation) ? current : [...current, nextConversation]);
-    if (nextConversation === "guild" || nextConversation.startsWith("guild:")) {
+    if (demoConversations.some((option) => option.id === nextConversation && option.context === "campaign")) {
+      setCampaignConversation(nextConversation);
+      setChatContext("campaign");
+    }
+    else if (nextConversation === "guild" || nextConversation.startsWith("guild:")) {
       setGuildConversation(nextConversation);
       setChatContext("guild");
     }

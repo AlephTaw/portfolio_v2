@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useContext, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useContext, useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { LayoutGroup, motion } from "framer-motion";
-import { FiChevronDown, FiEdit2, FiPlus } from "react-icons/fi";
-import { InteractionsApp } from "./interactions-app";
-import { CampaignActivitySummary, CampaignDetailsContent, StatsLevelsContent } from "../state/state-display";
+import { FiChevronDown, FiEdit2, FiGrid, FiList, FiPlus } from "react-icons/fi";
+import { CampaignActivitySummary, CampaignDetailsContent } from "../state/state-display";
 import { ComposerDockContext } from "./composer-dock-context";
 import { ActivityCategoryIcon } from "./activity-category-icon";
 import { HudCategoryApp, type HudCategory } from "./hud";
@@ -21,13 +20,11 @@ import { subjectMasteryQuest, type SubjectMasteryCategory } from "./quest-contex
 import { useSplitView } from "./split-view-context";
 import { ActionsSelectedView } from "./actions-selected-view";
 import { useActionsView } from "./actions-view-context";
-import { RunningTasks } from "./running-tasks";
-import { TaskPlan } from "./task-plan";
 import { activityTasksChangedEvent, readTasks, starterTasks, writeTasks, type ActivityTask } from "./activity-task-data";
-import { TasksKanban } from "./tasks-kanban";
+import { protocolsForTask } from "./mvd-protocols";
+import { MvdProtocolContent } from "./mvd-protocol-content";
 
 type ActivityView = "current" | "tasks";
-type TaskView = "campaign" | "task-runner" | "inbox";
 const competenceCategories = subjectMasteryQuest.workingSystemModel.taskOntology.categories;
 type CompetenceCategory = SubjectMasteryCategory;
 type CompetenceView = "recent" | "created" | "categories";
@@ -58,13 +55,41 @@ function competenceCategoryFor(task: ActivityTask): CompetenceCategory {
   return task.skillCategory && competenceCategories.includes(task.skillCategory) ? task.skillCategory : "Engineering";
 }
 
-function ActivityTaskGrid({ createLabel, emptyMessage, onCreate, onSelect, tasks }: {
+function ActivityTaskListItem({ task, onSelect, expanded }: { task: ActivityTask; onSelect: (task: ActivityTask) => void; expanded: boolean }) {
+  const titleId = useId();
+  const protocols = protocolsForTask(task);
+  return (
+    <li>
+      <div className={`flex items-center gap-1 rounded-lg transition-colors ${expanded ? "bg-white/[0.04]" : ""}`}>
+        <button type="button" id={titleId} onClick={() => onSelect(task)} className="flex min-h-11 min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white/85 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">
+          <span className="min-w-0 flex-1 break-words">{task.name}</span>
+          <span className="shrink-0 text-xs text-white/45">{task.completed ? "Completed" : "Ready"}</span>
+        </button>
+        <button type="button" aria-label={`Open ${task.name} activity`} onClick={() => onSelect(task)} className="min-h-11 shrink-0 cursor-pointer rounded-lg px-3 py-2 text-xs text-white/55 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">Open</button>
+      </div>
+      {expanded && protocols.length > 0 && <div aria-labelledby={titleId} className="px-3 pb-4"><MvdProtocolContent protocols={protocols} /></div>}
+    </li>
+  );
+}
+
+function ActivityTaskCollection({ createLabel, emptyMessage, onCreate, onSelect, tasks, list = false, expanded = false }: {
   createLabel: string;
   emptyMessage?: string;
   onCreate: () => void;
   onSelect: (task: ActivityTask) => void;
   tasks: ActivityTask[];
+  list?: boolean;
+  expanded?: boolean;
 }) {
+  if (list) return (
+    <div aria-label={`${createLabel} task list`} className="py-4">
+      {tasks.length === 0 && emptyMessage && <p className="py-6 text-sm text-white/45">{emptyMessage}</p>}
+      <ul className="space-y-1">
+        {tasks.map((task) => <ActivityTaskListItem key={task.id} task={task} onSelect={onSelect} expanded={expanded} />)}
+      </ul>
+      <button type="button" aria-label={`Create ${createLabel.toLowerCase()} task`} onClick={onCreate} className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-xs text-white/55 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"><FiPlus aria-hidden="true" className="size-4" />{createLabel === "Quests" ? "Create quest" : "Create task"}</button>
+    </div>
+  );
   return (
     <div aria-label={`${createLabel} tasks`} className="grid grid-cols-3 gap-3 py-4 sm:grid-cols-4 md:grid-cols-6">
       {tasks.length === 0 && emptyMessage && <p className="col-span-full py-6 text-sm text-white/45">{emptyMessage}</p>}
@@ -112,14 +137,15 @@ function ActivityWorkspaceContent({
   const [taskName, setTaskName] = useState("");
   const [editingTaskName, setEditingTaskName] = useState(false);
   const [draftTaskName, setDraftTaskName] = useState("");
-  const [taskView, setTaskView] = useState<TaskView>("campaign");
-  const [runnerView, setRunnerView] = useState<"running" | "plan" | "levels" | "kanban">("running");
-  const [selectedCampaign, setSelectedCampaign] = useState<"all" | "current">("current");
   const [competenceView, setCompetenceView] = useState<CompetenceView>("created");
   const [hudVisible, setHudVisible] = useState(false);
+  const [categoryLists, setCategoryLists] = useState<Partial<Record<ActivityCategory, boolean>>>({});
+  const [categoryExpanded, setCategoryExpanded] = useState<Partial<Record<ActivityCategory, boolean>>>({});
   const [draftSkillCategory, setDraftSkillCategory] = useState<CompetenceCategory>("Engineering");
   const [recentCompetenceIds, setRecentCompetenceIds] = useState<string[]>(() => typeof window === "undefined" ? [] : readRecentCompetenceIds());
   const category = activeActivity?.category;
+  const taskListVisible = category ? categoryLists[category] ?? false : false;
+  const taskListExpanded = category ? categoryExpanded[category] ?? false : false;
   const hudCategory = category ? hudCategoryForActivity[category] : undefined;
   const selectedTask = tasks.find((task) => task.id === selectedTaskId);
   const taskGridVisible = Boolean(category && !choosingCategory && (showingTaskGrid || (!selectedTask && !creatingTask)));
@@ -239,6 +265,18 @@ function ActivityWorkspaceContent({
             </div>
           </div>
         )}
+        {taskGridVisible && category && (
+          <div className="mb-3 flex items-center justify-end gap-2">
+            {taskListVisible && <button type="button" aria-expanded={taskListExpanded} onClick={() => setCategoryExpanded((current) => ({ ...current, [category]: !current[category] }))} className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/40 px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-white/65 transition-colors hover:border-white hover:text-white focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white">
+              <FiChevronDown aria-hidden="true" className={`size-3 transition-transform ${taskListExpanded ? "rotate-180" : ""}`} />
+              {taskListExpanded ? "Collapse all" : "Expand all"}
+            </button>}
+            <button type="button" aria-label={`Show ${category} tasks as a ${taskListVisible ? "grid" : "list"}`} aria-pressed={taskListVisible} onClick={() => setCategoryLists((current) => ({ ...current, [category]: !current[category] }))} className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.14em] transition-colors focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white ${taskListVisible ? "border-white bg-white text-black" : "border-white/40 text-white/65 hover:border-white hover:text-white"}`}>
+              {taskListVisible ? <FiGrid aria-hidden="true" className="size-3" /> : <FiList aria-hidden="true" className="size-3" />}
+              {taskListVisible ? "Grid" : "List"}
+            </button>
+          </div>
+        )}
         {taskGridVisible && hudVisible && (
           hudCategory ? <HudCategoryApp category={hudCategory} className="mt-0" /> : <QuestHud />
         )}
@@ -283,6 +321,7 @@ function ActivityWorkspaceContent({
               )}
             </div>
             <p className="mt-3 text-xs text-white/50">{selectedTask.category === "Competence" ? competenceCategoryFor(selectedTask) : selectedTask.category} · {selectedTask.completed ? "Completed" : "Ready"}</p>
+            <MvdProtocolContent protocols={protocolsForTask(selectedTask)} />
             <button type="button" onClick={() => saveTasks(tasks.map((task) => task.id === selectedTask.id ? { ...task, completed: !task.completed, status: task.completed ? "todo" : "done" } : task))} className="mt-6 cursor-pointer rounded-full bg-white px-4 py-2.5 text-xs font-medium text-black">{selectedTask.completed ? "Mark incomplete" : "Complete task"}</button>
           </section>
         ) : category === "Competence" ? (
@@ -291,41 +330,19 @@ function ActivityWorkspaceContent({
               {competenceCategories.map((skillCategory) => (
                 <section key={skillCategory} aria-labelledby={`competence-${skillCategory.toLowerCase().replaceAll(" ", "-")}`} className="px-4 py-6 sm:px-6">
                   <h3 id={`competence-${skillCategory.toLowerCase().replaceAll(" ", "-")}`} className="text-sm font-medium text-white/70">{skillCategory}</h3>
-                  <ActivityTaskGrid createLabel={skillCategory} emptyMessage="No skills in this category yet" tasks={competenceTasks.filter((task) => competenceCategoryFor(task) === skillCategory)} onSelect={selectTask} onCreate={() => beginCreateTask(skillCategory)} />
+                  <ActivityTaskCollection list={taskListVisible} expanded={taskListExpanded} createLabel={skillCategory} emptyMessage="No skills in this category yet" tasks={competenceTasks.filter((task) => competenceCategoryFor(task) === skillCategory)} onSelect={selectTask} onCreate={() => beginCreateTask(skillCategory)} />
                 </section>
               ))}
             </div>
           ) : (
-            <ActivityTaskGrid createLabel="Competence" emptyMessage={competenceView === "recent" ? "No recently opened skills" : undefined} tasks={competenceView === "recent" ? recentCompetenceTasks : createdCompetenceTasks} onSelect={selectTask} onCreate={() => beginCreateTask()} />
+            <ActivityTaskCollection list={taskListVisible} expanded={taskListExpanded} createLabel="Competence" emptyMessage={competenceView === "recent" ? "No recently opened skills" : undefined} tasks={competenceView === "recent" ? recentCompetenceTasks : createdCompetenceTasks} onSelect={selectTask} onCreate={() => beginCreateTask()} />
           )
         ) : (
-          <ActivityTaskGrid createLabel={category} tasks={tasks.filter((task) => task.category === category)} onSelect={selectTask} onCreate={() => beginCreateTask()} />
+          <ActivityTaskCollection list={taskListVisible} expanded={taskListExpanded} createLabel={category} tasks={tasks.filter((task) => task.category === category)} onSelect={selectTask} onCreate={() => beginCreateTask()} />
         )}
         </>
       ) : (
-        <div>
-          <div aria-label="Task views" className="flex flex-wrap gap-2">
-            {(["campaign", "task-runner", "inbox"] as const).map((view) => (
-              <button key={view} type="button" aria-pressed={taskView === view} onClick={() => setTaskView(view)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-medium capitalize transition-colors ${taskView === view ? "border-white/75 text-white" : "border-white/20 text-white/55 hover:border-white/50 hover:text-white"}`}>{view === "task-runner" ? "Task runner" : view}</button>
-            ))}
-          </div>
-          {taskView === "task-runner" ? (
-            <section aria-label="Task runner" className="mt-6">
-              <div role="group" aria-label="Task runner views" className="flex justify-end gap-2">
-                {(["plan", "levels", "kanban"] as const).map((view) => <button key={view} type="button" aria-pressed={runnerView === view} onClick={() => setRunnerView((current) => current === view ? "running" : view)} className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-medium capitalize transition-colors ${runnerView === view ? "border-white/75 text-white" : "border-white/20 text-white/55 hover:border-white/50 hover:text-white"}`}>{view}</button>)}
-              </div>
-              {runnerView === "levels" ? <div className="mt-4"><StatsLevelsContent className="border-y-0 font-sans text-sm font-normal normal-case tracking-normal [&_header]:text-sm [&_header]:font-medium [&_header]:tracking-normal [&_h3]:text-sm [&_h3]:font-medium [&_h3]:normal-case [&_h3]:tracking-normal [&_dt]:text-xs [&_dt]:normal-case [&_dt]:tracking-normal [&_label]:text-xs [&_label]:normal-case [&_label]:tracking-normal [&_dd]:text-sm [&_p]:text-sm [&_input]:rounded-2xl [&_textarea]:rounded-2xl [&_input]:bg-white/[0.04] [&_textarea]:bg-white/[0.04] [&_dl>div]:rounded-2xl [&_section>div>div]:rounded-2xl [&_button]:rounded-full [&_button]:text-xs [&_button]:normal-case [&_button]:tracking-normal" /></div> : runnerView === "kanban" ? (
-                <div className="mt-6"><TasksKanban onSelect={selectTask} /></div>
-              ) : <div className="mt-6">{runnerView === "plan" ? <TaskPlan /> : <RunningTasks />}</div>}
-            </section>
-          ) : taskView === "campaign" ? (
-            <CampaignDetailsContent id="map-campaign-view" selectedCampaign={selectedCampaign} onSelect={setSelectedCampaign} />
-          ) : taskView === "inbox" ? (
-            <section aria-label="Inbox" className="mt-6 h-[max(20rem,calc(100dvh_-_var(--composer-height)_-_12rem))] min-w-0">
-              <InteractionsApp embedded />
-            </section>
-          ) : null}
-        </div>
+        <CampaignDetailsContent compact className="mt-0" id="map-campaign-view" onSelectTask={selectTask} />
       )}
 
     </div>
@@ -335,7 +352,7 @@ function ActivityWorkspaceContent({
 export function ActionsWorkspace({ workshop = false, showSummary = true }: { workshop?: boolean; showSummary?: boolean }) {
   const { activityOpen, navigationRequest, setActivityOpen, setDetailTaskId, setActivityMapOpen } = useActivityWorkspace();
   const { view, chatVisible } = useActionsView();
-  const { startActivity } = useActiveActivity();
+  const { startActivity, startTaskActivity } = useActiveActivity();
   const { addCommand } = useQuestCommands();
   // Workshop history uses the shared rail's notes visibility control.
   const displayedView = workshop ? "notes" : view;
@@ -377,6 +394,11 @@ export function ActionsWorkspace({ workshop = false, showSummary = true }: { wor
         setChoosingCategory(false);
         setShowingTaskGrid(false);
         setActivityOpen(true);
+      } else if (navigationRequest.action === "task") {
+        const task = readTasks().find((entry) => entry.id === navigationRequest.taskId);
+        if (!task) return;
+        startTaskActivity(task.name, task.category, task.id);
+        openCurrentActivity();
       } else if (navigationRequest.action === "current") {
         openCurrentActivity();
       } else if (navigationRequest.action === "task-grid") {
@@ -403,7 +425,7 @@ export function ActionsWorkspace({ workshop = false, showSummary = true }: { wor
       }
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [navigationRequest, openCurrentActivity, workshop, addCommand, startActivity, setActivityOpen]);
+  }, [navigationRequest, openCurrentActivity, workshop, addCommand, startActivity, startTaskActivity, setActivityOpen]);
   return (
     <LayoutGroup id={workshop ? "workshop-activity-category-grid" : "activity-category-grid"}><div className={`mx-auto flex min-h-0 w-full max-w-[var(--composer-max-width,72rem)] flex-1 flex-col ${workshop ? "relative h-full" : ""} ${fullWidthTerminal ? (workshop ? "" : "pl-1 pr-[var(--composer-gutter,1.5rem)]") : "pl-[var(--composer-gutter,1.5rem)] pr-[calc(var(--composer-gutter,1.5rem)+2rem)]"}`}>
       {showSummary && composerDock && createPortal(<div className="w-fit max-w-full [&>section]:mb-0" id={workshop ? "workshop-campaign-activity-summary" : "terminal-campaign-activity-summary"}>
