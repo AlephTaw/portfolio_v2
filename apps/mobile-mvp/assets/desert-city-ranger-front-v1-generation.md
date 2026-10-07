@@ -1,0 +1,11 @@
+# Ranger head-on windshield perspective
+
+Generated using the built-in image-generation tool from `/Users/stevenwilcox/Desktop/ChatGPT Image Oct 6, 2026, 10_10_17 PM.png`. Saved as `../public/landing-desert-city-ranger-front-v1.png`. Separate asset; live application references unchanged.
+
+## Prompt
+
+Use case: identity-preserve. Input image 1: reference for the exact truck, driver identity, illustration style, lighting, and location. Generate a new perspective of this same moment, moving the camera to directly in front of the cactus-grey 2022 Ford Ranger, looking straight head-on through its CLOSED windshield at the driver. Keep camera at exactly the seated driver's eye level, no overhead or low angle, no three-quarter angle. Landscape 16:9 composition, truck and windshield centered, both windshield pillars and side mirrors visible, hood along bottom. Driver is in the vehicle's LEFT front seat, which appears on the viewer's RIGHT in this front-facing shot. Preserve the bald tan-skinned NPC's facial features, navy t-shirt, seatbelt, neutral relaxed expression, hands naturally driving, simple basic anime/cel-shaded character design. Empty front passenger seat appears viewer-left, properly aligned beside driver. Four seats total, two front/two rear. Behind the truck, visible around its sides and through the cabin, the bridge recedes toward the periphery of the circular city/desert boundary: pale concrete bridge rails, river and sparse peripheral greenery yielding to endless golden desert mesas and distant mauve mountains. The city center is ahead of the truck and behind the CAMERA, not behind the driver. Preserve warm sunny daylight, bright turquoise sky with cream illustrated clouds and coherent shadows. Retain the reference's clean illustrated desert aesthetic and restrained simple character shading; not a photograph, no overdefined muscles, no new people, no floating cube, no captions or watermark. Black side mirrors with no white light inserts.
+
+## Inspection
+
+Head-on windshield composition, driver viewer-right in the vehicle's left front seat, empty front passenger seat viewer-left, hood and black mirrors visible. Bridge, water, peripheral greenery, desert and mountains behind the truck. Generated rear seating includes a central headrest despite the four-seat prompt; not a seating-layout correction asset.

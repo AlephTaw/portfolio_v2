@@ -5,3 +5,12 @@ dist/
 .vite/
 next-env.d.ts
 *.tsbuildinfo
+
+# Local OSM captures and reproducible audit/preview artifacts.
+# Keep queries, builders, provenance docs, and public runtime map assets in Git.
+/assets/columbus-buildings-osm-v1.json
+/assets/columbus-building-heights-v1.json
+/assets/columbus-buildings-extrusion-master-v1.svg
+/assets/world-map-preview.svg
+/assets/world-map-preview.png
+/assets/world-desert-resolution-candidate-v2.png

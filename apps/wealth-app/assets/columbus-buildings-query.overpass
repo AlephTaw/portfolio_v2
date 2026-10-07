@@ -1,0 +1,8 @@
+[out:json][timeout:90];
+(
+  way[building](39.929,-83.064,39.989,-82.977);
+  relation[building](39.929,-83.064,39.989,-82.977);
+  way["building:part"](39.929,-83.064,39.989,-82.977);
+  relation["building:part"](39.929,-83.064,39.989,-82.977);
+);
+out body geom;

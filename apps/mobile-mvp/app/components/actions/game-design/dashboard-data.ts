@@ -1,11 +1,12 @@
 import { mvdChecklist, mvdItemId } from "../field-report/mvd-checklist-data.ts";
+import { pointColors } from "./point-colors.ts";
 
 export const categories = [
-  { name: "Health", unit: "Hp", color: "#83c6a3" },
-  { name: "Wealth", unit: "Wp", color: "#d7bd7c" },
-  { name: "Sentience", unit: "Mp", color: "#a99ed7" },
-  { name: "Skills", unit: "Sp", color: "#88b8d8" },
-  { name: "Connection", unit: "Ip", color: "#d7a0ad" },
+  { name: "Health", unit: "Hp", color: pointColors.Health },
+  { name: "Wealth", unit: "Wp", color: pointColors.Wealth },
+  { name: "Sentience", unit: "Mp", color: pointColors.Sentience },
+  { name: "Skills", unit: "Sp", color: pointColors.Skills },
+  { name: "Connection", unit: "Ip", color: pointColors.Connection },
 ] as const;
 
 export function categoryTasks(name: string) {

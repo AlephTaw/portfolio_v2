@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Welcome to the game of life. Mobile-first edition.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Speedrun IRL" },
-  icons: { icon: "/icons/app.svg", apple: "/icons/apple-touch-icon.png" },
+  icons: { icon: { url: "/favicon.svg", type: "image/svg+xml" }, apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {

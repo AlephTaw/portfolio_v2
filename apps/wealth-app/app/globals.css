@@ -47,6 +47,18 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .actions-create-button { background: var(--app-accent); }
 .actions-create-button:hover { background: color-mix(in srgb, var(--app-accent) 90%, white); }
+.wealth-visor-rail {
+  right: calc((100% - 100vw) / 4);
+  bottom: calc(100% + 3.25rem);
+}
+.wealth-world-mode-rail {
+  top: calc(env(safe-area-inset-top) + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+@media (width < 640px) {
+  .wealth-visor-rail { right: max(-8px, calc((100% - 100vw) * 3 / 8)); }
+}
 .terminal-scroll { scrollbar-width: thin; scrollbar-color: #35363d transparent; }
 
 .planner { scrollbar-width: thin; scrollbar-color: #35363d transparent; }

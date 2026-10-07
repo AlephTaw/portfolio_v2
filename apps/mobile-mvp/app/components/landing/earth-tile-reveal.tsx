@@ -4,15 +4,16 @@ import { useMemo } from "react";
 
 // Each square reveals a crop of one shared cover-positioned image, not a
 // repeated thumbnail. Eight rows begin at the top of the visible planet.
-export function EarthTileReveal({ width, height, imageSrc, seed: shuffleSeed }: {
+export function EarthTileReveal({ width, height, imageSrc, seed: shuffleSeed, imageSize = { width: 1448, height: 1086 }, fullCoverage = false }: {
   width: number; height: number; imageSrc: string; seed: number;
+  imageSize?: { width: number; height: number }; fullCoverage?: boolean;
 }) {
-  const scale = Math.max(width / 1448, height / 1086);
-  const imageWidth = 1448 * scale;
-  const imageHeight = 1086 * scale;
+  const scale = Math.max(width / imageSize.width, height / imageSize.height);
+  const imageWidth = imageSize.width * scale;
+  const imageHeight = imageSize.height * scale;
   const offsetX = (width - imageWidth) / 2;
   const offsetY = (height - imageHeight) / 2;
-  const gridTop = Math.max(0, offsetY + imageHeight * 0.09);
+  const gridTop = fullCoverage ? 0 : Math.max(0, offsetY + imageHeight * 0.09);
   const tileSize = (height - gridTop) / 8;
   const columns = Math.ceil(width / tileSize);
   const count = columns * 8;
@@ -37,6 +38,7 @@ export function EarthTileReveal({ width, height, imageSrc, seed: shuffleSeed }: 
       return <div key={index} className="earth-reveal-tile absolute" style={{
         left: x, top: y, width: tileSize + 0.5, height: tileSize + 0.5,
         backgroundImage: `url('${imageSrc}')`,
+        backgroundColor: "#000",
         backgroundSize: `${imageWidth}px ${imageHeight}px`,
         backgroundPosition: `${offsetX - x}px ${offsetY - y}px`,
         animationDelay: `${rank / Math.max(1, count - 1) * 1600}ms`,

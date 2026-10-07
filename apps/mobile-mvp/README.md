@@ -37,6 +37,14 @@ Keep navigation state out of content views and layout wrappers. Add future HUD c
 
 Only the helmet toggle changes `visorOpen`. Build/Inventory/Chat use the same `ActivityOverlay`, sizing state, rail-dot resize control, glass material, and toggle/switch/minimize/restore transitions. There is no visor-specific window selection or alternate dialog wrapper. New windows use visor-specific launch sizes; toggling the visor while a window is already active preserves that window's size and content. With the visor closed, the window floats above an uninterrupted, independently scrolling activity log. Opening and resizing a window do not reset log scroll; new entries follow the bottom only when the user is already there.
 
+## Video authoring
+
+In-app video uses portrait 9:16, preferably 1080 × 1920. Film vertically with the subject centered, or prepare the final portrait crop in an external editor before uploading. Export MP4 with H.264 video and AAC audio when audio is needed; preserve the source frame rate. Leave breathing room around the subject for interface overlays.
+
+Experiences requiring multiple views should provide explicit filming instructions or an editing preset defining each shot, framing, and final composition. Do not introduce a general-purpose in-app video editor or automatic subject tracking for ordinary uploads.
+
+The existing landscape landing clip uses one fixed focal point (27% from the left, 50% from the top). Its cover crop centers that point during resizing where image boundaries permit. This keeps the imported clip usable on phones without changing the source video or the landing tour's layout.
+
 ## Development
 
 From the workspace root:

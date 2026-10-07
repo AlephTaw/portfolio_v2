@@ -4,11 +4,12 @@ import type { TerminalCategory } from "./terminal-categories.ts";
 export type HistoryEntry =
   | { id: number; kind: "category"; category: TerminalCategory }
   | { id: number; kind: "view"; view: PanelView }
-  | { id: number; kind: "command"; text: string; status: "execution-preview" }
+  | { id: number; kind: "command"; text: string; status: "execution-preview" | "category-note"; category?: TerminalCategory }
   | { id: number; kind: "action"; label: string };
 export type ActivitySession = { workspace: WorkspaceState; history: HistoryEntry[]; nextId: number; composing: boolean; visorOpen: boolean; activeCategory: TerminalCategory | null };
 export type SessionAction = WorkspaceAction
   | { type: "select-category"; category: TerminalCategory }
+  | { type: "clear-category" }
   | { type: "toggle-hud" }
   | { type: "open-panel"; view: PanelView }
   | { type: "minimize-panel" }
@@ -16,6 +17,7 @@ export type SessionAction = WorkspaceAction
   | { type: "restore-view"; id: number }
   | { type: "toggle-composer" }
   | { type: "begin-command" }
+  | { type: "activate-composer" }
   | { type: "return-terminal" }
   | { type: "close-composer" }
   | { type: "record-action"; label: string }
@@ -46,7 +48,7 @@ function closeComposer(state: ActivitySession): ActivitySession {
 }
 
 export function activitySessionReducer(state: ActivitySession, action: SessionAction): ActivitySession {
-  // Category screens live inline in the feed, not in the navbar window layer.
+  // Both category and navbar apps share one active slot in the terminal feed.
   if (action.type === "open-panel" || action.type === "select-panel" || action.type === "expand-panel") state = archiveCategory(state);
   // The visor is a separate display layer, not a destination in pane navigation.
   // Window navigation is identical over either background; only the helmet
@@ -55,6 +57,8 @@ export function activitySessionReducer(state: ActivitySession, action: SessionAc
     return record({ ...state, visorOpen: !state.visorOpen }, state.visorOpen ? "Visor closed" : "Visor opened");
   }
   switch (action.type) {
+    case "activate-composer": return state.composing ? state : { ...state, composing: true };
+    case "clear-category": return archiveCategory(state);
     case "select-category": {
       if (state.activeCategory === action.category) return state;
       const next = archivePanel(archiveCategory(state), { kind: "command" });
@@ -80,9 +84,14 @@ export function activitySessionReducer(state: ActivitySession, action: SessionAc
     case "submit-command": {
       const text = action.text.trim();
       if (!text) return state;
+      const category = state.activeCategory;
+      const next = archivePanel(archiveCategory(state), { kind: "command" });
       // No backend runner exists yet: never label preview submissions as
       // successful executions or execute untrusted text as a shell command.
-      return { ...state, nextId: state.nextId + 1, history: [...state.history, { id: state.nextId, kind: "command", text, status: "execution-preview" }] };
+      const entry: HistoryEntry = category
+        ? { id: next.nextId, kind: "command", text, status: "category-note", category }
+        : { id: next.nextId, kind: "command", text, status: "execution-preview" };
+      return { ...next, composing: true, nextId: next.nextId + 1, history: [...next.history, entry] };
     }
     case "toggle-composer": return record({ ...state, composing: !state.composing }, state.composing ? "Command composer closed" : "Command composer opened");
     case "close-composer": return closeComposer(state);

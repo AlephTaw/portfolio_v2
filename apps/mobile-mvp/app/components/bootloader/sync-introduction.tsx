@@ -11,13 +11,14 @@ const builds = [
   { id: "connector", name: "Connector", description: "Emphasize relationships, community, and shared progress." },
 ] as const;
 
-export function SyncIntroduction() {
+export function SyncIntroduction({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
   const [build, setBuild] = useState<string>("");
   const [mode, setMode] = useState<"normal" | "speedrun" | "">("");
+  const Heading = embedded ? "h2" : "h1";
 
   return <div className="mx-auto w-full max-w-md py-10 text-center sm:py-16">
-    <h1 className="text-xs font-medium uppercase tracking-[0.18em] text-white/65">Welcome to the game of life</h1>
+    <Heading className="text-xs font-medium uppercase tracking-[0.18em] text-white/65">Welcome to the game of life</Heading>
     <div className="mt-8 space-y-5 text-sm leading-7 text-white/75">
       <p className="text-2xl font-light leading-9 tracking-tight text-white">Your life is the action space.</p>
       <p>This game is played through real actions, not time spent on a screen. Choose what matters, turn it into small daily commitments, and watch your character develop.</p>
@@ -63,7 +64,7 @@ export function SyncIntroduction() {
       <p className="mt-3 text-sm leading-7 text-white/65">The exchange goes both ways: you bring your intentions and actions; the game reflects them back as a character, a plan, and feedback. You choose whether to begin.</p>
       <p className="mt-3 text-xs leading-5 text-white/45">Prototype preview: sign-in and data transfer are not connected. Nothing will be uploaded.</p>
       <button type="button" disabled={!build || !mode} onClick={() => router.push("/actions")} className="mt-6 min-h-11 rounded-full bg-white px-5 text-sm font-medium text-black transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-30">Begin bilateral upload and sync</button>
-      <Link href="/" className="mx-auto mt-4 block w-fit py-3 text-xs text-white/50 hover:text-white">Not now</Link>
+      {!embedded && <Link href="/" className="mx-auto mt-4 block w-fit py-3 text-xs text-white/50 hover:text-white">Not now</Link>}
     </section>
   </div>;
 }

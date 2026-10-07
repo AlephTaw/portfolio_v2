@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type FocusEvent, type PointerEvent } from "react";
 
-export const TimelineInteractionContext = createContext<(source: string, active: boolean) => void>(() => {});
+export const TimelineInteractionContext = createContext<(source: string, active: boolean, persist?: boolean) => void>(() => {});
 export const TimelineVisibilityContext = createContext(false);
 
 export function useTimelineVisibility() {
@@ -10,8 +10,9 @@ export function useTimelineVisibility() {
   const sources = useRef(new Set<string>());
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pinned = useRef(false);
-  const interact = useCallback((source: string, active: boolean) => {
+  const interact = useCallback((source: string, active: boolean, persist = false) => {
     if (timer.current) clearTimeout(timer.current);
+    if (active && persist) pinned.current = true;
     if (active) {
       sources.current.add(source);
       setVisible(true);

@@ -4,14 +4,16 @@ import { useState } from "react";
 import { useWatcher } from "../../watcher/watcher";
 import { NarrationInput } from "./narration-input";
 
-export function Storyboard({ editable = false, preview = false }: { editable?: boolean; preview?: boolean }) {
+export function Storyboard({ editable = false, preview = false, outline: controlledOutline, onOutlineChange, showViewToggle = true }: { editable?: boolean; preview?: boolean; outline?: boolean; onOutlineChange?: (outline: boolean) => void; showViewToggle?: boolean }) {
   const { storyScenes, setStoryScenes, storyScript, setStoryScript } = useWatcher();
-  const [outline, setOutline] = useState(false);
+  const [localOutline, setLocalOutline] = useState(false);
+  const outline = controlledOutline ?? localOutline;
+  const setOutline = onOutlineChange ?? setLocalOutline;
   const [selected, setSelected] = useState<string | null>(null);
   const canEdit = editable && !preview;
   const editingScene = storyScenes.find((scene) => scene.id === selected);
   return <section aria-label={editable ? "Authorship" : outline ? "Outline" : "Storyboard"} className="space-y-4">
-    <div className="flex items-center justify-between gap-2"><h2 className="text-sm font-medium text-white/90">{editable ? "Authorship" : outline ? "Outline" : "Storyboard"}</h2><button type="button" onClick={() => setOutline(!outline)} className="min-h-11 rounded-full bg-white/5 px-3 text-[11px] text-white/65 hover:bg-white/10">{outline ? "Storyboard view" : "Outline view"}</button></div>
+    <div className="flex items-center justify-between gap-2"><h2 className="text-sm font-medium text-white/90">{editable ? "Authorship" : outline ? "Outline" : "Storyboard"}</h2>{showViewToggle && <button type="button" onClick={() => setOutline(!outline)} className="min-h-11 rounded-full bg-white/5 px-3 text-[11px] text-white/65 hover:bg-white/10">{outline ? "Storyboard view" : "Outline view"}</button>}</div>
     <ol className={outline ? "space-y-3" : "grid grid-cols-3 gap-2"}>{storyScenes.map((scene, index) => <li key={scene.id} className={`min-w-0 ${outline ? "flex gap-3 border-b border-white/5 pb-3 last:border-0" : ""}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={scene.image} alt={`${scene.title} scene`} className={outline ? "h-20 w-14 shrink-0 rounded-lg object-cover" : "mb-2 aspect-[4/5] w-full rounded-xl object-cover"} />

@@ -78,6 +78,20 @@ test("empty commands do not create timeline entries", () => {
   assert.equal(reduce(start, { type: "submit-command", text: " \n " }), start);
 });
 
+test("submitting from an active navbar app docks it and returns to the command feed in either visor mode", () => {
+  for (const visorOpen of [false, true]) {
+    const start = { ...createActivitySession("inventory"), visorOpen };
+    const submitted = reduce(start, { type: "submit-command", text: "Review priorities" });
+    assert.deepEqual(submitted.workspace, { kind: "command" });
+    assert.equal(submitted.composing, true);
+    assert.equal(submitted.visorOpen, visorOpen);
+    assert.deepEqual(submitted.history, [
+      { id: 1, kind: "view", view: "inventory" },
+      { id: 2, kind: "command", text: "Review priorities", status: "execution-preview" },
+    ]);
+  }
+});
+
 test("each submitted command gets a unique timeline entry", () => {
   let state = createActivitySession(null);
   state = reduce(state, { type: "submit-command", text: "First" });

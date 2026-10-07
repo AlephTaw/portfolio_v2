@@ -11,8 +11,9 @@ export const mvdChecklist: readonly MvdGroup[] = [
   { id: "skin", category: "Health", title: "Skin", items: items("Daily cleanser morning and night", "Sunscreen face & head (4 dots)") },
   { id: "mouth", category: "Health", title: "Mouth", items: items("Brush morning", "Floss morning", "Brush at night", "Floss at night", "Mouthwash at night") },
   { id: "hair", category: "Health", title: "Hair", items: items("5 min whole-scalp warmup massage") },
-  { id: "earning", category: "Wealth", title: "Daily earning quota", items: [{ points: "1 Wp", label: "Complete the earning quota for the day" }], note: "Daily earning target and monthly/long-term solvency estimates are not configured.", focus: true },
-  { id: "solvency", category: "Wealth", title: "Solvency", items: [{ points: "Action", label: "Re-establish solvency" }] },
+  { id: "earning", category: "Wealth", title: "Daily Earning Quota", items: [{ points: "1 Wp", label: "Complete the earning quota for the day" }], focus: true },
+  { id: "solvency", category: "Wealth", title: "Debt Repayment", items: [{ points: "1 Wp", label: "Repay the debt balance" }] },
+  { id: "monthly-expenses", category: "Wealth", title: "Cover Monthly Expenses", items: [{ points: "1 Wp", label: "Cover all expenses for the month" }] },
   { id: "connection", category: "Connection", title: "Connection", items: [
     { points: "1 Ip", label: "One daily family check-in call" },
     { points: "+1 bonus Ip", label: "Talk with one person who is not a close friend or family member" },

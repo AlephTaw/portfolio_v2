@@ -1,0 +1,15 @@
+{
+  "source_timestamp": "2026-06-01T08:52:28Z",
+  "rendered_features": 30798,
+  "recorded": 73,
+  "floor_estimates": 4114,
+  "default_6m": 26611,
+  "suppressed_parent_outlines": 2785,
+  "rejected_geometry": [
+    "way/783689075"
+  ],
+  "unsupported_building_relations": [
+    "relation/7412767"
+  ],
+  "unitsPerMeter": 0.20206274444604222
+}

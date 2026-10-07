@@ -5,3 +5,15 @@ dist/
 .vite/
 next-env.d.ts
 *.tsbuildinfo
+
+# Local production masters and diagnostic renders, not runtime assets.
+# Published web assets in public/ remain versioned.
+/assets/cube-repair-trials/
+/assets/*.mkv
+/assets/*.mp4
+/assets/*-contact.png
+/assets/original-flight-*.png
+/assets/desert-city-*-check-*.png
+/assets/desert-city-flight-final-frame-v1.png
+# Downloaded OSM source; retained locally, retrieval documented in the map README.
+/assets/maps/columbus-central/osm-source.json

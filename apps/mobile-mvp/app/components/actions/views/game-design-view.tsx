@@ -5,6 +5,7 @@ import { CategoryStatus } from "../game-design/category-status";
 import { categories, categoryAchievements, categoryProgress, systemHealth } from "../game-design/dashboard-data";
 import { Storyboard } from "../game-design/storyboard";
 import { AgentArchitecture } from "../game-design/agent-architecture";
+import { pointsEarnedColors } from "../game-design/point-colors";
 
 export function GameDesignView() {
   const { completedMvd } = useWatcher();
@@ -38,7 +39,7 @@ export function GameDesignView() {
         <ul className="pb-2">{pending.map((item) => <li key={item.id} className="flex items-center gap-2 border-t border-white/5 py-2.5 text-xs"><span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full" style={{ background: item.color }} /><span className="flex-1 text-white/75">{item.title}</span><span className="text-[10px] text-white/40">{item.category}</span></li>)}</ul>
       </details>
       <h3 className="mb-2 mt-4 text-[11px] text-white/50">Points earned</h3>
-      <div className="flex flex-wrap gap-x-5 gap-y-2">{categories.map((category) => <span key={category.name} className="flex items-baseline gap-1.5 text-xs"><span className="font-medium tabular-nums" style={{ color: category.color }}>{categoryProgress(category.name, completedMvd).earned}</span><span className="text-[10px] text-white/45">{category.unit}</span></span>)}</div>
+      <div className="flex flex-wrap gap-x-5 gap-y-2">{categories.map((category) => <span key={category.name} className="flex items-baseline gap-1.5 text-xs"><span className="font-medium tabular-nums" style={{ color: pointsEarnedColors[category.name] }}>{categoryProgress(category.name, completedMvd).earned}</span><span className="text-[10px] text-white/45">{category.unit}</span></span>)}</div>
     </section>
 
     <div className="mt-7 border-t border-white/10 pt-5"><Storyboard /></div>

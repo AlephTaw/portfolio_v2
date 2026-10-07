@@ -3,8 +3,9 @@ import { useSyncExternalStore } from "react";
 import { defaultPlan, isPlan, validatePlan, type Plan } from "./planner";
 
 const KEY = "mobile-mvp-wealth-plan-v1";
-type Snapshot = { plan: Plan; status: string };
-const server: Snapshot = { plan: defaultPlan(), status: "Loading saved plan…" };
+type WealthTab = "overview" | "entries" | "parameters";
+type Snapshot = { plan: Plan; status: string; tab: WealthTab };
+const server: Snapshot = { plan: defaultPlan(), status: "Loading saved plan…", tab: "overview" };
 let snapshot = server;
 let loaded = false;
 const listeners = new Set<() => void>();
@@ -17,9 +18,9 @@ function subscribe(listener: () => void) {
       const saved = localStorage.getItem(KEY);
       const value: unknown = saved ? JSON.parse(saved) : null;
       snapshot = saved && isPlan(value)
-        ? { plan: value, status: "Saved in this browser" }
-        : { plan: defaultPlan(), status: saved ? "Saved data could not be read; showing the starter plan." : "Edits save in this browser" };
-    } catch { snapshot = { plan: defaultPlan(), status: "Browser storage unavailable; edits stay in this session." }; }
+        ? { ...snapshot, plan: value, status: "Saved in this browser" }
+        : { ...snapshot, plan: defaultPlan(), status: saved ? "Saved data could not be read; showing the starter plan." : "Edits save in this browser" };
+    } catch { snapshot = { ...snapshot, plan: defaultPlan(), status: "Browser storage unavailable; edits stay in this session." }; }
     emit();
   }
   return () => { listeners.delete(listener); };
@@ -32,10 +33,15 @@ function update(change: (plan: Plan) => Plan) {
     try { localStorage.setItem(KEY, JSON.stringify(plan)); }
     catch { status = "Browser storage unavailable; edits stay in this session."; }
   }
-  snapshot = { plan, status };
+  snapshot = { ...snapshot, plan, status };
+  emit();
+}
+function setTab(tab: WealthTab) {
+  if (snapshot.tab === tab) return;
+  snapshot = { ...snapshot, tab };
   emit();
 }
 export function usePlan() {
   const current = useSyncExternalStore(subscribe, () => snapshot, () => server);
-  return { ...current, update };
+  return { ...current, update, setTab };
 }

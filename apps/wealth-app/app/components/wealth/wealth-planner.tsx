@@ -5,12 +5,12 @@ import { usePlan } from "./use-plan";
 import { EntryEditor, Parameters } from "./plan-editor";
 import { PlanOverview } from "./plan-overview";
 
-export function WealthPlanner({ header }: { header?: React.ReactNode }) {
+export function WealthPlanner({ header, embedded = false }: { header?: React.ReactNode; embedded?: boolean }) {
   const { plan, status, update } = usePlan();
   const [tab, setTab] = useState<"overview" | "entries" | "parameters">("overview");
   const errors = validatePlan(plan);
   const analysis = errors.length ? null : analyzePlan(plan);
-  return <section aria-label="Wealth planner" className="planner min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-3">
+  return <section aria-label="Cover Monthly Expenses planner" className={embedded ? "planner pb-2" : "planner min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-3"}>
     {header}
     <div className="mb-5 mt-3 flex items-start justify-between gap-3"><p className="text-[11px] text-white/45">{status}</p><span className="text-xs text-white/40">{plan.start.slice(0, 7)}</span></div>
     <div className="mb-5 flex flex-wrap gap-2" role="tablist" aria-label="Wealth sections">

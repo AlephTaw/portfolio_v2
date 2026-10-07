@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./components/systems/utilities/utilities.css";
 
 :root {
   color-scheme: dark;
@@ -107,6 +108,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
   bottom: 2px;
 }
 
+/* One centered material surface owns the timeline, feed and dock in both modes.
+   Nested views transmit this surface rather than stacking tint and blur. */
+.actions-page { --terminal-max-width: 629.8px; }
+.terminal-container {
+  width: min(100%, var(--terminal-max-width));
+  margin-inline: auto;
+  border-radius: 0;
+}
+.terminal-container .actions-primary-column {
+  max-width: var(--terminal-max-width);
+  /* The timeline gutter is now inside the centered terminal layout, rather
+     than outside a page column. Do not shift the whole group off-screen. */
+  left: 0;
+}
+.terminal-container-world .activity-timeline {
+  /* Clip the rail alone: content keeps the full container height. Preserve
+     horizontal room for its dots, counter, settings and pointer targets. */
+  clip-path: inset(16px -100vw 0 -100vw);
+  --timeline-top-anchor: 32px;
+}
+
 /* Window surfaces fill narrow viewports, then stop at the column's width cap.
    Their centered content parent keeps both visor modes aligned with the dock. */
 .activity-overlay {
@@ -183,6 +205,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .actions-primary-column {
     --side-rail-right: calc((100% - 100vw) * 3 / 8);
   }
+  .terminal-container .actions-side-rail {
+    /* Keep the visor glyph inside the viewport when the inner gutter opens. */
+    right: max(-8px, var(--side-rail-right));
+  }
   .terminal-prompt-anchor { bottom: 14px; }
 }
 
@@ -258,7 +284,7 @@ button.inventory-glass-slot:focus-visible {
   box-shadow: 0 12px 40px rgb(0 0 0 / 25%), inset 0 1px 0 rgb(255 255 255 / 22%);
 }
 
-/* The outer shared window owns adaptive tint; nested content stays unchanged. */
+/* The outer shared surface owns adaptive tint; nested panes stay transparent. */
 .activity-overlay-surface.liquid-glass-surface {
   background-color: rgb(0 0 0 / var(--adaptive-glass-alpha, 0));
   backdrop-filter: blur(var(--glass-blur, 48px)) saturate(calc(1 - var(--adaptive-glass-alpha, 0) * 0.6));
@@ -268,8 +294,26 @@ button.inventory-glass-slot:focus-visible {
   background-color: rgb(255 255 255 / var(--adaptive-glass-alpha, 0));
 }
 
+/* Content panes and profile headers are not additional material layers.
+   Top-layer dialogs and discrete controls/tiles keep their own surfaces. */
+.actions-page .terminal-container :is(.view-glass:not(dialog), .profile-glass) {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
 .actions-input { background: rgb(255 255 255 / 5%); }
 .terminal-input { background: #16171c; }
+.terminal-composer-input:focus-within {
+  border-color: color-mix(in srgb, var(--app-accent) 65%, white);
+}
+.terminal-composer-input .actions-input {
+  background: transparent;
+}
+.terminal-composer-input .actions-input:focus-visible {
+  outline: none;
+}
 .terminal-category-pulse {
   display: block;
   animation: terminal-category-wiggle 480ms ease-in-out both;
@@ -313,8 +357,66 @@ button.inventory-glass-slot:focus-visible {
 
 .earth-secondary-frame {
   opacity: 0;
-  animation: earth-tile-reveal 300ms ease-out 600ms forwards;
+  animation: earth-tile-reveal 600ms ease-out 600ms forwards;
   animation-play-state: var(--earth-animation-state, running);
+}
+
+.earth-preview-panel {
+  animation: earth-preview-panel-opacity 2000ms ease-in-out 1000ms both;
+  animation-play-state: var(--earth-animation-state, running);
+}
+
+.earth-secondary-frame .earth-preview-panel {
+  animation-delay: 1600ms;
+}
+
+@keyframes earth-preview-panel-opacity {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+.earth-final-frame {
+  transform-origin: center;
+  animation: earth-final-frame-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-play-state: var(--earth-animation-state, running);
+}
+
+@keyframes earth-final-frame-enter {
+  from { transform: scale(0); border-radius: 24px; }
+  to { transform: scale(1); border-radius: 0; }
+}
+
+.landing-glass-pill {
+  border-radius: 0;
+  background: #000;
+}
+
+.landing-live-gameplay {
+  animation: landing-live-gameplay-enter 600ms ease-out both;
+}
+
+.landing-signup-screen {
+  animation: landing-live-gameplay-enter 1000ms ease-in-out both;
+}
+
+.landing-onboarding-arrow {
+  animation: landing-live-gameplay-enter 6000ms ease-in-out both;
+}
+
+.landing-onboarding-arrow-bounce {
+  animation: landing-onboarding-bounce 5000ms ease-in-out 6000ms infinite;
+}
+
+@keyframes landing-onboarding-bounce {
+  0%, 12%, 24%, 36%, 100% { transform: translateY(0); }
+  6% { transform: translateY(16px); }
+  18% { transform: translateY(11px); }
+  30% { transform: translateY(6px); }
+}
+
+@keyframes landing-live-gameplay-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .earth-glass-status {
@@ -324,7 +426,7 @@ button.inventory-glass-slot:focus-visible {
   -webkit-backdrop-filter: blur(22px) saturate(1.35);
   box-shadow: 0 16px 48px rgb(0 0 0 / 22%);
   opacity: 0;
-  animation: earth-glass-enter 850ms cubic-bezier(0.16, 1, 0.3, 1) 450ms forwards;
+  animation: earth-glass-enter 1700ms cubic-bezier(0.16, 1, 0.3, 1) 450ms forwards;
   animation-play-state: var(--earth-animation-state, running);
 }
 
@@ -335,6 +437,7 @@ button.inventory-glass-slot:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .actions-visor-background { transition: none; }
-  .earth-reveal-tile, .earth-secondary-frame, .earth-glass-status { animation-duration: 1ms; animation-delay: 0ms !important; }
+  .earth-reveal-tile, .earth-secondary-frame, .earth-preview-panel, .earth-glass-status, .earth-final-frame, .landing-live-gameplay, .landing-signup-screen, .landing-onboarding-arrow { animation-duration: 1ms; animation-delay: 0ms !important; }
   .landing-sync-path { animation-duration: 1ms !important; }
+  .landing-onboarding-arrow-bounce { animation: none; }
 }

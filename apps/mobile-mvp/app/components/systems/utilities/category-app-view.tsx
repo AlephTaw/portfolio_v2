@@ -1,16 +1,16 @@
 "use client";
 
-import { CategoryStatus } from "../../actions/game-design/category-status";
-import { categories } from "../../actions/game-design/dashboard-data";
-import { terminalCategories, type TerminalCategory } from "../../actions/terminal-categories";
-import { JourneyView } from "./journey/journey-view";
+import type { TerminalCategory } from "../../actions/terminal-categories";
+import type { CategoryProgressProps } from "./shared/category-dashboard";
+import { JourneyTabs } from "./journey/journey-tabs";
+import { ConnectionsApp } from "./connection/connections-app";
+import { WealthApp } from "./wealth/wealth-app";
+import { HealthApp } from "./health/health-app";
+import { SentienceApp } from "./sentience/sentience-app";
+import { SkillsApp } from "./skills/skills-app";
 
-export function CategoryAppView({ category }: { category: TerminalCategory }) {
-  const metadata = terminalCategories.find((item) => item.name === category)!;
-  if (category === "Journey") return <JourneyView />;
-  const dashboard = categories.find((item) => item.name === (category === "Connections" ? "Connection" : category))!;
-  return <section aria-label={`${category} app`} className="rounded-2xl bg-black/70 px-4 py-3">
-    <h2 className={`text-sm font-medium ${metadata.color}`}>{category}</h2>
-    <CategoryStatus category={dashboard} />
-  </section>;
+export function CategoryAppView({ category, ...progress }: CategoryProgressProps & { category: TerminalCategory }) {
+  const apps = { Health: HealthApp, Wealth: WealthApp, Sentience: SentienceApp, Skills: SkillsApp, Connections: ConnectionsApp, Journey: JourneyTabs };
+  const App = apps[category];
+  return <div className="system-utility-app"><App {...progress} /></div>;
 }
